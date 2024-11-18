@@ -32,6 +32,7 @@ const strings ={
     customsClearnace: "Customs Clearnace",
     cfsHandling: "CFS Handling",
     doorToPortTrucking: "Door To Port Trucking",
+    portToDoorTrucking: "Port to Door Trucking",
     factoryStuffing: "Factory / Door Stuffing",
     portCFSStuffing:"Port / Terminal /Ramp Stuffing",
     defactoryStuffing: "Factory / Door Destuffing",

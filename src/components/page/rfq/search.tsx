@@ -113,6 +113,7 @@ function RfqSearchUI() {
           return values.portOfUnLoading.includes(item?.dischargePort);
         });
       }
+      console.log(localRfqList);
         setemptyResult(false)        
         
         if(localRfqList.length<1){
@@ -546,15 +547,15 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                     {
                       addOnService.placeOfLoading &&
                       <Col span={24}>
-                        <Form.Item label={"Place of Loading"}>
+                        <Form.Item label={"Place of Loading"} className='d-inline-flex'>
                           <Input value={`${addOnService?.placeOfLoading?.address}, ${addOnService?.placeOfLoading?.city}, ${addOnService?.placeOfLoading?.state}, ${addOnService?.placeOfLoading?.country}`} disabled className='text-center' />
                         </Form.Item>
                       </Col>
                     }
                     {
                       addOnService.placeOfUnLoading &&
-                      <Col span={24}>
-                        <Form.Item label={"Place of UnLoading"}>
+                      <Col span={24} >
+                        <Form.Item label={"Place of UnLoading"} className='d-inline-flex'>
                           <Input value={`${addOnService?.placeOfUnLoading?.address}, ${addOnService?.placeOfUnLoading?.city}, ${addOnService?.placeOfUnLoading?.state}, ${addOnService?.placeOfUnLoading?.country}`} disabled className='text-center' />
                         </Form.Item>
                       </Col>
@@ -562,7 +563,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                     {
                       addOnService.stuffingLocationType&&
                       <Col span={12}>
-                        <Form.Item label={"Stuffing Location"}>
+                        <Form.Item label={ tradeType === strings.import?"De Stuffing Location":"Stuffing Location"}>
                           <Input value={addOnService?.stuffingLocationType} disabled className='text-center' />
                         </Form.Item>
                       </Col>
@@ -610,7 +611,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
             }
             <Card>
               <Form.Item label={"Payment Terms"} className='d-inline-flex'>
-                <Input value={paymentTerms} disabled className='text-center text-wrap' />
+                <Input.TextArea rows={3} value={paymentTerms} disabled className='text-center text-wrap' />
               </Form.Item>
               <Form.Item label={"Remarks"} className='d-inline-flex'>
                 <Input value={remarks} disabled className='text-center text-wrap' />
