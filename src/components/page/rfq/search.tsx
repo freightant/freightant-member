@@ -5,7 +5,7 @@ import { importIncotermOptions, incotermOptions, modeOfShipmentOptions, tradeTyp
 import { strings } from '@/components/strings';
 import { useWatch } from 'antd/es/form/Form';
 import { layParams3 } from './post';
-import { DownloadOutlined, DownOutlined, SearchOutlined } from '@ant-design/icons';
+import { DownloadOutlined, DownOutlined, SearchOutlined, UpCircleOutlined } from '@ant-design/icons';
 import LocodeSelect from '@/components/supportcomponents/customcomponents/locodeselect';
 import { CountrySelect, CountrySelectV2, StateSelectV4 } from '@/components/supportcomponents/customcomponents/stateselect';
 import { locodeFormatedString, validateMessages } from '@/components/utils';
@@ -22,6 +22,7 @@ function RfqSearchUI() {
   const [SrcLocation, setSrcLocation] = useState("")
   const [DesLocation, setDesLocation] = useState("")
   const [universal, setUniversal] = useState<any>(null)
+  const [inputUpdate, setinputUpdate] = useState(false)
   const modeOfShipment = useWatch("modeOfShipment",form)
   const tradeType = useWatch("tradeType",form)
   const incoterm = useWatch("incoterm",{form,preserve:true})
@@ -29,16 +30,34 @@ function RfqSearchUI() {
 
   const [RfqList, setRfqList] = useState([])
   const [UniversalRfqList, setUniversalRfqList] = useState([])
+
+
   const handleSubmit = (values:any) => {
     if (universal) {      
       
-
       let localRfqList = UniversalRfqList;
+      if(inputUpdate){
+        setFormLoading(true)
+        form.resetFields()
+        getRfQ({ universal, only: true })
+        .then(r => {
+          if (r.code) {
+            setRfqList(r.data)
+            setUniversalRfqList(r.data)
+            setemptyResult(r.data.length < 1)
+          }
+        })
+        .catch(r => {
+        }).finally(() => {
+          setFormLoading(false);
+          setinputUpdate(false)
+        });
+      }
 
       if (values?.origin?.country) {
         localRfqList = localRfqList.filter((item: any) => {
           if (values?.origin?.country === 'Any') {
-            return true;  // Allow any match for 'Any'
+            return true; 
           }          
           return `${item?.placeOfLoading?.country}`.toLowerCase() === `${values?.origin?.country}`.toLowerCase();
         });
@@ -53,7 +72,7 @@ function RfqSearchUI() {
       if (values?.destination?.country) {        
         localRfqList = localRfqList.filter((item: any) => {
           if (values?.destination?.country === 'Any') {
-            return true;  // Allow any match for 'Any'
+            return true; 
           }
           return `${item?.placeOfUnLoading?.country}`.toLowerCase() === `${values?.destination?.country}`.toLowerCase();
         });
@@ -94,6 +113,7 @@ function RfqSearchUI() {
           return values.portOfUnLoading.includes(item?.dischargePort);
         });
       }
+      console.log(localRfqList);
         setemptyResult(false)        
         
         if(localRfqList.length<1){
@@ -121,27 +141,14 @@ function RfqSearchUI() {
   };
 
   useEffect(() => {
-
-    const timer = setTimeout(() => {
-      if(universal){
-        setFormLoading(true)
-        form.resetFields()
-        getRfQ({ universal, only: true })
-          .then(r => {
-            if (r.code) {
-              setRfqList(r.data)
-              setUniversalRfqList(r.data)
-              setemptyResult(r.data.length < 1)
-            }
-          })
-          .catch(r => {
-          }).finally(() => {
-            setFormLoading(false);
-          });
-      }
-    }, 1000);
-    return () => clearTimeout(timer);
+    setinputUpdate(true);
   }, [universal]); 
+
+  const resetHandle = () => {
+    form.resetFields()
+    setRfqList(UniversalRfqList)
+    setemptyResult(false)
+  }
   return (
     <div className={`bg-shade min-vh-100`} >
       <Row justify={"center"} gutter={[8,8]} className='mx-0 py-5'>
@@ -261,6 +268,11 @@ function RfqSearchUI() {
                   Search
                 </Button>
               </Form.Item>
+              <Form.Item rootClassName="d-flex justify-content-center">
+                <Button className="px-5" type="link" onClick={()=>resetHandle()}>
+                  Reset
+                </Button>
+              </Form.Item>
             </Form>
           </Card>
         </Col>
@@ -332,6 +344,7 @@ export default RfqSearchUI
 
 export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,showSubmit?:boolean,hideExpoter?:boolean}) => {
   const [form] = Form.useForm();
+  const [expand, setexpand] = useState(false)
   
   const {
     _id,
@@ -363,8 +376,10 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
     <Form
       form={form} 
     >
-      <Card title={`RFQ ID: ${"rfqId"}`} styles={{header:{borderBottomWidth:0}}}>
-        <Row gutter={[16, 8]} className='my-3'>
+      <Card title={`RFQ ID: ${"rfqId"}`} styles={{header:{borderBottomWidth:0}}} className='my-3'
+        extra={<Button className={expand?"":"d-none"} size="large" type="link" onClick={()=>setexpand(false)} icon={<UpCircleOutlined className='fs-4' />}/>}
+      >
+        <Row gutter={[48, 8]} className='my-3'>
           <Col span={8}>
             <Form.Item name={"modeOfShipment"} label={"Mode of Shipment"}>
                 <Input disabled className='text-center' />
@@ -407,7 +422,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
           {
             dischargePort&&
           <Col span={12}>
-            <Form.Item label="Port of Loading" layout="vertical">
+            <Form.Item label="Port of Unloading" layout="vertical">
                 <PortUI i={dischargePortObj} />
             </Form.Item>
           </Col>
@@ -423,14 +438,14 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
           {
             (placeOfUnLoading && !dischargePort)&&
           <Col span={12}>
-            <Form.Item label="Place of Loading" layout="vertical">
+            <Form.Item label="Place of Unloading" layout="vertical">
               <Input className='rounded-2' value={`${placeOfUnLoading?.address}, ${placeOfUnLoading?.city}, ${placeOfUnLoading?.state}, ${placeOfUnLoading?.country}`} />
             </Form.Item>
           </Col>
           }
         </Row>
-        <Collapse bordered={false} defaultActiveKey={[]}>
-          <Collapse.Panel showArrow={false} header={<Button shape="round">View Details</Button>} key="1">
+        <Collapse bordered={false} activeKey={[expand?1:-1]}>
+          <Collapse.Panel showArrow={false} header="" extra={<Button shape="round" onClick={()=>setexpand(true)}  className={expand?"d-none":""}>View Details</Button>} key="1">
             { (cargoDetail?.category?cargoDetail?.category:[]).length>0&&
               <Card title={"Cargo Details"} styles={{ header: { borderBottom: 0 }, body: { padding: 10 } }}
               className="my-2"
@@ -532,15 +547,15 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                     {
                       addOnService.placeOfLoading &&
                       <Col span={24}>
-                        <Form.Item label={"Place of Loading"}>
+                        <Form.Item label={"Place of Loading"} className='d-inline-flex'>
                           <Input value={`${addOnService?.placeOfLoading?.address}, ${addOnService?.placeOfLoading?.city}, ${addOnService?.placeOfLoading?.state}, ${addOnService?.placeOfLoading?.country}`} disabled className='text-center' />
                         </Form.Item>
                       </Col>
                     }
                     {
                       addOnService.placeOfUnLoading &&
-                      <Col span={24}>
-                        <Form.Item label={"Place of UnLoading"}>
+                      <Col span={24} >
+                        <Form.Item label={"Place of UnLoading"} className='d-inline-flex'>
                           <Input value={`${addOnService?.placeOfUnLoading?.address}, ${addOnService?.placeOfUnLoading?.city}, ${addOnService?.placeOfUnLoading?.state}, ${addOnService?.placeOfUnLoading?.country}`} disabled className='text-center' />
                         </Form.Item>
                       </Col>
@@ -548,7 +563,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                     {
                       addOnService.stuffingLocationType&&
                       <Col span={12}>
-                        <Form.Item label={"Stuffing Location"}>
+                        <Form.Item label={ tradeType === strings.import?"De Stuffing Location":"Stuffing Location"}>
                           <Input value={addOnService?.stuffingLocationType} disabled className='text-center' />
                         </Form.Item>
                       </Col>
@@ -586,8 +601,8 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                     {
                       (addOnService.miscServices?addOnService.miscServices:[]).length>0&&
                       <Col sm={24} span={11}>
-                        <Form.Item label={"Misc Services"}>
-                          <Input.TextArea rows={1} value={addOnService.miscServices.join()+ `${addOnService.miscServices.includes(strings.others)?", "+addOnService?.miscOtherValue:""}`} disabled className='text-center text-wrap' />
+                        <Form.Item label={"Misc Services"} className='d-inline-flex'>
+                          <Input.TextArea rows={1} value={addOnService.miscServices.join()+ `${addOnService.miscServices.includes(strings.others)?", "+addOnService?.miscOtherValue:""}`} disabled className='text-center text-wrap ' />
                         </Form.Item>
                       </Col>
                     }
@@ -595,10 +610,10 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
               </Card>
             }
             <Card>
-              <Form.Item label={"Payment Terms"}>
-                <Input value={paymentTerms} disabled className='text-center text-wrap' />
+              <Form.Item label={"Payment Terms"} className='d-inline-flex'>
+                <Input.TextArea rows={3} value={paymentTerms} disabled className='text-center text-wrap' />
               </Form.Item>
-              <Form.Item label={"Remarks"}>
+              <Form.Item label={"Remarks"} className='d-inline-flex'>
                 <Input value={remarks} disabled className='text-center text-wrap' />
               </Form.Item>
             </Card>

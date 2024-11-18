@@ -129,7 +129,6 @@ const KYCForm = ({ setCurrentStep }: {setCurrentStep: Dispatch<SetStateAction<nu
           }else{
             let c = fetchedOrg1?.data?.user?.countryCode==91
             if(fetchedOrg1.code &&c){
-                console.log("tl");
                 setCountryId(`101`)
             }
           }

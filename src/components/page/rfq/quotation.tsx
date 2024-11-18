@@ -15,13 +15,12 @@ import LocodeSelect from '@/components/supportcomponents/customcomponents/locode
 import { getPaymentCode, locodeFormatedString, validateData } from '@/components/utils';
 import { AuthHOC } from '@/components/supportcomponents/auth/UnAuthHOC';
 import PostSuccessModal from '@/components/supportcomponents/rfq/postSuccessModal';
+import OfferDetail from './details';
 
 const {Column, ColumnGroup} = Table
 const defaultValues = {
-  "polFreeTimeStatus":true,
-  "podFreeTimeStatus":true,
-  "paymentTermsStatus":true,
   noOfTransShipmentPorts:0,
+  
   pointOfContact:[]
 }
 const OceanFreightForm=({id}:{id?:string | string[] | undefined})=>{
@@ -218,6 +217,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   const [transshipmentPorts, setTransshipmentPorts] = useState([]);
   const [etd, setEtd] = useState(new Date());
 
+  const [quotationData, setquotationData] = useState({})
+
   const noOfTransShipmentPorts = Form.useWatch("noOfTransShipmentPorts",form)
   const paymentTermsStatus = Form.useWatch("paymentTermsStatus",form)
   const paymentTermsDeclineValue = Form.useWatch("paymentTermsDeclineValue",form)
@@ -271,7 +272,31 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     if(termsCondition){
       updateSteps(initialStateRFQQuata[7].title)
     }
+    
+    ///
+    let dts = {...form.getFieldsValue()}
+    dts.etd = value["etd"]?.format("YYYY-MM-DD")
+    dts.quotationValidityDate = value["quotationValidityDate"]?.format("YYYY-MM-DD")
+    dts.portCutOff ={date: value["portCutOff"]["date"]?.format("YYYY-MM-DD"),time: value["portCutOff"]["time"]?.format("HH:mm")}
+    if(rfq?.modeOfShipment !== strings.air ){
+      dts.siCutOff ={date: value["siCutOff"]["date"]?.format("YYYY-MM-DD"),time: value["siCutOff"]["time"]?.format("HH:mm")}
+    }
+    dts.shippingLine = Array.isArray(value["shippingLine"]) ? value["shippingLine"][0] : value["shippingLine"]
+    dts.transShipmentPorts = transshipmentPorts
+    
 
+
+    
+    dts.freightData = (freightData?freightData:[]).map((i:any)=>({...i,costHead:[i.costHead]?.[0]}))
+    dts.polChargesData = (polChargesData?polChargesData:[]).map((i:any)=>({...i,costHead:i.costHead?.[0],costCategory:[i.costCategory]?.[0]}))
+    dts.podChargesData = (podChargesData?podChargesData:[]).map((i:any)=>({...i,costHead:i.costHead?.[0],costCategory:[i.costCategory]?.[0]}))
+    if(dts.airline){
+      if(dts.airline.length>0 && Array.isArray(dts.airline)){
+        dts.airline = dts.airline[0]
+      }
+    }
+    setquotationData({...dts,rfq:rfq})
+    ///
   },[
     freightData,
     polChargesData,
@@ -340,6 +365,13 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         })
         .catch(r=>{})        
       }
+    }
+    setFreightData([{}])
+    if(rfq?.tradeType===strings.export){
+      setPolChargesData([{}])
+    }
+    if(rfq?.tradeType===strings.import){
+      setPodChargesData([{}])
     }
     form.setFieldsValue({...defaultValues,rfq:rfq?._id})
   }, [])
@@ -587,7 +619,16 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             </Col>
                         </Card>
                         { (rfq?.incoterm !== strings.FOB)&&
-                        <Card title="Port of Loading [POL] Charges" styles={{ header: { borderBottom: 0 } }}>
+                        <Card
+                          title={
+                            <Space>
+                              {"Port of Loading [POL] Charges"}
+                                {(rfq?.container?rfq?.container:[]).length>0?
+                                rfq?.container.map((i:any)=>(<Button type="primary" key={`${i?.name}*${i?.quantity}`} className="rounded-pill">{i?.name}*{i?.quantity}</Button>))
+                                :null
+  }
+                              </Space> } 
+                         styles={{ header: { borderBottom: 0 } }}>
                             <CustomTable dataSource={polChargesData}
                               columns={[
                                 {
@@ -738,7 +779,16 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </Card>
                         }
                         {!((rfq?.incoterm?rfq?.incoterm:"").toLowerCase().includes("c"))&&
-                        <Card title="Port of Discharge [POD] Charges" styles={{ header: { borderBottom: 0 } }}>
+                        <Card 
+                        title={
+                          <Space>
+                            {"Port of Discharge [POD] Charges"}
+                              {(rfq?.container?rfq?.container:[]).length>0?
+                              rfq?.container.map((i:any)=>(<Button type="primary" key={`${i?.name}*${i?.quantity}`} className="rounded-pill">{i?.name}*{i?.quantity}</Button>))
+                              :null
+}
+                            </Space> } 
+                             styles={{ header: { borderBottom: 0 } }}>
                             <CustomTable dataSource={podChargesData}
                               columns={[
                                 {
@@ -986,7 +1036,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                     <DatePicker/>
                                   </Form.Item>
                                   <Form.Item rules={[{required:true}]} name={["siCutOff","time"]} >
-                                    <TimePicker/>
+                                    <TimePicker format={"HH"}/>
                                   </Form.Item>
                                   </Space>
                               </Form.Item>
@@ -999,7 +1049,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   <DatePicker />
                                 </Form.Item>
                                 <Form.Item rules={[{required:true}]} name={["portCutOff", "time"]} >
-                                  <TimePicker />
+                                  <TimePicker  format={"HH"}/>
                                 </Form.Item>
                               </Space>
                             </Form.Item>
@@ -1020,7 +1070,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 </Radio.Group>
                               </Form.Item>
                           </Col>
-                          { !polFreeTimeStatus &&
+                          { polFreeTimeStatus === false &&
                             <Col span={7}>
                                 <Form.Item name={"polFreeTimeDeclineValue"}  layout="horizontal">
                                   <Input className="text-center"
@@ -1039,7 +1089,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 </Radio.Group>
                               </Form.Item>
                           </Col>
-                          { !podFreeTimeStatus &&
+                          { podFreeTimeStatus === false  &&
                             <Col span={7}>
                                   
                                 <Form.Item name={"podFreeTimeDeclineValue"}  layout="horizontal">
@@ -1070,7 +1120,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </Radio.Group>
                     </Form.Item>
                     
-                    {!paymentTermsStatus&&
+                    {paymentTermsStatus===false&&
                     <Form.Item name={"paymentTermsDeclineValue"} label={`Payments Term`}>
                       <Select placeholder="Select payment terms" options={paymentTermOptions.map(i=>({key:i.title,label:`${i.title} - ${i.days}`,value:`${i.title} - ${i.days}`}))} />
                     </Form.Item>
@@ -1086,7 +1136,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
             <Col span={24}>
                 <Card title="Terms & Conditions" styles={{ header: { borderBottom: 0 } }}>
                     <Form.Item rules={[{required:true}]} name={"termsCondition"}>
-                        <Input placeholder='Enter Here' className='rounded-2'/>
+                        <Input.TextArea placeholder='Enter Here' className='rounded-2'/>
                     </Form.Item>
                 </Card>
             </Col>
@@ -1133,7 +1183,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                 </div>
             </Col>             
             <Modal open={previewModalOpen} onCancel={()=>setPreviewModalOpen(i=>!i)} width={1000} onClose={()=>setPreviewModalOpen(i=>!i)} footer={<Button onClick={()=>setPreviewModalOpen(i=>!i)}>Close</Button>}>
-                <RFQCard rfqData={rfq} showSubmit />
+                <OfferDetail params={{id:""}} previewData={quotationData} hideExtra />
             </Modal>
             <Modal open={SuccessModal} footer={null} closable={false}>
               <PostSuccessModal id={""} message="Quotation Submitted" />

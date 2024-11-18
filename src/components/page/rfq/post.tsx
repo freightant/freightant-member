@@ -97,12 +97,11 @@ const PostRFQUI = () => {
       let gw = 0
       v.forEach((element: any) => {
         let { dimensions, weight } = element
-        console.log(dimensions);
 
         cbm = +cbm + +CBMCalculate(
-          dimensions.length ? dimensions.length : 1
-          , dimensions.breadth ? dimensions.breadth : 1
-          , dimensions.height ? dimensions.height : 1
+          dimensions?.length ? dimensions?.length : 1
+          , dimensions?.breadth ? dimensions?.breadth : 1
+          , dimensions?.height ? dimensions.height : 1
           , unit)
         gw = +gw + +weight ? weight : 0
       });
@@ -191,9 +190,9 @@ const PostRFQUI = () => {
     form.setFieldValue(["addOnService", "truckType"], [...a, ...[{ typee: e, quantity: 1 }]])
   }
   const onFinished = () => {
-    console.log("ca");
     
     let formValues = form.getFieldsValue()
+    console.log(formValues);
     setformLoading(true)
     let e = { ...formValues }
     console.log(e);
@@ -228,9 +227,18 @@ const PostRFQUI = () => {
   useEffect(() => {
     form.setFieldsValue(defaultValue)
   }, [])
-  // useEffect(() => {
-  //   console.log(formValue);    
-  // }, [formValue])
+  useEffect(() => {
+    if((addOnService?.truckType?addOnService?.truckType:[]).length>0){
+      if(tradeType ===strings.export){
+        let exist =addOnService?.services?addOnService?.services:[]
+        form.setFieldValue(["addOnService", "services"],exist.includes(strings.doorToPortTrucking)?exist:[...exist,strings.doorToPortTrucking])
+      }
+      if(tradeType ===strings.import){
+        let exist =addOnService?.services?addOnService?.services:[]
+        form.setFieldValue(["addOnService", "services"],exist.includes(strings.portToDoorTrucking)?exist:[...exist,strings.portToDoorTrucking])
+      }
+    }
+  }, [addOnService])
   return (
     <>
       <Form
@@ -1108,12 +1116,12 @@ const PostRFQUI = () => {
                             </Space>
                             <Space>
                               <Checkbox
-                                checked={(addOnService?.services ? addOnService?.services : []).includes(strings.doorToPortTrucking)}
-                                onChange={() => form.setFieldValue(["addOnService", "services"], updateArray((addOnService?.services ? addOnService?.services : []), strings.doorToPortTrucking))}
+                                checked={(addOnService?.services ? addOnService?.services : []).includes(strings.portToDoorTrucking)}
+                                onChange={() => form.setFieldValue(["addOnService", "services"], updateArray((addOnService?.services ? addOnService?.services : []), strings.portToDoorTrucking))}
                               />
                               <Button
-                                type={(addOnService?.services ? addOnService?.services : []).includes(strings.doorToPortTrucking) ? "primary" : "default"}
-                                onClick={() => form.setFieldValue(["addOnService", "services"], updateArray((addOnService?.services ? addOnService?.services : []), strings.doorToPortTrucking))}
+                                type={(addOnService?.services ? addOnService?.services : []).includes(strings.portToDoorTrucking) ? "primary" : "default"}
+                                onClick={() => form.setFieldValue(["addOnService", "services"], updateArray((addOnService?.services ? addOnService?.services : []), strings.portToDoorTrucking))}
                               >{"Port to Door Trucking"}</Button>
                             </Space>
                           </>
