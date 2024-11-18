@@ -18,9 +18,6 @@ import PostSuccessModal from '@/components/supportcomponents/rfq/postSuccessModa
 
 const {Column, ColumnGroup} = Table
 const defaultValues = {
-  "polFreeTimeStatus":true,
-  "podFreeTimeStatus":true,
-  "paymentTermsStatus":true,
   noOfTransShipmentPorts:0,
   pointOfContact:[]
 }
@@ -1020,7 +1017,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 </Radio.Group>
                               </Form.Item>
                           </Col>
-                          { !polFreeTimeStatus &&
+                          { polFreeTimeStatus === false &&
                             <Col span={7}>
                                 <Form.Item name={"polFreeTimeDeclineValue"}  layout="horizontal">
                                   <Input className="text-center"

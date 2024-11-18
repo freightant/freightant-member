@@ -73,6 +73,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
     const [countryId, setCountryId] = useState("")
     const [stateId, setStateId] = useState("")
     const [Currency, setCurrency] = useState("₹")
+    
     const handleCountrySelect = (e: any) => {
         setCountryId((countryList ? countryList : []).filter((state: any) => state.desc === e)[0].id)
         setCurrency((countryList ? countryList : []).filter((state: any) => state.desc === e)[0].currency_symbol)
