@@ -22,7 +22,7 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
     podCurrencyCode,
     polCurrencyCode,
     polChargeLocal,    
-    inclusiveFrightDollor,
+    inclusiveFrightDollar,
     transShipmentPorts,
     noOfTransShipmentPorts,
     oceanFreightCost,
@@ -126,7 +126,7 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
                 <Col span={24}>
                     <Space className="border rounded-2 px-2 py-1">
                         <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}</p>
-                        <p className='m-0'>USD {inclusiveFrightDollor}</p>
+                        <p className='m-0'>USD {inclusiveFrightDollar}</p>
                     </Space>
                 </Col>
                 <Col span={24}>

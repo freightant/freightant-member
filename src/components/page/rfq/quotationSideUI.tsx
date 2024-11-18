@@ -76,7 +76,7 @@ export const initialStateRFQQuata: StepStruct[] = [
           paddingBottom: 25,
           lineHeight:0.1,
           paddingTop:5,
-          color: "#F3F6FF"
+          color: "#F3F6FF",
         }
     },
     {

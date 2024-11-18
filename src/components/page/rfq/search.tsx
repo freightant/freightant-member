@@ -42,8 +42,8 @@ function RfqSearchUI() {
         getRfQ({ universal, only: true })
         .then(r => {
           if (r.code) {
-            setRfqList(r.data)
-            setUniversalRfqList(r.data)
+            setRfqList((r.data?r.data:[]).reverse())
+            setUniversalRfqList((r.data?r.data:[]).reverse())
             setemptyResult(r.data.length < 1)
           }
         })
@@ -126,8 +126,8 @@ function RfqSearchUI() {
     getRfQ(values)
     .then(r=>{
       if(r.code){
-        setRfqList(r.data)
-        setUniversalRfqList(r.data)
+        setRfqList((r.data?r.data:[]).toReversed())
+        setUniversalRfqList((r.data?r.data:[]).toReversed())
         setemptyResult(r.data.length<1)
       }      
     })
@@ -379,7 +379,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
       <Card title={`RFQ ID: ${"rfqId"}`} styles={{header:{borderBottomWidth:0}}} className='my-3'
         extra={<Button className={expand?"":"d-none"} size="large" type="link" onClick={()=>setexpand(false)} icon={<UpCircleOutlined className='fs-4' />}/>}
       >
-        <Row gutter={[48, 8]} className='my-3'>
+        <Row gutter={[48, 16]} className='my-3'>
           <Col span={8}>
             <Form.Item name={"modeOfShipment"} label={"Mode of Shipment"}>
                 <Input disabled className='text-center' />
@@ -398,16 +398,32 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
           {
             freeTimeLP&&
           <Col span={12} className=''>
-            <Form.Item label="Free time required at POL">
-              <Input value={freeTimeLP+` Days`} disabled className='text-center'/>
+            <Form.Item label="Free time required at POL" className='d-inline-flex'>
+              <Input value={freeTimeLP+` Days`} style={{width:"100px"}} disabled className='text-center'/>
             </Form.Item>
           </Col>
           }
           {
             freeTimeDP&&
           <Col span={12} className=''>
-            <Form.Item label="Free time required at POD">
-              <Input value={freeTimeDP+` Days`} disabled className='text-center'/>
+            <Form.Item label="Free time required at POD" className='d-inline-flex'>
+              <Input value={freeTimeDP+` Days`} style={{width:"100px"}} disabled className='text-center'/>
+            </Form.Item>
+          </Col>
+          }
+          {
+            (placeOfLoading && (!loadingPort || modeOfShipment===strings.crossBorderTrucking))&&
+          <Col span={12}>
+            <Form.Item label="Place of Loading" layout="vertical">
+              <Input className='rounded-2' value={`${placeOfLoading?.address}, ${placeOfLoading?.city}, ${placeOfLoading?.state}, ${placeOfLoading?.country}`} />
+            </Form.Item>
+          </Col>
+          }
+          {
+            (placeOfUnLoading && (!dischargePort|| modeOfShipment===strings.crossBorderTrucking))&&
+          <Col span={12}>
+            <Form.Item label="Place of Discharge" layout="vertical" className={incoterm.toLowerCase().includes("c")?"d-none":""}>
+              <Input className='rounded-2' value={`${placeOfUnLoading?.address}, ${placeOfUnLoading?.city}, ${placeOfUnLoading?.state}, ${placeOfUnLoading?.country}`} />
             </Form.Item>
           </Col>
           }
@@ -422,27 +438,12 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
           {
             dischargePort&&
           <Col span={12}>
-            <Form.Item label="Port of Unloading" layout="vertical">
+            <Form.Item label="Port of Discharge" layout="vertical">
                 <PortUI i={dischargePortObj} />
             </Form.Item>
           </Col>
           }
-          {
-            (placeOfLoading && !loadingPort)&&
-          <Col span={12}>
-            <Form.Item label="Place of Loading" layout="vertical">
-              <Input className='rounded-2' value={`${placeOfLoading?.address}, ${placeOfLoading?.city}, ${placeOfLoading?.state}, ${placeOfLoading?.country}`} />
-            </Form.Item>
-          </Col>
-          }
-          {
-            (placeOfUnLoading && !dischargePort)&&
-          <Col span={12}>
-            <Form.Item label="Place of Unloading" layout="vertical">
-              <Input className='rounded-2' value={`${placeOfUnLoading?.address}, ${placeOfUnLoading?.city}, ${placeOfUnLoading?.state}, ${placeOfUnLoading?.country}`} />
-            </Form.Item>
-          </Col>
-          }
+          
         </Row>
         <Collapse bordered={false} activeKey={[expand?1:-1]}>
           <Collapse.Panel showArrow={false} header="" extra={<Button shape="round" onClick={()=>setexpand(true)}  className={expand?"d-none":""}>View Details</Button>} key="1">
@@ -624,14 +625,15 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                   <Col span={24}>
                     <Space size={"large"} align="center">
                       <h5 className="text-primary3">Exporter : <span className="border p-1 rounded">{organization?.companyName}</span></h5>
-                      <div className="pb-2">
-                        <Input value={organization?.businessType} disabled/>
+                      <div className="pb-2 text-center">
+                        <Input className=' text-center' value={organization?.businessType} disabled/>
                       </div>
                     </Space>
                   </Col>
                   <Col span={24}>
                     <div className='d-flex gap-2 align-items-center'>
                       {organization?.starExportHouseRating&& <Rate disabled value={organization?.starExportHouseRating}/>}
+                      {organization?.starExportHouseRating&& <p className='m-0'>{organization?.starExportHouseRating} star export House</p>}
                       {organization?.exportPromotionOrganisationMembership&& 
                         <>
                         <Input value={"AEO"} disabled style={{width:"70px"}} className='text-center'/>

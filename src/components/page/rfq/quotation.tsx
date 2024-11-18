@@ -20,7 +20,7 @@ import OfferDetail from './details';
 const {Column, ColumnGroup} = Table
 const defaultValues = {
   noOfTransShipmentPorts:0,
-  
+  transitTime:0,
   pointOfContact:[]
 }
 const OceanFreightForm=({id}:{id?:string | string[] | undefined})=>{
@@ -233,6 +233,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   const quotationValidityDate = Form.useWatch("quotationValidityDate",form)
   const transitTime = Form.useWatch("transitTime",form)
 
+  const inclusiveFrightDollar = Form.useWatch("inclusiveFrightDollar",form)
+  const inclusiveFrightLocal = Form.useWatch("inclusiveFrightLocal",form)
+
+  const totallandedCost = Form.useWatch("totallandedCost",form)
+
+
   useEffect(() => {
     let value = form.getFieldsValue()
     if(validateData(freightData,"Freight").length<1 && freightData.length>0){
@@ -277,9 +283,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     let dts = {...form.getFieldsValue()}
     dts.etd = value["etd"]?.format("YYYY-MM-DD")
     dts.quotationValidityDate = value["quotationValidityDate"]?.format("YYYY-MM-DD")
-    dts.portCutOff ={date: value["portCutOff"]["date"]?.format("YYYY-MM-DD"),time: value["portCutOff"]["time"]?.format("HH:mm")}
+    dts.portCutOff ={date: value["portCutOff"]?.["date"]?.format("YYYY-MM-DD"),time: value["portCutOff"]?.["time"]?.format("HH:mm")}
     if(rfq?.modeOfShipment !== strings.air ){
-      dts.siCutOff ={date: value["siCutOff"]["date"]?.format("YYYY-MM-DD"),time: value["siCutOff"]["time"]?.format("HH:mm")}
+      dts.siCutOff ={date: value["siCutOff"]?.["date"]?.format("YYYY-MM-DD"),time: value["siCutOff"]?.["time"]?.format("HH:mm")}
     }
     dts.shippingLine = Array.isArray(value["shippingLine"]) ? value["shippingLine"][0] : value["shippingLine"]
     dts.transShipmentPorts = transshipmentPorts
@@ -366,12 +372,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         .catch(r=>{})        
       }
     }
-    setFreightData([{}])
+    setFreightData([...freightData, {key:generateRandomNumber(4),  costHead :null,unit:null,quantity:"",currency:"USD",rate:"",amount:0}]);
     if(rfq?.tradeType===strings.export){
-      setPolChargesData([{}])
+      setPolChargesData([...polChargesData, {key:generateRandomNumber(4),costCategory:null,  costHead :null,unit:"",quantity:"",currency:"",rate:"",amount:0}]);
     }
     if(rfq?.tradeType===strings.import){
-      setPodChargesData([{}])
+      setPodChargesData([...podChargesData, {key:generateRandomNumber(4),costCategory:null,  costHead :null,unit:"",quantity:"",currency:"",rate:"",amount:0}]);
     }
     form.setFieldsValue({...defaultValues,rfq:rfq?._id})
   }, [])
@@ -528,6 +534,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost heads",
                                   dataIndex: "costHead",
                                   key: "costHead",
+                                  align: 'center',
                                   width:250,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -581,6 +588,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Currency",
                                   dataIndex: "currency",
                                   key: "currency",
+                                  align: 'center',
+                                  width:75,
                                   className:"text-center",
                                   render:()=>("USD")
                                 },
@@ -588,6 +597,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Rate",
                                   dataIndex: "rate",
                                   key: "rate",
+                                  align: 'center',
                                   width:75,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input placeholder="Rate" disabled={!freightData[index].unit} variant="outlined" className="p-1 text-center" value={freightData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value)}/>
@@ -597,7 +607,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Amount",
                                   dataIndex: "amount",
                                   key: "amount",   
+                                  align: 'center',
+                                  width:85,
                                   className:"text-center",
+                                  render:(_:any,record:any,index:number) => (
+                                    (freightData[index].amount?freightData[index].amount:"").toLocaleString("en-US", {style:"currency", currency:freightData[index].currency}).substring(1)
+                                  ) 
                                 },
                               ]}
                               setDataSource={setFreightData}
@@ -608,11 +623,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             <Col sm={22} md={12}>
                               <Form.Item  label={freightTitle(rfq?.modeOfShipment)} layout="horizontal">
                                 <Space>
-                                  <Form.Item name={"inclusiveFrightDollar"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} />
+                                  <Form.Item name={"inclusiveFrightDollar"} noStyle/>
+                                  <Form.Item >
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} value={(inclusiveFrightDollar?+inclusiveFrightDollar:0).toLocaleString("en-US")} />
                                   </Form.Item>
                                   <Form.Item name={"inclusiveFrightLocal"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} />
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} value={(inclusiveFrightLocal?+inclusiveFrightLocal:0).toLocaleString("en-IN")} />
                                   </Form.Item>
                                 </Space>
                               </Form.Item>
@@ -648,6 +664,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost Category",
                                   dataIndex: "costCategory",
                                   key: "costCategory",
+                                  align: 'center',
                                   width:150,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -657,6 +674,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost heads",
                                   dataIndex: "costHead",
                                   key: "costHead",
+                                  align: 'center',
                                   width:"230px",
                                   className:"text-wrap p-1",
                                   render:(_:any,record:any,index:number)=>(
@@ -680,6 +698,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Receipt",
                                   dataIndex: "receipted",
                                   key: "costHead",
+                                  align: 'center',
                                   width:30,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -734,6 +753,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Currency",
                                   dataIndex: "currency",
                                   key: "currency",
+                                  align: 'center',
+                                  width:80,
                                   className:"p-0",
                                   render:(_:any,record:any,index:number)=>(
                                     <Select rootClassName="p-0 m-0" placeholder="Select" dropdownStyle={{ width: "102px" }} options={getCurrencyOPtion(rfq?.loadingPortObj?.currency,LoadingCountryCurrency).map((i:any)=>({label:i,value:i}))}
@@ -747,6 +768,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Rate",
                                   dataIndex: "rate",
                                   key: "rate",
+                                  align: 'center',
+                                  width:85,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input disabled={!polChargesData[index].unit} placeholder="Rate" variant="outlined" className="p-1" value={polChargesData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value,1)}/>
                                   ))
@@ -754,7 +777,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 {
                                   title: "Amount",
                                   dataIndex: "amount",
-                                  key: "amount",   
+                                  key: "amount", 
+                                  align: 'center',
+                                  width:85,
+                                  render:(_:any,record:any,index:number) => (
+                                    (polChargesData[index].amount?polChargesData[index].amount:"").toLocaleString("en-US", {style:"currency", currency:polChargesData[index].currency}).substring(1)
+                                  ) 
                               
                                 },
                               ]}
@@ -808,6 +836,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost Category",
                                   dataIndex: "costCategory",
                                   key: "costCategory",
+                                  align: 'center',
                                   width:150,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -817,6 +846,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost heads",
                                   dataIndex: "costHead",
                                   key: "costHead",
+                                  align: 'center',
                                   width:"230px",
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -840,6 +870,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Receipted",
                                   dataIndex: "receipted",
                                   key: "costHead",
+                                  align: 'center',
                                   width:50,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -893,6 +924,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Currency",
                                   dataIndex: "currency",
                                   key: "currency",
+                                  align: 'center',
+                                  width:80,
                                   render:(_:any,record:any,index:number)=>(
                                     <Select placeholder="Select" dropdownStyle={{ width: "102px" }} options={getCurrencyOPtion(rfq?.dischargePortObj?.currency,UnLoadingCountryCurrency).map((i:any)=>({label:i,value:i}))}
                                     disabled={!podChargesData[index].unit}
@@ -906,6 +939,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Rate",
                                   dataIndex: "rate",
                                   key: "rate",
+                                  align: 'center',
+                                  width:85,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input disabled={!podChargesData[index].unit} placeholder="Rate" variant="outlined" className="p-1" value={podChargesData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value,2)}/>
                                   ))
@@ -913,7 +948,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 {
                                   title: "Amount",
                                   dataIndex: "amount",
-                                  key: "amount",   
+                                  key: "amount", 
+                                  align: 'center',
+                                  width:85,
+                                  render:(_:any,record:any,index:number) => (
+                                    (podChargesData[index].amount?+podChargesData[index].amount:0).toLocaleString("en-US", {style:"currency", currency:podChargesData[index].currency}).substring(1)
+                                  )   
                               
                                 },
                               ]}
@@ -941,8 +981,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </Card>
                         }
                         <div className="col-12 col-md-8 col-lg-6">
-                          <Form.Item name={"totallandedCost"} label={"Total Landed Cost"} className='d-inline' layout="horizontal">
-                              <Input disabled value={calculateTotalLandedCost()} addonBefore={currencyCode} className='d-inline' />
+                          <Form.Item label={"Total Landed Cost"} className='d-inline' layout="horizontal">
+                            <Form.Item name={"totallandedCost"} noStyle />
+                              <Input disabled value={(totallandedCost?+totallandedCost:0).toLocaleString("en-"+(currencyCode?currencyCode:"USD").substring(1))} addonBefore={(currencyCode)} className='d-inline' />
                           </Form.Item>
                         </div>
                     </div>
@@ -971,57 +1012,67 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </>
                           }
                         </Col>
-                        <Col sm={24} md={12}>
-                            <Form.Item name={"noOfTransShipmentPorts"} label={`Transshipment ${rfq?.modeOfShipment === strings.air?"Airports":"Ports"}`} layout="horizontal">
-                                <Input placeholder={noOfTransShipmentPorts}
-                                  className='text-center'
-                                    addonBefore={<MinusOutlined onClick={e=>form.setFieldValue("noOfTransShipmentPorts",noOfTransShipmentPorts>0?noOfTransShipmentPorts-1:0)} />} 
-                                    addonAfter={<PlusOutlined onClick={e=>form.setFieldValue("noOfTransShipmentPorts",noOfTransShipmentPorts<15?noOfTransShipmentPorts+1:15)} />}
-                                    />
-                            </Form.Item>
-                        </Col>
-                        <Col span={24} className='border rounded-2 border-primary2 p-2'>
-                            <div className="d-flex justify-content-between">
-                            <h5 className='text-primary2'>Transshipment {rfq?.modeOfShipment === strings.air?"Airports":"Ports"}</h5>
-                            <Form.Item name={"transitTime"} label={`Transit time`} layout="horizontal">
-                                <Input placeholder={noOfTransShipmentPorts}
-                                  className='text-center'
-                                    addonBefore={<MinusOutlined onClick={e=>form.setFieldValue("transitTime",transitTime>0?transitTime-1:0)} />} 
-                                    addonAfter={<PlusOutlined onClick={e=>form.setFieldValue("transitTime",transitTime?transitTime+1:1)} />}
-                                    />
-                            </Form.Item>
-                            </div>
-                            <Space style={{minWidth:"400px"}}>
-                              <Timeline
-                                style={{ padding: 10, margin: 10 }}
-                                mode="left"
-                                rootClassName=''
-                                items={
-                                  [ 
-                                    ...[{ label: `Port of Loading`, children: rfq?.loadingPortObj?<PortUI {...{style:{minWidth:"300px",maxWidth:"370px"}}} i={rfq?.loadingPortObj} /> :
-                                      <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.placeOfLoading?.address}, ${rfq?.placeOfLoading?.city}, ${rfq?.placeOfLoading?.state}, ${rfq?.placeOfLoading?.country}`} />
-                                    }],
-                                    ...Array.from({length:noOfTransShipmentPorts}).map((port, index) => ({ 
-                                      label: `T/S Port ${index + 1}`, 
-                                      children: (
-                                        <Form.Item name={["transShipmentPorts", index]} layout="horizontal">
-                                          <LocodeSelect
-                                            {...{style:{minWidth:"300px",maxWidth:"370px"}}}
-                                            change={() => { }}
-                                            wholeValue={(value: any) => handleTransshipmentPortChange(value.title, index)}
-                                          />
-                                        </Form.Item>
-                                      ) 
-                                    })),
-                                    ...[{ label: `Port of Discharge`, children:rfq?.dischargePortObj? <PortUI {...{style:{minWidth:"300px",maxWidth:"370px"}}} i={rfq?.dischargePortObj} /> 
-                                    :
-                                    <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.placeOfUnLoading?.address}, ${rfq?.placeOfUnLoading?.city}, ${rfq?.placeOfUnLoading?.state}, ${rfq?.placeOfUnLoading?.country}`} />
-                                    }],
-                                  ]
-                                }
-                              />
-                            </Space>
-                        </Col>
+                        <ConfigProvider theme={{
+                          components:{
+                            Input:{
+                              colorFillAlter:"#6A37F4"                       }
+                          }
+                        }}>
+                          <Col sm={24} md={12}>
+                              <Form.Item name={"noOfTransShipmentPorts"} label={`Transshipment ${rfq?.modeOfShipment === strings.air?"Airports":"Ports"}`} layout="horizontal">
+                                  <Input placeholder={noOfTransShipmentPorts}
+                                    className='text-center'
+                                      addonBefore={<MinusOutlined className='text-light' onClick={e=>form.setFieldValue("noOfTransShipmentPorts",noOfTransShipmentPorts>0?noOfTransShipmentPorts-1:0)} />} 
+                                      addonAfter={<PlusOutlined className='text-light' onClick={e=>form.setFieldValue("noOfTransShipmentPorts",noOfTransShipmentPorts<15?noOfTransShipmentPorts+1:15)} />}
+                                      />
+                              </Form.Item>
+                          </Col>
+                          <Col span={24} className='border rounded-2 border-primary2 p-2'>
+                              <div className="d-flex justify-content-between">
+                              <h5 className='text-primary2'>Transshipment {rfq?.modeOfShipment === strings.air?"Airports":"Ports"}</h5>
+                              <Form.Item label={`Transit time`} layout="horizontal">
+                                <Form.Item name={"transitTime"} noStyle/>
+                                  <Input placeholder={transitTime}
+                                    className='text-center'
+                                    value={transitTime + " Days"}
+                                      addonBefore={<MinusOutlined className='text-light' onClick={e=>form.setFieldValue("transitTime",transitTime>0?transitTime-1:0)} />} 
+                                      addonAfter={<PlusOutlined className='text-light' onClick={e=>form.setFieldValue("transitTime",transitTime?transitTime+1:1)} />}
+                                      />
+                              </Form.Item>
+                              </div>
+                              <Space style={{minWidth:"400px"}}>
+                                <Timeline
+                                  style={{ padding: 10, margin: 10 }}
+                                  mode="left"
+                                  rootClassName=''
+                                  items={
+                                    [ 
+                                      ...[{ label: `Port of Loading`, children: rfq?.loadingPortObj?<PortUI {...{style:{minWidth:"300px",maxWidth:"370px"}}} i={rfq?.loadingPortObj} /> :
+                                        <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.placeOfLoading?.address}, ${rfq?.placeOfLoading?.city}, ${rfq?.placeOfLoading?.state}, ${rfq?.placeOfLoading?.country}`} />
+                                      }],
+                                      ...Array.from({length:noOfTransShipmentPorts}).map((port, index) => ({ 
+                                        label: `T/S Port ${index + 1}`, 
+                                        children: (
+                                          <Form.Item name={["transShipmentPorts", index]} layout="horizontal">
+                                            <LocodeSelect
+                                              {...{style:{minWidth:"300px",maxWidth:"370px"}}}
+                                              change={() => { }}
+                                              wholeValue={(value: any) => handleTransshipmentPortChange(value.title, index)}
+                                            />
+                                          </Form.Item>
+                                        ) 
+                                      })),
+                                      ...[{ label: `Port of Discharge`, children:rfq?.dischargePortObj? <PortUI {...{style:{minWidth:"300px",maxWidth:"370px"}}} i={rfq?.dischargePortObj} /> 
+                                      :
+                                      <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.placeOfUnLoading?.address}, ${rfq?.placeOfUnLoading?.city}, ${rfq?.placeOfUnLoading?.state}, ${rfq?.placeOfUnLoading?.country}`} />
+                                      }],
+                                    ]
+                                  }
+                                />
+                              </Space>
+                          </Col>
+                        </ConfigProvider>
+
                         <Col span={24}>
                             <Form.Item rules={[{required:true}]} name={"etd"} label={`ETD`} layout="horizontal">
                                 <DatePicker  />
@@ -1036,7 +1087,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                     <DatePicker/>
                                   </Form.Item>
                                   <Form.Item rules={[{required:true}]} name={["siCutOff","time"]} >
-                                    <TimePicker format={"HH"}/>
+                                    <TimePicker format={"HH"} needConfirm={false}/>
                                   </Form.Item>
                                   </Space>
                               </Form.Item>
@@ -1049,7 +1100,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   <DatePicker />
                                 </Form.Item>
                                 <Form.Item rules={[{required:true}]} name={["portCutOff", "time"]} >
-                                  <TimePicker  format={"HH"}/>
+                                  <TimePicker  format={"HH"} needConfirm={false}/>
                                 </Form.Item>
                               </Space>
                             </Form.Item>

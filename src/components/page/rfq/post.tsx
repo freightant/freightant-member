@@ -354,10 +354,10 @@ const PostRFQUI = () => {
                     )
                   }
                 </Col>
-                {modeOfShipment !== strings.crossBorderTrucking &&
+                {true &&
                   <>
                     <Col {...layParams} lg={13}>
-                      <Form.Item label="Port of Loading" name={"loadingPort"} layout="vertical" rules={[{ required: true }]}>
+                      <Form.Item label={`Port of Loading ${modeOfShipment===strings.crossBorderTrucking?"[Land Port]":""}`} name={"loadingPort"} layout="vertical" rules={[{ required: true }]}>
                         <LocodeSelect
                           change={(e: any) => form.setFieldValue("loadingPort", e)}
                           wholeValue={(e: any) => form.setFieldValue("loadingPortObj", e?.title)}
@@ -390,7 +390,7 @@ const PostRFQUI = () => {
                         </Space>}
                     </Col>
                     <Col {...layParams} lg={13}>
-                      <Form.Item name={"dischargePort"} label={"Port of Discharge"} layout="vertical" rules={[{ required: true }]}>
+                      <Form.Item name={"dischargePort"} label={`Port of Discharge ${modeOfShipment===strings.crossBorderTrucking?"[Land Port]":""}`} layout="vertical" rules={[{ required: true }]}>
                         <LocodeSelect
                           change={(e: any) => form.setFieldValue("dischargePort", e)}
                           wholeValue={(e: any) => form.setFieldValue("dischargePortObj", e?.title)}
@@ -424,10 +424,10 @@ const PostRFQUI = () => {
                 }
                 <Col span={24}>
                   {(
-                    incoterm === strings.dap ||
+                    (incoterm === strings.dap ||
                     incoterm === strings.dpu ||
-                    incoterm === strings.ddp ||
-                    modeOfShipment === strings.crossBorderTrucking
+                    incoterm === strings.ddp )&&
+                    (modeOfShipment === strings.crossBorderTrucking)
                   ) &&
                     <>
                       <p>Place of Unloading , Destination Factory / warehouse address</p>
@@ -718,11 +718,7 @@ const PostRFQUI = () => {
                             styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0 }, body: { padding: "10px" } }}
                             extra={
                               iIndex === 0 ?
-                                (<Space size={"small"} className='pt-2'>
-                                  <Form.Item className='border rounded-pill px-2' label="Cargo Readiness Date" required={false} name={[name, "readyDate"]} rules={[{ required: true }]} layout="horizontal">
-                                    <DatePicker onChange={(e, r) => form.setFieldValue("readyDate", dayjs(r.toString()))} size="small" styles={{}} style={{ border: 0, fontSize: "10px", paddingRight: "2px", paddingLeft: "2px" }} className='rounded-pill' />
-                                  </Form.Item>
-                                </Space>) :
+                                "":
                                 <Button onClick={() => remove(iIndex)} shape="round">Delete <CloseOutlined className="text-danger fw-bold" /> </Button>
                             }
                           >
@@ -775,7 +771,7 @@ const PostRFQUI = () => {
                                   </Row>
                                 </Form.Item>
                               </Col>
-                              <Col span={24}>
+                              <Col span={6}>
                                 <Form.Item label={`Number of Container(s)`} name={[name, "quantity"]} rules={[{ required: true }]} layout="vertical">
                                   <Space className='border rounded p-1'>
                                     <Button onClick={() => form.setFieldValue(["container", name, "quantity"], +container[name]?.quantity - 1 < 1 ? 1 : +container[name]?.quantity - 1)} size="small" type="primary">-</Button>
@@ -783,6 +779,13 @@ const PostRFQUI = () => {
                                     <Button onClick={() => form.setFieldValue(["container", name, "quantity"], +(container[name]?.quantity ? container[name]?.quantity : 0) + 1)} size="small" type="primary">+</Button>
                                   </Space>
                                 </Form.Item>
+                              </Col>
+                              <Col span={12}>                                
+                                {iIndex === 0 &&
+                                  <Form.Item className='rounded-pill px-2' label="Cargo Readiness Date" required={false} name={[name, "readyDate"]} rules={[{ required: true }]} layout="vertical">
+                                    <DatePicker onChange={(e, r) => form.setFieldValue("readyDate", dayjs(r.toString()))} size="small" styles={{}} style={{ fontSize: "15px", paddingRight: "2px", paddingLeft: "2px" }} className='p-1 px-4'  />
+                                  </Form.Item>
+                                }
                               </Col>
                               <Col span={24}>
                                 <div className=" d-flex flex-column gap-2 my-2">
@@ -917,7 +920,7 @@ const PostRFQUI = () => {
             <Col span={24}>
               <Card title="Add on Services at Port of loading [ POL ]" classNames={{ body: "px-4" }} styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0, paddingTop: "12px" }, body: { padding: "10px" } }}
                 extra={
-                  modeOfShipment !== strings.crossBorderTrucking &&
+                  true &&
                   <Form.Item label="" name={["addOnService", "status"]} className="my-2">
                     <Switch checkedChildren={"Yes"} unCheckedChildren={"No"} checked={addOnService?.status} onChange={(e: any) => form.setFieldValue("addOnService", { status: e })} />
                   </Form.Item>
