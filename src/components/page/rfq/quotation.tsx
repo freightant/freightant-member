@@ -131,8 +131,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
       setPolChargesData((o:any)=>{
         let i = [...o]
         i[id][name]=value
-        if("rate" === name){
-          i[id]["amount"] =  value*i[id]?.quantity
+        if("rate" === name || "quantity" === name){
+          i[id]["amount"] =  +(i[id]["rate"]?i[id]["rate"]:0)* +i[id]?.quantity
         }
         return [...i]
       })
@@ -141,8 +141,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     if(type===2){    
       setPodChargesData((i:any)=>{
         i[id][name]=value
-        if("rate" === name){
-          i[id]["amount"] = value*i[id]?.quantity
+        if("rate" === name || "quantity" === name){
+          i[id]["amount"] = +(i[id]["rate"]?i[id]["rate"]:0)* +i[id]?.quantity
         }
         return [...i]
       })
@@ -152,9 +152,10 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
       let i = [...o]
       
       i[id][name]=value
-      if("rate" === name){
-        i[id]["amount"] = value*i[id]?.quantity
+      if("rate" === name || "quantity" === name){
+        i[id]["amount"] = +(i[id]["rate"]?i[id]["rate"]:0)* +i[id]?.quantity
       }
+      
       return [...i]
     })
   }
@@ -235,6 +236,10 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
 
   const inclusiveFrightDollar = Form.useWatch("inclusiveFrightDollar",form)
   const inclusiveFrightLocal = Form.useWatch("inclusiveFrightLocal",form)
+  const polChargeDollar = Form.useWatch("polChargeDollar",form)
+  const polChargeLocal = Form.useWatch("polChargeLocal",form)
+  const podChargeDollar = Form.useWatch("podChargeDollar",form)
+  const podChargeLocal = Form.useWatch("podChargeLocal",form)
 
   const totallandedCost = Form.useWatch("totallandedCost",form)
 
@@ -380,7 +385,26 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
       setPodChargesData([...podChargesData, {key:generateRandomNumber(4),costCategory:null,  costHead :null,unit:"",quantity:"",currency:"",rate:"",amount:0}]);
     }
     form.setFieldsValue({...defaultValues,rfq:rfq?._id})
+    
+   
   }, [])
+  
+  useEffect(() => {
+    if (!((rfq?.incoterm?rfq?.incoterm:"").toLowerCase().includes("c"))) {
+      dispatch({
+        type: 'UPDATE_STEP_STATUS', payload: {
+          title: initialStateRFQQuata[2].title, status: 'wait', description: "Completed",
+          style: {
+            paddingBottom: 25,
+            lineHeight: 0.1,
+            paddingTop: 5,
+            color: "#F3F6FF",
+            display: "none"
+          }
+        }
+      })
+    }
+  }, [rfq])
 
   useEffect(() => {
     if(exchangeRates){
@@ -627,8 +651,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   <Form.Item >
                                     <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} value={(inclusiveFrightDollar?+inclusiveFrightDollar:0).toLocaleString("en-US")} />
                                   </Form.Item>
-                                  <Form.Item name={"inclusiveFrightLocal"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} value={(inclusiveFrightLocal?+inclusiveFrightLocal:0).toLocaleString("en-IN")} />
+                                  <Form.Item name={"inclusiveFrightLocal"} noStyle/>
+                                  <Form.Item>
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} value={(inclusiveFrightLocal?+inclusiveFrightLocal:0).toLocaleString("en-"+(currencyCode==="INR"?"IN":"US"))} />
                                   </Form.Item>
                                 </Space>
                               </Form.Item>
@@ -716,6 +741,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Units",
                                   dataIndex: "units",
                                   key: "units",
+                                  width:120,
                                   children: [
                                     {
                                       title: "",
@@ -733,7 +759,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                         )
                                     },
                                     {
-                                      title: "",
+                                      title: `  Quantity`,
                                       dataIndex: "costHeads",
                                       key: "quantity",
                                       width:60,
@@ -798,8 +824,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             <Col sm={22} md={12}>
                             <Form.Item label={"Port of Loading [POL] charges"} layout="horizontal">
                                 <Space>
-                                  <Form.Item name={"polChargeLocal"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} />
+                                  <Form.Item name={"polChargeLocal"} noStyle/>
+                                  <Form.Item>
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} value={(polChargeLocal?+polChargeLocal:0).toLocaleString("en-"+(currencyCode==="INR"?"IN":"US"))} />
                                   </Form.Item>
                                 </Space>
                               </Form.Item>
@@ -969,11 +996,13 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             <Col sm={22} md={12}>
                             <Form.Item label={"Port of unLoading [POD] charges"} layout="horizontal">
                                 <Space>
-                                  <Form.Item name={"podChargeDollar"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} />
+                                  <Form.Item name={"podChargeDollar"} noStyle />
+                                  <Form.Item>
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} value={(podChargeDollar?+podChargeDollar:0).toLocaleString("en-US")}/>
                                   </Form.Item>
-                                  <Form.Item name={"podChargeLocal"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={UnLoadingCountryCurrency} />
+                                  <Form.Item name={"podChargeLocal"} noStyle />
+                                  <Form.Item>
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={UnLoadingCountryCurrency} value={(podChargeLocal?+podChargeLocal:0).toLocaleString("en-"+(UnLoadingCountryCurrency==="INR"?"IN":"US"))} />
                                   </Form.Item>
                                 </Space>
                               </Form.Item>
@@ -983,7 +1012,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         <div className="col-12 col-md-8 col-lg-6">
                           <Form.Item label={"Total Landed Cost"} className='d-inline' layout="horizontal">
                             <Form.Item name={"totallandedCost"} noStyle />
-                              <Input disabled value={(totallandedCost?+totallandedCost:0).toLocaleString("en-"+(currencyCode?currencyCode:"USD").substring(1))} addonBefore={(currencyCode)} className='d-inline' />
+                              <Input disabled value={(totallandedCost?+totallandedCost:0).toLocaleString("en-"+(currencyCode==="INR"?"INR":"USD").substring(1))} addonBefore={(currencyCode)} className='d-inline' />
                           </Form.Item>
                         </div>
                     </div>

@@ -152,7 +152,7 @@ export const reducerRFQQuata: Reducer<StepStruct[], ContextAction> = (state, act
     case 'UPDATE_STEP_STATUS':
       return state.map((step) => {
         if (step.title === action.payload.title) {
-          return { ...step, status: action.payload.status, description: action.payload.status?"Completed":"Pending" };
+          return { ...step, status: action.payload.status, description: action.payload.status?"Completed":"Pending",style:action.payload.style?action.payload.style:step.style };
         }
         return step;
       });
