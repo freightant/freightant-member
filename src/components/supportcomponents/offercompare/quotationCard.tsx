@@ -1,720 +1,164 @@
-"use client"
-import { Button, Card, Col, Collapse, ConfigProvider, Form, Input, Rate, Row, Select, Space, Table, Typography } from 'antd'
-import React, { useEffect, useState } from 'react'
-import { importIncotermOptions, incotermOptions, modeOfShipmentOptions, tradeTypeOptions } from './options';
-import { strings } from '@/components/strings';
-import { useWatch } from 'antd/es/form/Form';
-import { layParams3 } from './post';
-import { DownloadOutlined, DownOutlined, SearchOutlined, UpCircleOutlined } from '@ant-design/icons';
-import LocodeSelect from '@/components/supportcomponents/customcomponents/locodeselect';
-import { CountrySelect, CountrySelectV2, StateSelectV4 } from '@/components/supportcomponents/customcomponents/stateselect';
-import { locodeFormatedString, validateMessages } from '@/components/utils';
-import { getRfQ, locodeById } from '@/network/endpoints';
-import useSWR from 'swr';
+import React, { useEffect, useState } from 'react';
+import { Card, Typography, Row, Col, Button, Space, Steps } from 'antd';
+import { assetsRootPath, camelCaseToSpaceSeparated } from '@/components/utils';
+import { title } from 'process';
 import dayjs from 'dayjs';
+import { ClockCircleOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { freightTitle } from '@/components/page/rfq/options';
 
-function RfqSearchUI() {
-  const [form] = Form.useForm()
-  const [FormLoading, setFormLoading] = useState(false)
-  const [emptyResult, setemptyResult] = useState(false)
-
-  const [SrcLocation, setSrcLocation] = useState("")
-  const [DesLocation, setDesLocation] = useState("")
-  const [universal, setUniversal] = useState<any>(null)
-  const [inputUpdate, setinputUpdate] = useState(false)
-  const modeOfShipment = useWatch("modeOfShipment",form)
-  const tradeType = useWatch("tradeType",form)
-  const incoterm = useWatch("incoterm",{form,preserve:true})
-  const freeTimeLP = useWatch("freeTimeLP",{form,preserve:true})
-
-  const [RfqList, setRfqList] = useState([])
-  const [UniversalRfqList, setUniversalRfqList] = useState([])
-
-
-  const handleSubmit = (values:any) => {
-    if (universal) {      
-      
-      let localRfqList = UniversalRfqList;
-      if(inputUpdate){
-        setFormLoading(true)
-        form.resetFields()
-        getRfQ({ universal, only: true })
-        .then(r => {
-          if (r.code) {
-            setRfqList(r.data)
-            setUniversalRfqList(r.data)
-            setemptyResult(r.data.length < 1)
-          }
-        })
-        .catch(r => {
-        }).finally(() => {
-          setFormLoading(false);
-          setinputUpdate(false)
-        });
-      }
-
-      if (values?.origin?.country) {
-        localRfqList = localRfqList.filter((item: any) => {
-          if (values?.origin?.country === 'Any') {
-            return true; 
-          }          
-          return `${item?.placeOfLoading?.country}`.toLowerCase() === `${values?.origin?.country}`.toLowerCase();
-        });
-      }
-      
-      if (values?.origin?.state && (values?.origin?.state?values?.origin?.state:[]).length>0) {        
-        localRfqList = localRfqList.filter((item: any) => {
-          return `${item?.placeOfLoading?.state}`.toLowerCase() === `${values?.origin?.state}`.toLowerCase();
-        });
-      }
-      
-      if (values?.destination?.country) {        
-        localRfqList = localRfqList.filter((item: any) => {
-          if (values?.destination?.country === 'Any') {
-            return true; 
-          }
-          return `${item?.placeOfUnLoading?.country}`.toLowerCase() === `${values?.destination?.country}`.toLowerCase();
-        });
-      }
-      
-      if (values?.destination?.state && (values?.destination?.state?values?.destination?.state:[]).length>0) {        
-        localRfqList = localRfqList.filter((item: any) => {
-          return `${item?.placeOfUnLoading?.state}`.toLowerCase() === `${values?.destination?.state}`.toLowerCase();
-        });
-      }
-      
-      if (values?.modeOfShipment) {        
-        localRfqList = localRfqList.filter((item: any) => {
-          return item?.modeOfShipment === values?.modeOfShipment;
-        });
-      }
-      
-      if (values?.incoterm) {        
-        localRfqList = localRfqList.filter((item: any) => {
-          return item?.incoterm === values?.incoterm;
-        });
-      }
-      
-      if (values?.tradeType) {        
-        localRfqList = localRfqList.filter((item: any) => {
-          return item?.tradeType === values?.tradeType;
-        });
-      }
-
-      if (values?.portOfLoading&&(values?.portOfLoading?values?.portOfLoading:[]).length>0) {
-        localRfqList = localRfqList.filter((item: any) => {
-          return values.portOfLoading.includes(item?.loadingPort);
-        });
-      }
-
-      if (values?.portOfUnLoading&&(values?.portOfUnLoading?values?.portOfUnLoading:[]).length>0) {
-        localRfqList = localRfqList.filter((item: any) => {
-          return values.portOfUnLoading.includes(item?.dischargePort);
-        });
-      }
-      console.log(localRfqList);
-        setemptyResult(false)        
-        
-        if(localRfqList.length<1){
-          setemptyResult(true)
-        }
-        setRfqList(localRfqList)
-      return
-    }
-    setFormLoading(true)
-    getRfQ(values)
-    .then(r=>{
-      if(r.code){
-        setRfqList(r.data)
-        setUniversalRfqList(r.data)
-        setemptyResult(r.data.length<1)
-      }      
-    })
-    .catch(r=>{
-      console.log(r);
-      
-    })
-    .finally(() => {
-      setFormLoading(false);
-    })
-  };
-
-  useEffect(() => {
-    setinputUpdate(true);
-  }, [universal]); 
-
-  const resetHandle = () => {
-    form.resetFields()
-    setRfqList(UniversalRfqList)
-    setemptyResult(false)
-  }
-  return (
-    <div className={`bg-shade min-vh-100`} >
-      <Row justify={"center"} gutter={[8,8]} className='mx-0 py-5'>
-        <Col sm={23} md={20} lg={18} xxl={15} className="px-5 my-2">
-          <Input onChange={e=>setUniversal(e.target.value)} placeholder="Search Input" variant="filled" size="large" prefix={<SearchOutlined />} />
-        </Col>
-        <Col sm={23} md={20} lg={18} xxl={15}>
-          <Card className="border-primary2">
-            <h4 className='text-primary2 text-center'>Filter by</h4>
-            <Form 
-              form={form}
-              onFinish={handleSubmit}
-              layout="vertical"
-              validateMessages={validateMessages}
-            >
-              <Row gutter={[16,8]}>
-                <Col span={24}>
-                  <Form.Item name={"modeOfShipment"} label={<h6 className="text-primary2">Mode of Shipment</h6>}>
-                    <Row gutter={[16, 16]}>
-                      {modeOfShipmentOptions.map((e: string) => (
-                        <Col {...layParams3} key={e}>
-                          <Button size="large" block shape="round" style={{ textWrap: "wrap", lineHeight: 1 }} type={modeOfShipment === e ? "primary" : "default"} onClick={() => {
-                            form.setFieldValue("modeOfShipment", e)
-                            form.setFieldValue("cargoDetail", {})
-                          }}>{e}</Button>
-                        </Col>
-                      ))}
-                    </Row>
-                  </Form.Item>
-                </Col>
-                <Col span={24}>
-                  <Form.Item name={"tradeType"} label={<h6 className="text-primary2 m-0">Trade Type</h6>} layout="horizontal">
-                    <Row gutter={[16, 16]}>
-                      {tradeTypeOptions.map((e: string) => (<Col key={e} {...layParams3}><Button size="large" block shape="round" style={{ textWrap: "wrap", lineHeight: 1 }} type={tradeType === e ? "primary" : "default"} onClick={() => {
-                        form.setFieldValue("tradeType", e)
-                        form.setFieldValue(["addOnService", "status"], true)
-                        form.setFieldValue("incoterm", e !== strings.import ? incotermOptions[0] : importIncotermOptions[0])
-
-                      }}>{e}</Button></Col>))}
-                    </Row>
-                  </Form.Item>
-                </Col>
-                <Col {...lParams}>
-                  <Form.Item  name={["origin","country"]} label={<h6 className="m-0 text-primary2">Origin Country</h6>}>
-                    <CountrySelectV2
-                      {...{className:"border rounded-pill",variant:"borderless"}}
-                      all={true}
-                      onChange={(e:any)=>{
-                        setSrcLocation(e.id)
-                        form.setFieldsValue({origin:{country:e.name,state:[]}})
-                      }}
-                      
-                    />
-  
-                  </Form.Item>                
-                </Col>
-                <Col {...lParams}>
-                  <Form.Item name={["origin","state"]} label={<h6 className="m-0 text-primary2">Origin State/Province</h6>}>
-                    <StateSelectV4
-                    {...{className:"border rounded-3",variant:"borderless",mode:"multiple"}}
-                    countryId={SrcLocation} onChange={(e:any)=>{}} />
-                  </Form.Item>                
-                </Col>
-                <Col {...lParams}>
-                  <Form.Item  name={["destination","country"]} label={<h6 className="m-0 text-primary2">Dest. Country</h6>}>
-                    <CountrySelectV2
-                    {...{className:"border rounded-pill",variant:"borderless"}}
-                    all={true}
-                      onChange={(e:any)=>{
-                        setDesLocation(e.id)
-                        form.setFieldsValue({destination:{country:e.name,state:[]}})
-                      }}
-                    />
-                    </Form.Item>
-                </Col>
-                <Col {...lParams}>
-                  <Form.Item name={["destination","state"]} label={<h6 className="m-0 text-primary2">Dest. State/Province</h6>}>
-                    <StateSelectV4
-                      {...{ className: "border rounded-3", variant: "borderless", mode: "multiple" }}
-                      countryId={DesLocation} onChange={(e: any) => {}} />
-                  </Form.Item>                
-                </Col>
-                <ConfigProvider 
-                  theme={{
-                      "components": {
-                        "Select": {
-                          "multipleItemBg": "#F3F6FF",
-                          multipleItemHeight:32,
-                          "colorText": "#6A37F4",
-                          multipleItemBorderColor: "#6937f46c"
-                        }
-                      }
-                  }}
-                >
-                <Col sm={22} md={12}>
-                  <Form.Item name={"portOfLoading"} label={<h6 className="m-0 text-primary2">Port of Loading</h6>}>
-                    <LocodeSelect
-                      change={()=>{}}
-                      wholeValue={(e:any)=>{form.setFieldValue("portOfLoading",e.map((v:any)=>`${v.value}`))}}
-                      mode="multiple"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col sm={22} md={12}>
-                  <Form.Item name={"portOfUnLoading"} label={<h6 className="m-0 text-primary2">Port of Discharge</h6>}>
-                    <LocodeSelect
-                      change={()=>{}}
-                      wholeValue={(e: any) => { form.setFieldValue("portOfUnLoading",e.map((v:any)=>`${v.value}`)) }}
-                      mode="multiple"
-                    />
-                  </Form.Item>
-                </Col>
-                </ConfigProvider>
-              </Row>
-              <Form.Item rootClassName="d-flex justify-content-center">
-                <Button size="large" className="px-5" type="primary" htmlType="submit" shape="round" loading={FormLoading}>
-                  Search
-                </Button>
-              </Form.Item>
-              <Form.Item rootClassName="d-flex justify-content-center">
-                <Button className="px-5" type="link" onClick={()=>resetHandle()}>
-                  Reset
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
-        </Col>
-        {RfqList.length > 0 &&
-          <Col sm={23} md={20} lg={18} xxl={15}>
-          <h4 className='text-primary2 text-center'>{RfqList.length} live RFQs</h4>
-          </Col>
-        }
-        <ConfigProvider
-          theme={{
-            "components": {
-              "Select": {
-                "multipleItemBg": "#F3F6FF",
-                multipleItemHeight: 32,
-                "colorText": "#6A37F4",
-                multipleItemBorderColor: "#6937f46c"
-              },
-              "Input": {
-                colorBgContainerDisabled: "rgb(243,246,255)",
-                colorTextDisabled: "rgba(69, 17, 151, 1)",
-                "colorBorder": "rgb(243,246,255)",
-                borderRadius:48,
-              },
-              "Collapse": {
-                "headerBg": "rgba(255,255,255,0.02)",
-                padding:0,
-                contentPadding:0,
-              },
-              "Form": {
-                "labelColor": "rgb(10,0,73)"
-              },
-              "Card":{
-                colorTextHeading:"rgba(69, 17, 151, 1)",
-              },
-              Table:{
-                colorTextHeading:"rgba(69, 17, 151, 1)",
-                headerBg: "rgb(243,246,255)",
-                padding:10,
-                fontSize:13,
-                borderColor:"#A89CF7",
-              }
-            }
-          }}
-        >
-          {RfqList.map((i:any) =>
-            <Col key={i?._id} sm={23} md={20} lg={18} xxl={15}>
-              <RFQCard rfqData={i} />
-            </Col>
-          )}
-        </ConfigProvider>
-        {
-          emptyResult && 
-          <Col sm={23} md={20} lg={18} xxl={15} >
-            <Row justify="center" className="py-5">
-              <Col sm={23} md={20} lg={18} xxl={15} className='p-3' style={{border:"1px dashed #6A37F4"}}>
-                <p className='text-center m-0 p-0'>
-                  No RFQ to show with the applied filters.
-                </p>
-              </Col>
-            </Row>
-          </Col>
-        }
-      </Row>
-    </div>
-  )
-}
-
-export default RfqSearchUI
-
-export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,showSubmit?:boolean,hideExpoter?:boolean}) => {
-  const [form] = Form.useForm();
-  const [expand, setexpand] = useState(false)
-  
+const QuotationCard = ({ quotation }:{quotation:any}) => {
+    // console.log(quotation);
+    const [docs, setDocs] = useState<any>([])
+    
   const {
     _id,
+    rfq,
+    shippingLine,
     modeOfShipment,
-    tradeType,
-    incoterm,
-    freeTimeLP,
-    freeTimeDP,
-    readyDate,
-    cargoDetail,
-    loadingPort,
-    dischargePort,
-    loadingPortObj,
-    dischargePortObj,
-    organization,
-    paymentTerms,
-    remarks,
-    container,
-    addOnService,
-    placeOfLoading,
-    placeOfUnLoading
-  } = rfqData;
-
-  useEffect(()=>{
-    form.setFieldsValue(rfqData)
-  },[rfqData])
+    quotationValidityDate,
+    portCutOff,
+    podChargeLocal,
+    podCurrencyCode,
+    polCurrencyCode,
+    polChargeLocal,    
+    inclusiveFrightDollor,
+    transShipmentPorts,
+    noOfTransShipmentPorts,
+    oceanFreightCost,
+    polCost,
+    podCost,
+    portCutoff,
+    etd,
+    validTill,
+    totallandedCost,
+    licensesAndCertifications,
+    inclusiveFrightLocal,
+  } = quotation;
   
+  useEffect(()=>{
+    // console.log(quotation?.organization?.userdocuments);
+    if(quotation?.organization?.userdocuments){
+        let a = Object.keys(quotation?.organization?.userdocuments)
+        setDocs(a.map((i:any)=>({...quotation?.organization?.userdocuments[i],name:i})))
+    }
+    
+  },[quotation])
+  console.log(docs);
+  
+
   return (
-    <Form
-      form={form} 
-    >
-      <Card title={`RFQ ID: ${"rfqId"}`} styles={{header:{borderBottomWidth:0}}} className='my-3'
-        extra={<Button className={expand?"":"d-none"} size="large" type="link" onClick={()=>setexpand(false)} icon={<UpCircleOutlined className='fs-4' />}/>}
-      >
-        <Row gutter={[48, 8]} className='my-3'>
-          <Col span={8}>
-            <Form.Item name={"modeOfShipment"} label={"Mode of Shipment"}>
-                <Input disabled className='text-center' />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item name={"tradeType"} label={"Trade Type"}>
-                <Input disabled className='text-center' />
-            </Form.Item>
-          </Col>
-          <Col span={8}>
-            <Form.Item name={"incoterm"} label={"Incoterm"}>
-                <Input disabled className='text-center' />
-            </Form.Item>
-          </Col>
-          {
-            freeTimeLP&&
-          <Col span={12} className=''>
-            <Form.Item label="Free time required at POL">
-              <Input value={freeTimeLP+` Days`} disabled className='text-center'/>
-            </Form.Item>
-          </Col>
-          }
-          {
-            freeTimeDP&&
-          <Col span={12} className=''>
-            <Form.Item label="Free time required at POD">
-              <Input value={freeTimeDP+` Days`} disabled className='text-center'/>
-            </Form.Item>
-          </Col>
-          }
-          {
-            loadingPort&&
-          <Col span={12}>
-            <Form.Item label="Port of Loading" layout="vertical">
-              <PortUI i={loadingPortObj} />
-            </Form.Item>
-          </Col>
-          }
-          {
-            dischargePort&&
-          <Col span={12}>
-            <Form.Item label="Port of Unloading" layout="vertical">
-                <PortUI i={dischargePortObj} />
-            </Form.Item>
-          </Col>
-          }
-          {
-            (placeOfLoading && !loadingPort)&&
-          <Col span={12}>
-            <Form.Item label="Place of Loading" layout="vertical">
-              <Input className='rounded-2' value={`${placeOfLoading?.address}, ${placeOfLoading?.city}, ${placeOfLoading?.state}, ${placeOfLoading?.country}`} />
-            </Form.Item>
-          </Col>
-          }
-          {
-            (placeOfUnLoading && !dischargePort)&&
-          <Col span={12}>
-            <Form.Item label="Place of Unloading" layout="vertical">
-              <Input className='rounded-2' value={`${placeOfUnLoading?.address}, ${placeOfUnLoading?.city}, ${placeOfUnLoading?.state}, ${placeOfUnLoading?.country}`} />
-            </Form.Item>
-          </Col>
-          }
-        </Row>
-        <Collapse bordered={false} activeKey={[expand?1:-1]}>
-          <Collapse.Panel showArrow={false} header="" extra={<Button shape="round" onClick={()=>setexpand(true)}  className={expand?"d-none":""}>View Details</Button>} key="1">
-            { (cargoDetail?.category?cargoDetail?.category:[]).length>0&&
-              <Card title={"Cargo Details"} styles={{ header: { borderBottom: 0 }, body: { padding: 10 } }}
-              className="my-2"
-                extra={<p className='m-0 p-1 border text-primary1 rounded-2'>Cargo Ready Date: {dayjs(readyDate).format("DD/MM/YY")}</p>}
-              >
-                {
-                    <Row gutter={[16, 16]} className='my-3'>
-                      <Col {...lParams}>
-                        <Form.Item label={`Cargo Category`} layout="vertical">
-                          <Input value={cargoDetail?.category} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                      <Col {...lParams}>
-                        <Form.Item label={"Hs Code"} layout="vertical">
-                          <Input disabled className='text-center' />
-                        </Form.Item>
-
-                      </Col>
-                      <Col {...lParams}>
-                        <Form.Item label={"Volume"} layout="vertical">
-                          <Input value={cargoDetail?.totalCBM} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                      <Col {...lParams}>
-                        <Form.Item label={"Weight"} layout="vertical">
-                          <Input value={cargoDetail?.totalGrossWeight || cargoDetail?.weight} disabled className='text-center' />
-                      </Form.Item>                        
-                      </Col>
-                      {
-                        (cargoDetail?.packageDetail?cargoDetail?.packageDetail:[]).length > 0 &&
-                        <Col sm={24} md={22} lg={12}>
-                          <Table className='my-2' bordered dataSource={
-                            (cargoDetail?.packageDetail?cargoDetail?.packageDetail:[])
-                            .map((i:any,iIndex:number)=>({
-                              key:i?._id,
-                              package:iIndex+1,
-                              dimensions:`L:${i?.dimensions?.length} ${cargoDetail?.measurement1}, B:${i?.dimensions?.breadth} ${cargoDetail?.measurement1}, H:${i?.dimensions?.height} ${cargoDetail?.measurement1}`,
-                              weight:`${i?.weight} ${cargoDetail?.measurement2}`,
-                            }))
-                          } columns={columns} pagination={false} />
-                        </Col>
-                      }
-                    </Row>
-                }
-              </Card>
-            }
-            {(container?container:[]).length>0&&
-              <Card title={"Container Details"} className="my-2" styles={{header:{borderBottom:0},body:{padding:10}}}
-                extra={<p className='m-0 p-1 border text-primary1 rounded-2'>Cargo Ready Date: {dayjs(container?.[0]?.readyDate).format("DD/MM/YY")}</p>}
-              >
-                {
-                  (container?container:[]).map((i: any, index: number) => (
-                    <Row gutter={[16, 16]} key={index} className='my-3'>
-                      <Col {...lParams}>
-                        <Form.Item label={!index?`Container`:null} layout="vertical">
-                          <Input value={(i?.cargo?.category?i?.cargo?.category:[]).join()} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                      <Col {...lParams}>
-                        <Form.Item label={!index?"Hs Code":null} layout="vertical">
-                          <Input disabled className='text-center' />
-                        </Form.Item>
-                        
-                      </Col>
-                      <Col {...lParams}>
-                        <Form.Item label={!index?"Container Type":null} layout="vertical">
-                          <Input value={`${i?.name} x ${i?.quantity}`} disabled className='text-center' />
-                        </Form.Item>
-                        { i?.cargo?.gaugeStatus&&
-                          <input value={i?.cargo?.gaugeStatus} disabled className='text-center rounded-2 border p-1 my-3 d-inline text-primary1' />
-                        }
-                      </Col>
-                      <Col {...lParams}>
-                        <Form.Item label={!index?"Weight/Container":null} layout="vertical">
-                          <Input value={`${i?.cargo?.weight} MT`} disabled className='text-center' />
-                        </Form.Item>
-                        { i?.cargo?.gaugeStatus&&
-                          <input value={`L:${i?.cargo?.dimensions?.length} mm,B:${i?.cargo?.dimensions?.breadth} mm,H:${i?.cargo?.dimensions?.height} mm`} disabled className='text-center rounded-2 border p-1 my-2 d-inline text-primary1 my-3' />
-                        }
-                      </Col>
-                    </Row>
-                  ))
-                }
-              </Card>
-            }
-            {
-              (addOnService && addOnService.status)&&            
-              <Card title={`Add on Services at port of loading ${tradeType===strings.export?"[POL]":"[POD]"}`} styles={{header:{borderBottom:0},body:{padding:10}}} className="my-2">
-                <Row gutter={[16,8]}>
-                  <Col span={24}>
-                    <Form.Item>
-                      <Space size={"large"}>
-                        {(addOnService.services?addOnService.services:[]).map((service :string,iIndex:number)=>(
-                          <Input key={service+iIndex} value={service} disabled className='rounded-2 text-center' />
-                        ))}
-                      </Space>
-                    </Form.Item>
-                  </Col>
-                    {
-                      addOnService.placeOfLoading &&
-                      <Col span={24}>
-                        <Form.Item label={"Place of Loading"} className='d-inline-flex'>
-                          <Input value={`${addOnService?.placeOfLoading?.address}, ${addOnService?.placeOfLoading?.city}, ${addOnService?.placeOfLoading?.state}, ${addOnService?.placeOfLoading?.country}`} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                    }
-                    {
-                      addOnService.placeOfUnLoading &&
-                      <Col span={24} >
-                        <Form.Item label={"Place of UnLoading"} className='d-inline-flex'>
-                          <Input value={`${addOnService?.placeOfUnLoading?.address}, ${addOnService?.placeOfUnLoading?.city}, ${addOnService?.placeOfUnLoading?.state}, ${addOnService?.placeOfUnLoading?.country}`} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                    }
-                    {
-                      addOnService.stuffingLocationType&&
-                      <Col span={12}>
-                        <Form.Item label={ tradeType === strings.import?"De Stuffing Location":"Stuffing Location"}>
-                          <Input value={addOnService?.stuffingLocationType} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                    }
-                      <Col span={12}>
-                    {
-                      (addOnService.truckType?addOnService.truckType:[]).length>0&&
-                        <Form.Item label={"Truck/Trailer Type"}>
-                          {
-                            (addOnService.truckType?addOnService.truckType:[]).map((truckType:any,iIndex:number)=>(
-                              <Input key={truckType.typee+iIndex} value={`${truckType.typee} * ${truckType.quantity}`} disabled className='text-center my-1' />
-                            ))
-                          }
-                        </Form.Item>
-                    }
-                      </Col>
-                    {
-                      addOnService.eSeal&&
-                      <Col sm={8} span={6}>
-                        <Form.Item label={"E Seal Facility"}>
-                          <Input value={addOnService.eSeal?"Yes":"No"} disabled className='text-center' />
-                        </Form.Item>
-                      </Col>
-                    }
-                    {
-                      <Col sm={16} span={7}>
-                          <Space wrap>
-                            <Form.Item label={"Insurance"}>
-                              <Input value={addOnService.insuranceRequired?"Yes":"No"} disabled className='text-center' />
-                            </Form.Item>
-                            {addOnService.insuranceRequired&&<div className='pb-2'><input value={`Cargo Value: `+addOnService.cargoValue +` USD`} disabled className='text-center rounded-2 border p-1 mb-3 text-primary1' /></div>}
-                          </Space>
-                      </Col>
-                    }
-                    {
-                      (addOnService.miscServices?addOnService.miscServices:[]).length>0&&
-                      <Col sm={24} span={11}>
-                        <Form.Item label={"Misc Services"} className='d-inline-flex'>
-                          <Input.TextArea rows={1} value={addOnService.miscServices.join()+ `${addOnService.miscServices.includes(strings.others)?", "+addOnService?.miscOtherValue:""}`} disabled className='text-center text-wrap ' />
-                        </Form.Item>
-                      </Col>
-                    }
-                </Row>
-              </Card>
-            }
-            <Card>
-              <Form.Item label={"Payment Terms"} className='d-inline-flex'>
-                <Input.TextArea rows={3} value={paymentTerms} disabled className='text-center text-wrap' />
-              </Form.Item>
-              <Form.Item label={"Remarks"} className='d-inline-flex'>
-                <Input value={remarks} disabled className='text-center text-wrap' />
-              </Form.Item>
-            </Card>
-            {
-              !hideExpoter&&
-              <Card className='my-2'>
-                <Row gutter={[16,16]}>
-                  <Col span={24}>
-                    <Space size={"large"} align="center">
-                      <h5 className="text-primary3">Exporter : <span className="border p-1 rounded">{organization?.companyName}</span></h5>
-                      <div className="pb-2">
-                        <Input value={organization?.businessType} disabled/>
-                      </div>
-                    </Space>
-                  </Col>
-                  <Col span={24}>
-                    <div className='d-flex gap-2 align-items-center'>
-                      {organization?.starExportHouseRating&& <Rate disabled value={organization?.starExportHouseRating}/>}
-                      {organization?.exportPromotionOrganisationMembership&& 
-                        <>
-                        <Input value={"AEO"} disabled style={{width:"70px"}} className='text-center'/>
-                        <Input value={organization?.exportPromotionOrganisationMembership} disabled style={{width:"50%"}} className='text-center' />
-                        </>
-                      }
-                    </div>
-                  </Col>
-                    {organization?.pointSalesPricingTeam&& 
-                    <>
-                    {
-                      (organization?.pointSalesPricingTeam?.name?organization.pointSalesPricingTeam?.name:[]).map((r:any,iIndex:number)=>(
-                      <Col span={24} key={iIndex}>
-                        <Space>
-                          {iIndex===0&& <p className="m-0">POC</p>}
-                          <Input value={organization?.pointSalesPricingTeam?.name?.[iIndex]} disabled className='text-center' />
-                          <Input value={organization?.pointSalesPricingTeam?.email?.[iIndex]} disabled className='text-center' />
-                          <Input value={organization?.pointSalesPricingTeam?.mobile?.[iIndex]} disabled className='text-center' />
-
-                        </Space>
-                      </Col>
-
-                      ))
-                    }
-                    </>
-                    }
-                </Row>
-              </Card>
-            }
-            <Col span={24} className='my-2'>
-              {!showSubmit&&<div className="d-flex justify-content-between mx-0">
-                <Button icon={<DownloadOutlined className="fw-bold fs-5 text-primary2"/>} >Download as pdf</Button>
-                <Link target="_blank" href={"/rfq/quotation?rfq="+_id}>
-                  <Button type="primary" >Submit quotation</Button>
-                </Link>
-              </div>}
+    <Card
+     title={
+        <Row justify={"space-between"} align={"middle"}>
+            <Col sm={24} md={8} className='d-flex justify-content-start'>
+                <h5 className="text-primary3">
+                    {quotation?.organization?.companyName}
+                </h5>
             </Col>
-          </Collapse.Panel>
-        </Collapse>
-      </Card>
-    </Form>
+            <Col sm={24} md={8} className='d-flex justify-content-center'>
+                <Space>
+                    <Button shape="round" icon={<img src={assetsRootPath+"image/assets/cargoShip.png"}/>}>{shippingLine}</Button>
+                    <Button shape="round" icon={<img src={assetsRootPath+"image/assets/port.png"}/>}>{noOfTransShipmentPorts} Transhipment</Button>                    
+                    <Button shape="round" icon={<ClockCircleOutlined/>}>{rfq?.transitTime} Days</Button>                    
+                </Space>
+            </Col>
+            <Col sm={24} md={8} className='d-flex justify-content-end'>
+                <Space className="border rounded-2 px-2 py-1 my-1">
+                    <p className='m-0'>{_id}</p>
+                </Space>
+            </Col>
+        </Row>
+    }
+        styles={{header:{borderBottom:0}}}
+    >
+      <Row gutter={[16, 16]}>
+        <Col sm={24} md={18}>
+            <Row gutter={[8,8]}>
+                <Col sm={22} md={19}>
+                <Typography.Paragraph>Routing:</Typography.Paragraph>
+                          <Steps
+                              progressDot
+                              size="small"
+                              items={
+                                [
+                                    ...[{ title:rfq?.loadingPortObj?.Name,description:rfq?.loadingPortObj?.FullName}],
+                                    ...(transShipmentPorts? transShipmentPorts: []).map((port: any, iIndex: number) => (
+                                        { title: port?.Name,status:"wait", description:port?.FullName  }
+                                    )),
+                                    ...[{ status:"finish", title:rfq?.dischargePortObj?.Name,description:rfq?.dischargePortObj?.FullName}],
+                                ]
+                              }
+                          />
+                </Col>
+                <Col span={24}>
+                <Space size={"large"}>
+                    <div className="p-1 border rounded-3">
+                        <p className='p-0 m-0'>Port Cutoff <span className="text-primary2">{dayjs(portCutOff?.date).format('YYYY-MM-DD')}</span> </p>
+                    </div>
+                    <div className="p-1 border rounded-3">
+                        <p className='p-0 m-0'>ETD <span className="text-primary2">{dayjs(etd).format('YYYY-MM-DD')}</span> </p>
+                    </div>
+                    <div className="p-1 border rounded-3">
+                        <p className='p-0 m-0'>VALID TILL <span className="text-primary2">{dayjs(quotationValidityDate).format('YYYY-MM-DD')}</span> </p>
+                    </div>
+                </Space>
+                </Col>
+                <Col span={24}>
+               
+             
+                </Col>
+                <Col span={24}>
+                <Space wrap>
+                        {
+                            docs.filter((i:any)=>(i.status)).map((i:any)=>(
+                            <div key={i.name} className="tag-content text-capitalize">
+                                {camelCaseToSpaceSeparated(i.name)}
+                              </div>
+                            ))
+                        }
+                </Space>
+                </Col>
+            </Row>
+        </Col>
+        <Col sm={24} md={6}>
+            <Row gutter={[16, 8]} justify={"end"}>
+                <Col span={24} className='d-flex justify-content-end'>
+                    <Space className="border rounded-2 px-2 py-1">
+                        <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}</p>
+                        <p className='m-0'>USD {inclusiveFrightDollor}</p>
+                    </Space>
+                </Col>
+                <Col span={24} className='d-flex justify-content-end'>
+                    <Space className="border rounded-2 px-2 py-1">
+                        <p className='m-0'>POL Cost:</p>
+                        <p className='m-0'>{polCurrencyCode} {polChargeLocal}</p>
+                    </Space>
+                </Col>
+                <Col span={24} className='d-flex justify-content-end'>
+                    <Space className="border rounded-2 px-2 py-1">
+                        <p className='m-0'>POD Cost:</p>
+                        <p className='m-0'>{podCurrencyCode} {podChargeLocal}</p>
+                    </Space>
+                </Col>
+                <Col span={24} className='d-flex justify-content-end'>
+                    <Space className="border rounded-2 px-2 py-1 my-1">
+                        <p className='m-0'>Total Landed Cost:</p>
+                        <p className='m-0'>{polCurrencyCode} {totallandedCost}</p>
+                    </Space>
+                </Col>
+            </Row>
+        </Col>
+      </Row>
+
+      
+    <div className='d-flex justify-content-end col-12'>
+        <Link target="_blank" href={"/rfq/offerdetail/"+_id}>
+            <Button type="primary" shape="round">View Details</Button>
+        </Link>
+    </div>
+    </Card>
   );
 };
 
-const lParams={
-  sm:24,
-  md:12,
-  lg:6,
-  xl:6,
-  xxl:6
-}
-
-const TextUI = ({children}: {children?:string})=> <span className='bg-shade text-primary1 p-1 px-3 rounded-pill'>{children}</span>
-export const PortUI = ({i,...props}:{i:any,props?:any})=>{
-  
-  return (
-    <ConfigProvider
-    theme={{
-      "components": {
-        "Input": {
-          colorBgContainerDisabled: "#f6f4ff",
-          colorTextDisabled: "rgba(69, 17, 151, 1)",
-          "colorBorder": "rgb(243,246,255)",
-          borderRadius:48,
-        },}}}>
-          <Input {...props} disabled className='border rounded-2 ' value={locodeFormatedString(i)}/>
-        </ConfigProvider>
-        )
-}
-const columns = [
-  {
-    title: 'Package',
-    dataIndex: 'package',
-    key: 'package',
-  },
-  {
-    title: 'Dimensions',
-    dataIndex: 'dimensions',
-    key: 'dimensions',
-  },
-  {
-    title: 'Weight',
-    dataIndex: 'weight',
-    key: 'weight',
-  },
-];
+export default QuotationCard;
