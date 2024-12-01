@@ -297,7 +297,6 @@ const KYCForm = ({ setCurrentStep }: {setCurrentStep: Dispatch<SetStateAction<nu
                 </Col>
                 <Col xs={22} sm={22} md={12} lg={12}>
                     <Form.Item label="Mobile No [Point of Contact / EXIM / Logistics Team]" required name={["pointSalesPricingTeam",`mobile`]} rules={[{ required: true, message: "This field is required." }, {min:10,max:11,message: 'Invalid Number'}]}>
-                    <Input type="number" maxLength={11} onChange={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11)} />
                         <Select mode={"tags"} showSearch={false} notFoundContent={<></>}  suffixIcon={null}/>
                     </Form.Item>
                 </Col>
@@ -328,7 +327,6 @@ const KYCForm = ({ setCurrentStep }: {setCurrentStep: Dispatch<SetStateAction<nu
 
                 <Col xs={22} sm={22} md={12} lg={12}>
                     <Form.Item label="Escalation/Emergency Contact Numbers" name="emergencyContactNumber" rules={[{ required: true, message: "This field is required." }, {min:10,max:11,message: 'Invalid Number'}]}>
-                        <Input type="number" maxLength={11} onChange={(e) => e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11)} />
                         <Select mode="tags" showSearch={false} notFoundContent={<></>} />
                     </Form.Item>
                 </Col>
