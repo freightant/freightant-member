@@ -9,6 +9,7 @@ export default function Home() {
       <Link href={"/auth/signin"}>Login</Link>
       <Link href={"/rfq/post"}>RFQ POST</Link>
       <Link href={"/rfq/search"}>RFQ Search</Link>
+      <Link href={"/dashboard"}>Dashboard</Link>
       <Button onClick={()=>signOut({callbackUrl:"/auth/signin"})} >Log Out</Button>
     </div>
   );

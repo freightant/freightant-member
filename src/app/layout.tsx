@@ -5,11 +5,15 @@ import"bootstrap/dist/css/bootstrap.min.css";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 
+import localFont from "next/font/local";
+
+
 const inter = Montserrat({
   style: ['normal', 'italic'],
   subsets: ['latin'],
   display: 'swap',
 });
+
 
 export const metadata: Metadata = {
   title: "Create Next App",

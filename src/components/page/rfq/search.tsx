@@ -13,6 +13,7 @@ import { getRfQ, locodeById } from '@/network/endpoints';
 import useSWR from 'swr';
 import dayjs from 'dayjs';
 import Link from 'next/link';
+import { AuthHOC } from '@/components/supportcomponents/auth/UnAuthHOC';
 
 function RfqSearchUI() {
   const [form] = Form.useForm()
@@ -340,8 +341,8 @@ function RfqSearchUI() {
   )
 }
 
-export default RfqSearchUI
 
+export default  AuthHOC(RfqSearchUI)
 export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,showSubmit?:boolean,hideExpoter?:boolean}) => {
   const [form] = Form.useForm();
   const [expand, setexpand] = useState(false)

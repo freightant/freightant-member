@@ -38,6 +38,7 @@ const SignInUI = () => {
                 </div>
                 <div className="freightant-login">
                     <h3 className="text-center">Login</h3>
+                    
                     <Form layout="vertical" onFinish={handleFinish}>
                         <Form.Item label="Business email" name={"email"}
                             rules={[
