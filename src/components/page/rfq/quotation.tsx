@@ -440,16 +440,16 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
           <Col span={24}>
           <Space  >
             <Form.Item className='mb-1' name={"rfq"}>
-              <Input value={id} disabled className='border rounded-pill p-1 fs-6' />
+              <Input value={id} disabled className='border rounded-pill p-1 fs-6' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item className='mb-1'>
-              <Input value={rfq?.modeOfShipment} disabled className='border rounded-pill p-1  text-center' />
+              <Input value={rfq?.modeOfShipment} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item className='mb-1'>
-              <Input value={rfq?.tradeType} disabled className='border rounded-pill p-1  text-center' />
+              <Input value={rfq?.tradeType} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item className='mb-1'>
-              <Input value={rfq?.incoterm} disabled className='border rounded-pill p-1  text-center' />
+              <Input value={rfq?.incoterm} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item noStyle name={"polCurrencyCode"}/>
             <Form.Item noStyle name={"podCurrencyCode"}/>
@@ -458,7 +458,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
           {
             rfq?.loadingPort&&
           <Col span={12}>
-            <Form.Item label="Port of Loading" layout="vertical">
+            <Form.Item label="Port of Loading" layout="vertical" style={{  fontWeight: '600' }}>
               <PortUI i={rfq?.loadingPortObj} />
             </Form.Item>
           </Col>
@@ -466,7 +466,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
           {
             rfq?.dischargePort&&
           <Col span={12}>
-            <Form.Item label="Port of UnLoading" layout="vertical">
+            <Form.Item label="Port of Discharge" layout="vertical" style={{  fontWeight: '600' }}>
                 <PortUI i={rfq?.dischargePortObj} />
             </Form.Item>
           </Col>
@@ -489,15 +489,15 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
           }
             <Col span={24}>
               <Space>
-                <Form.Item name={"exchangeRate"} label="Exchange Rates" className='my-2' layout="horizontal">
+                <Form.Item name={"exchangeRate"} label="Exchange Rates" className='my-2' layout="horizontal" style={{  fontWeight: '600' ,  backgroundColor: '#F6F4FF'}}>
                   <Input readOnly addonBefore={"USD/"+currencyCode} />
                 </Form.Item>
               </Space>
             </Col>
-            <Col span={24}>
+            <Col span={40}>
                 <Card rootClassName=''>
-                    <div className='d-flex flex-column gap-3'>
-                        <Card title={
+                    <div className='d-flex flex-column gap-3 my-2'>
+                        <Card style={{ padding: '12px' }} title={
                           <Space>
                             {freightTitle(rfq?.modeOfShipment)}
                               {(rfq?.container?rfq?.container:[]).length>0?
@@ -509,7 +509,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             null
                           }
                           >
-                            <CustomTable dataSource={freightData}
+                            <CustomTable dataSource={freightData} 
                               columns={[
                                 {
                                   key: 'sort',
@@ -609,17 +609,17 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                               <Form.Item  label={freightTitle(rfq?.modeOfShipment)} layout="horizontal">
                                 <Space>
                                   <Form.Item name={"inclusiveFrightDollar"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} />
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px", backgroundColor: '#F6F4FF', fontWeight: '600'}} addonBefore={"USD"} />
                                   </Form.Item>
                                   <Form.Item name={"inclusiveFrightLocal"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={currencyCode} />
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px", backgroundColor: '#F6F4FF', fontWeight: '600'}} addonBefore={currencyCode} />
                                   </Form.Item>
                                 </Space>
                               </Form.Item>
                             </Col>
                         </Card>
                         { (rfq?.incoterm !== strings.FOB)&&
-                        <Card
+                        <Card style={{ padding: '12px' }}
                           title={
                             <Space>
                               {"Port of Loading [POL] Charges"}
@@ -779,7 +779,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </Card>
                         }
                         {!((rfq?.incoterm?rfq?.incoterm:"").toLowerCase().includes("c"))&&
-                        <Card 
+                        <Card style={{ padding: '12px' }}
                         title={
                           <Space>
                             {"Port of Discharge [POD] Charges"}
@@ -926,8 +926,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 <Input placeholder='Enter Remarks & T&C (If any)' />
                               </Form.Item>
                             </div>
-                            <Col sm={22} md={12}>
-                            <Form.Item label={"Port of unLoading [POD] charges"} layout="horizontal">
+                            <Col sm={22} md={12} >
+                            <Form.Item label={"Port of unLoading [POD] charges"} layout="horizontal" style={{ fontWeight: '700' }} >
                                 <Space>
                                   <Form.Item name={"podChargeDollar"} noStyle>
                                     <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} />
@@ -941,7 +941,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </Card>
                         }
                         <div className="col-12 col-md-8 col-lg-6">
-                          <Form.Item name={"totallandedCost"} label={"Total Landed Cost"} className='d-inline' layout="horizontal">
+                          <Form.Item name={"totallandedCost"} label={"Total Landed Cost"} className='d-inline' layout="horizontal" style={{ fontWeight: '600' }}>
                               <Input disabled value={calculateTotalLandedCost()} addonBefore={currencyCode} className='d-inline' />
                           </Form.Item>
                         </div>
@@ -950,7 +950,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
             </Col>
             {rfq?.modeOfShipment !== strings.crossBorderTrucking &&
             <Col span={24}>
-                <Card title="Shipping Line Details" styles={{ header: { borderBottom: 0 } }}>
+                <Card title="Shipping Line Details" styles={{ header: { borderBottom: 0 } }} style={{ padding: '12px' }}>
                     <Row gutter={[16,16]}>
                           <Col sm={24} md={12}>
                         {rfq?.modeOfShipment === strings.air?
@@ -971,7 +971,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </>
                           }
                         </Col>
-                        <Col sm={24} md={12}>
+                        <Col sm={24} md={12} >
                             <Form.Item name={"noOfTransShipmentPorts"} label={`Transshipment ${rfq?.modeOfShipment === strings.air?"Airports":"Ports"}`} layout="horizontal">
                                 <Input placeholder={noOfTransShipmentPorts}
                                   className='text-center'
@@ -980,8 +980,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                     />
                             </Form.Item>
                         </Col>
-                        <Col span={24} className='border rounded-2 border-primary2 p-2'>
-                            <div className="d-flex justify-content-between">
+                        <Col span={24} className='border rounded-2 border-primary2 p-2' >
+                            <div className="d-flex justify-content-between" >
                             <h5 className='text-primary2'>Transshipment {rfq?.modeOfShipment === strings.air?"Airports":"Ports"}</h5>
                             <Form.Item name={"transitTime"} label={`Transit time`} layout="horizontal">
                                 <Input placeholder={noOfTransShipmentPorts}
@@ -1062,9 +1062,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                   <Card styles={{body:{paddingBottom:9}}}>
                     <ConfigProvider theme={{components:{Input:{colorFillAlter:"#6A37F4",colorFill:"#FFFFF"}}}}>
                       <Row gutter={[8, 16]}>
-                          <Col span={16}>
+                          <Col span={20}>
                               <Form.Item name={"polFreeTimeStatus"} label={`POL Free Time`} layout="horizontal">
-                                <Radio.Group>                                    
+                                <Radio.Group style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>                                    
                                     <Radio value={true}>Accept RFQ Terms [{rfq?.freeTimeLP} Days]</Radio>
                                     <Radio value={false}>Change Free Time</Radio>
                                 </Radio.Group>
@@ -1081,9 +1081,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 </Form.Item>
                             </Col>
                           }
-                          <Col span={16}>
+                          <Col span={20}>
                               <Form.Item name={"podFreeTimeStatus"} label={`POD Free Time`} layout="horizontal">
-                                <Radio.Group>                                    
+                                <Radio.Group style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>                                    
                                 <Radio value={true}>Accept RFQ Terms [{rfq?.freeTimeDP} Days]</Radio>
                                 <Radio value={false}>Change Free Time</Radio>
                                 </Radio.Group>
@@ -1133,15 +1133,15 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                     }
                 </Card>
             </Col>
-            <Col span={24}>
-                <Card title="Terms & Conditions" styles={{ header: { borderBottom: 0 } }}>
+            <Col span={24} >
+                <Card title="Terms & Conditions" styles={{ header: { borderBottom: 0 } }} style={{ padding: '12px' }}>
                     <Form.Item rules={[{required:true}]} name={"termsCondition"}>
                         <Input.TextArea placeholder='Enter Here' className='rounded-2'/>
                     </Form.Item>
                 </Card>
             </Col>
             <Col span={24}>
-                <Card title="Point of Contact" styles={{ header: { borderBottom: 0 }, }}>
+                <Card title="Point of Contact" styles={{ header: { borderBottom: 0 }, }} style={{ padding: '12px' }}>
                 <Form.List name={"pointOfContact"}>
                     {(fields, { add, remove }) => (
                       <>
@@ -1164,8 +1164,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                           ))
                             
                         }
-                        <br />
-                      <Button onClick={()=>add({name:""})}  className="my-4 rounded-pill">
+                        
+                      <Button onClick={()=>add({name:""})}  className="rounded-pill">
                         <PlusCircleFilled className="text-primary1 fs-5" /> Add POC
                       </Button>
                       </>
