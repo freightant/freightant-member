@@ -171,13 +171,21 @@ body {
 
 /* TABLE CSS */
 
+.table-card {
+  width: 110%; /* Adjust as needed */
+  max-width: 1200px; /* Optional: Limit max width */
+  margin-left: -50px; /* Move the element towards the left */
+}
 .table-container {
-  border: 1px solid #6A37F4 !important;;
+  border: 1px solid #dedede !important;
   padding: 20px;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%; /* Set table container to full width */
+  max-width: 1200px; /* Optional: limit maximum width */
+  height: auto; /* Ensure the height adjusts based on content */
 }
 
 .table-header {
@@ -200,6 +208,7 @@ body {
 
 .card-content {
   background-color: #fff;
+  
 }
 
 .cust-table {
@@ -229,14 +238,17 @@ body {
 }
 
 .shippment-port-container {
-  border: 1px solid #6A37F4 !important;;
+  border: 1px solid #dedede !important;;
   border-radius: 10px;
+  position: relative; /* Ensure it can be moved relative to its normal flow */
+    width: 113%; /* Increase the width as needed */
+    margin-left: -50px; /* Move it to the left */
 }
 
 .transshipment-card-label{
   p{
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 700;
   }
 }
 

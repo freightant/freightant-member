@@ -32,7 +32,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
     )
   }
   return (
-    <div className="p-5 bg-shade min-vh-100">
+    <div className="p-3  min-vh-100" >
         {isLoading&&
         <div className="d-flex justify-content-center py-5">
             <div>
@@ -51,16 +51,16 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         </Col>
       </Row>
 
-      <Row className='card-content rounded-3 p-4 my-2' gutter={[15, 15]}>
+      <Row className='card-content rounded-3 px-1 py-4 my-2' gutter={[80, 15]} style={{ border: '1px solid #dedede' }}>
         <Col xs={24} md={9}>
-          <div className="d-flex flex-column gap-2">
-            <span className='fw-semibold fs-5'>Port of Loading</span>
+          <div className="d-flex flex-column gap-2" style={{ width: '110%' }}>
+            <span className='fw-semibold fs-5' style={{  color: '#0A0049' }}>Port of Loading</span>
                 <PortUI i={d?.data?.rfq?.loadingPortObj}/>
           </div>
         </Col>
         <Col xs={24} md={9}>
-          <div className="d-flex flex-column gap-2">
-            <span className='fw-semibold fs-5'>Port of Discharge</span>
+          <div className="d-flex flex-column gap-2" style={{ width: '110%' }}>
+            <span className='fw-semibold fs-5' style={{  color: '#0A0049' }}>Port of Discharge</span>
                 <PortUI i={d?.data?.rfq?.dischargePortObj}/>
           </div>
         </Col>        
@@ -68,18 +68,18 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
 
       <Row gutter={[10, 10]}>
         <Col xs={24} md={18}>
-          <Row gutter={[10, 10]}>
+          <Row gutter={[60, 20]} >
             <Col xs={24}>
-              <div className="rounded-2 card-content my-2 p-3">
+              <div className="rounded-2 card-content my-2 p-2">
                 <ConfigProvider
                   theme={{
                     components: {
                       Table: {
-                        colorTextHeading: "rgba(69, 17, 151, 1)",
-                        headerBg: "rgb(243,246,255)",
+                        colorTextHeading: "#451197",
+                        headerBg: "#F6F4FF",
                         cellPaddingInline: 5,
                         cellPaddingBlock: 10,
-                        fontSize: 13,
+                        fontSize: 12,
                         borderColor: "#A89CF7",
                       }
                     }
@@ -87,16 +87,16 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 >
                   <TableCards obj={d?.data} frieght={d?.data?.freightData} pol={d?.data?.polChargesData} pod={d?.data?.podChargesData} />
                 </ConfigProvider>
-                <p className='currency-total my-2 ms-3 fw-bold'>Total Landed cost: {d?.data?.polCurrencyCode} {d?.data?.totallandedCost}</p>
+                <p className='currency-total my-3  fw-bold' style={{ color: '#0A0049'  }}>Total Landed Cost: {d?.data?.polCurrencyCode} {d?.data?.totallandedCost}</p>
               </div>
             </Col>
             <Col xs={24}>
-                <div className="card-content rounded-3 p-4">
-                    <h3>{d?.data?.rfq?.modeOfShipment===strings.air?`Air`:`Shipping `}Line Details</h3>
-                    <div className="d-flex gap-4 my-3">
+                <div className="card-content rounded-3 p-4 ">
+                    <h3 style={{  marginLeft: "-40px",  marginBottom: "30px"}}>{d?.data?.rfq?.modeOfShipment===strings.air?`Air`:`Shipping `}Line Details</h3>
+                    <div className="d-flex gap-4 my-3 "  style={{  marginLeft: "-30px" }}>
                         {d?.data?.shippingLine&&
                           <div className="shipping-details-header d-flex align-items-center gap-2">
-                            <p className='mb-0'>Shipping Line</p><span>{d?.data?.shippingLine}</span>
+                            <p className='mb-0' >Shipping Line</p><span>{d?.data?.shippingLine}</span>
                         </div>
                         }
                         {d?.data?.airline&&
@@ -105,11 +105,11 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                         </div>
                         }
                         <div className="shipping-details-header d-flex align-items-center gap-2">
-                            <p className='mb-0'>Transshipment Ports</p><span>{d?.data?.noOfTransShipmentPorts}</span>
+                            <p className='mb-0' style={{ color: '#0A0049'  }}>Transshipment Ports</p><span>{d?.data?.noOfTransShipmentPorts}</span>
                         </div>
                     </div>
                     <div className="shippment-port-container">
-                        <h3 className='m-4'>Transshipment Ports</h3>
+                        <h3 className='m-4' style={{ color: '#0A0049'  }}>Transshipment Ports </h3>
                         <Row>
                             <Col xs={24} md={20} lg={20}>
                             <Space>
@@ -134,69 +134,69 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
           </Row>
         </Col>
 
-        <Col xs={24} md={6} className=''>
+        <Col xs={32} md={6} className=''>
           <div className="my-2">
             <Row gutter={[0, 10]}>
               <Col xs={24}>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                  <h5>Exchange Rate</h5>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                  <h6 style={{ fontWeight: 600, color: '#0A0049' }}>Exchange Rate</h6>
                   <span>USD/INR</span>
-                  <div className="tag-content">
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {d?.data?.exchangeRate}
                   </div>
                 </div>
               </Col>
               <Col xs={24}>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                  <h5>ETD</h5>
-                  <div className="tag-content">
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' ,  }}>
+                  <h6 style={{ fontWeight: 600, color: '#0A0049' }}>ETD</h6>
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {dayjs(d?.data?.etd).format('YYYY-MM-DD')}
                   </div>
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                  <h5>SI Cut off Date & Time</h5>
-                  <div className="tag-content">
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                  <h6 style={{ fontWeight: 600, color: '#0A0049' }}>SI Cut off Date & Time</h6>
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {dayjs(d?.data?.siCutOff?.date).format('YYYY-MM-DD')}
                   </div>
-                  <div className="tag-content">
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {d?.data?.siCutOff?.time}
                   </div>
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                  <h5>Port Cut off Date & Time</h5>
-                  <div className="tag-content">
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                  <h6 style={{ fontWeight: 600, color: '#0A0049' }}>Port Cut off Date & Time</h6>
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {dayjs(d?.data?.portCutOff?.date).format('YYYY-MM-DD')}
                   </div>
-                  <div className="tag-content">
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {d?.data?.portCutOff?.time}
                   </div>
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                  <h5>POL Free Time</h5>
-                  <div className="tag-content">
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                  <h6 style={{ fontWeight: 600, color: '#0A0049' }}>POL Free Time</h6>
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                   {processValues(d?.data,d?.data?.polFreeTimeStatus,d?.data?.rfq?.freeTimeDP,d?.data?.polFreeTimeDeclineValue)} Days
                   </div>
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                  <h5>POD Free Time</h5>
-                  <div className="tag-content">
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                  <h6 style={{ fontWeight: 600, color: '#0A0049' }}>POD Free Time</h6>
+                  <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {processValues(d?.data,d?.data?.podFreeTimeStatus,d?.data?.rfq?.freeTimeLP,d?.data?.podFreeTimeDeclineValue)} Days
                   </div>
                 </div>
               </Col>
                 <Col xs={24} className=''>
                     <div className="flex-column h-100 d-flex justify-content-end">
-                        <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2">
-                            <h5>Quotation validity Date</h5>
-                            <div className="tag-content">
+                        <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                            <h6 style={{ fontWeight: 600, color: '#0A0049' }}>Quotation validity Date</h6>
+                            <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                               {dayjs(d?.data?.quotationValidityDate).format('YYYY-MM-DD')}
                             </div>
                         </div>
@@ -207,7 +207,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         </Col>
       
         <Col xs={24}>
-          <div className="card-content rounded-3 p-4 my-2 d-flex gap-3 align-items-center">
+          <div className="card-content rounded-3 p-4 my-2 d-flex gap-3 align-items-center border border-[#dedede]" style={{ width: "107%", marginLeft: "-20px"}}>
             <span className='fw-semibold fs-5'>Payment Terms</span>
             <div className="">{d?.data?.paymentTermsStatus?
             d?.data?.rfq?.paymentTerms
@@ -226,12 +226,12 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         </Col>
       
         <Col xs={24}>
-          <div className="card-content rounded-3 p-4 my-2">
-            <span className='fw-semibold fs-5'>Terms and Conditions</span><br/>
-            <Typography.Text>{d?.data?.termsCondition}</Typography.Text> 
-          </div>
-        </Col>
-      
+  <div className="card-content rounded-3 p-4 my-2 border border-[#dedede] mx-" style={{ width: "107%", marginLeft: "-20px"}}>
+    <span className="fw-semibold fs-5">Terms and Conditions</span><br/>
+    <Typography.Text>{d?.data?.termsCondition}</Typography.Text>
+  </div>
+</Col>
+
         {(d?.data?.pointOfContact?d?.data?.pointOfContact:[]).length>0 &&
         <Col xs={24}>
           <div className="card-content rounded-3 p-4 my-2">
@@ -285,10 +285,10 @@ import useSWR from 'swr';
 
 function TableCards({frieght,pol,pod,obj}:{frieght:any,pol:any,pod:any,obj:any}) {
     return (
-        <div className="table-card d-flex gap-3 flex-column">
-            <div className="table-container">
-                <div className="table-header">
-                    <h6 className='mb-0'>{freightTitle(obj?.rfq?.modeOfShipment)}</h6>
+        <div className="table-card d-flex gap-3 flex-column" >
+            <div className="table-container" >
+                <div className="table-header" >
+                    <h6 className='mb-0' style={{ fontWeight: 600, color: '#0A0049' }}>{freightTitle(obj?.rfq?.modeOfShipment)}</h6>
                     <Space>
                       {(obj?.rfq?.container ? obj?.rfq?.container : []).length > 0 ?
                         obj?.rfq?.container.map((i: any) => (<div key={`${i?.name}*${i?.quantity}`} className="header-tag-content">{i?.name}*{i?.quantity}</div>))
@@ -303,10 +303,10 @@ function TableCards({frieght,pol,pod,obj}:{frieght:any,pol:any,pod:any,obj:any})
             </div>
 
             {(pol?pol:[]).length > 0 &&
-            <div className="table-container">
+            <div className="table-container " >
                 <div className="table-header">
-                    <h6 className='mb-0'>Port of Loading [POL] charges</h6>
-                    <Space>
+                    <h6 className='mb-0' style={{ fontWeight: 600, color: '#0A0049' }}>Port of Loading [POL] charges</h6>
+                    <Space >
                       {(obj?.rfq?.container ? obj?.rfq?.container : []).length > 0 ?
                         obj?.rfq?.container.map((i: any) => (<div key={`${i?.name}*${i?.quantity}`} className="header-tag-content">{i?.name}*{i?.quantity}</div>))
                         : null
@@ -314,15 +314,15 @@ function TableCards({frieght,pol,pod,obj}:{frieght:any,pol:any,pod:any,obj:any})
                     </Space> 
                 </div>
 
-                <div className="table-content">
-                    <CustomTable dataSource={(pol?pol:[])} setDataSource={()=>{}} columns={columnsV2}/>
+                <div className="table-content" >
+                    <CustomTable dataSource={(pol?pol:[])} setDataSource={()=>{}} columns={columnsV2} />
                 </div>
             </div>}
 
             {(pod?pod:[]).length>0&&
             <div className="table-container">
                 <div className="table-header">
-                    <h6 className='mb-0'>Port of Discharge [POD] Charges</h6>
+                    <h6 className='mb-0' style={{ fontWeight: 600, color: '#0A0049' }}>Port of Discharge [POD] Charges</h6>
                     <div className="header-tag-content">40FT x 2</div>
                     <div className="header-tag-content">20FT x 1</div>
                 </div>
@@ -346,12 +346,14 @@ let columns = [
         title: "Cost heads",
         dataIndex: "costHead",
         key: "costHead",
+        align: "center",
         width:250,
         className:"text-wrap",
       },
       {
         title: "Units",
         key: "units",
+        align: "center",
         children: [
           {
             title: "",
@@ -377,6 +379,7 @@ let columns = [
       {
         title: "Rate",
         dataIndex: "rate",
+        align: "center",
         key: "rate",
         width:75,
       },
@@ -396,6 +399,7 @@ let columnsV2 = [
       {
         title: "Cost Category",
         dataIndex: "costCategory",
+        align: "center",
         key: "costHead",
         width:100,
         className:"text-wrap",
@@ -403,6 +407,7 @@ let columnsV2 = [
       {
         title: "Cost heads",
         dataIndex: "costHead",
+        align: "center",
         key: "costHead",
         width:250,
         className:"text-wrap",
@@ -411,6 +416,7 @@ let columnsV2 = [
         title: "Receipt",
         dataIndex: "receipted",
         key: "costHead",
+        align: "center",
         width:30,
         className:"text-wrap",
         render:(_:any,record:any,index:number)=>(
@@ -449,6 +455,7 @@ let columnsV2 = [
       {
         title: "Rate",
         dataIndex: "rate",
+        align: "center",
         key: "rate",
         width:75,
       },
