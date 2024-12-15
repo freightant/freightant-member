@@ -529,6 +529,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   dataIndex: "costHead",
                                   key: "costHead",
                                   width:250,
+                                  align: "center",
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
                                       <Select 
@@ -568,7 +569,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                       key: "ch2",
                                       width:50,
                                       render:(_:any,record:any,index:number)=>(
-                                          <Input className='p-0 m-0 text-center' variant="borderless" value={freightData[index].quantity} onChange={(e:any)=>handleInputChange(
+                                          <Input className='p-0 m-0 text-center'  value={freightData[index].quantity} onChange={(e:any)=>handleInputChange(
                                             index,
                                             "quantity",
                                             e.target.value
@@ -588,6 +589,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Rate",
                                   dataIndex: "rate",
                                   key: "rate",
+                                  align: "center",
                                   width:75,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input placeholder="Rate" disabled={!freightData[index].unit} variant="outlined" className="p-1 text-center" value={freightData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value)}/>
@@ -648,6 +650,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost Category",
                                   dataIndex: "costCategory",
                                   key: "costCategory",
+                                  align: "center",
                                   width:150,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -657,7 +660,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost heads",
                                   dataIndex: "costHead",
                                   key: "costHead",
-                                  width:"230px",
+                                  align: "center",
+                                  width:"220px",
                                   className:"text-wrap p-1",
                                   render:(_:any,record:any,index:number)=>(
                                       <Select
@@ -680,6 +684,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Receipt",
                                   dataIndex: "receipted",
                                   key: "costHead",
+                                  align: "center",
                                   width:30,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -734,6 +739,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Currency",
                                   dataIndex: "currency",
                                   key: "currency",
+                                  align: "center",
                                   className:"p-0",
                                   render:(_:any,record:any,index:number)=>(
                                     <Select rootClassName="p-0 m-0" placeholder="Select" dropdownStyle={{ width: "102px" }} options={getCurrencyOPtion(rfq?.loadingPortObj?.currency,LoadingCountryCurrency).map((i:any)=>({label:i,value:i}))}
@@ -746,6 +752,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 {
                                   title: "Rate",
                                   dataIndex: "rate",
+                                  align: "center",
                                   key: "rate",
                                   render:((_:any,record:any,index:number)=>(
                                     <Input disabled={!polChargesData[index].unit} placeholder="Rate" variant="outlined" className="p-1" value={polChargesData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value,1)}/>
@@ -754,6 +761,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 {
                                   title: "Amount",
                                   dataIndex: "amount",
+                                  align: "center",
                                   key: "amount",   
                               
                                 },
