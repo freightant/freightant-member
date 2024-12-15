@@ -1190,7 +1190,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                   <Button loading={Loading} htmlType="submit" type="primary" size="large" block shape="round">Submit quotation</Button>
                 </div>
             </Col>             
-            <Modal open={previewModalOpen} onCancel={()=>setPreviewModalOpen(i=>!i)} width={1000} onClose={()=>setPreviewModalOpen(i=>!i)} footer={<Button onClick={()=>setPreviewModalOpen(i=>!i)}>Close</Button>}>
+            <Modal open={previewModalOpen} onCancel={()=>setPreviewModalOpen(i=>!i)} width={1440} onClose={()=>setPreviewModalOpen(i=>!i)} footer={<Button onClick={()=>setPreviewModalOpen(i=>!i)}>Close</Button>}>
                 <OfferDetail params={{id:""}} previewData={quotationData} hideExtra />
             </Modal>
             <Modal open={SuccessModal} footer={null} closable={false}>

@@ -50,21 +50,21 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
   return (
     <Card
      title={
-        <Row justify={"space-between"} align={"middle"}>
+        <Row justify={"space-between"} align={"middle"} style={{ padding: "24px 20px 24px 20px" , marginLeft: "-20px"}}>
             <Col sm={24} md={8} className='d-flex justify-content-start'>
-                <h5 className="text-primary3">
-                    {quotation?.organization?.companyName}
-                </h5>
+            <h5 className="text-primary3">
+                <b>{quotation?.organization?.companyName}</b>
+            </h5>
             </Col>
             <Col sm={24} md={8} className='d-flex justify-content-center'>
-                <Space>
+                <Space size={8}>
                     <Button shape="round" icon={<img src={assetsRootPath+"image/assets/cargoShip.png"}/>}>{shippingLine}</Button>
                     <Button shape="round" icon={<img src={assetsRootPath+"image/assets/port.png"}/>}>{noOfTransShipmentPorts} Transhipment</Button>                    
                     <Button shape="round" icon={<ClockCircleOutlined/>}>{rfq?.freeTimeLP} Days</Button>                    
                 </Space>
             </Col>
             <Col sm={24} md={8} className='d-flex justify-content-end'>
-                <Space className="border rounded-2 px-2 py-1 my-1">
+                <Space className="border rounded-2 px-2 py-1 my-1 " style={{ textAlign: "right" , marginRight: "-20px"}}>
                     <p className='m-0'>{_id}</p>
                 </Space>
             </Col>
@@ -76,7 +76,7 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
         <Col sm={24} md={18}>
             <Row gutter={[8,8]}>
                 <Col sm={22} md={19}>
-                <Typography.Paragraph>Routing:</Typography.Paragraph>
+                <Typography.Paragraph style={{ fontWeight: "bold", color: "#451197" }}>Routing:</Typography.Paragraph>
                           <Steps
                               progressDot
                               size="small"
@@ -91,23 +91,26 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
                               }
                           />
                 </Col>
-                <Col span={24}>
+                <Col span={24} style={{ marginTop: "20px" , marginBottom: "20px"}}>
                 <Space size={"large"}>
-                    <div className="p-1 border rounded-3">
-                        <p className='p-0 m-0'>Port Cutoff <span className="text-primary2">{dayjs(portCutOff?.date).format('YYYY-MM-DD')}</span> </p>
+                    <div className="p-2 border rounded-3" >
+                        <p className='p-0 m-0'>Port Cutoff: <span className="text-primary2"  style={{ fontWeight: "bold", color: "#451197"}}>{dayjs(portCutOff?.date).format('YYYY-MM-DD')}</span> </p>
                     </div>
-                    <div className="p-1 border rounded-3">
-                        <p className='p-0 m-0'>ETD <span className="text-primary2">{dayjs(etd).format('YYYY-MM-DD')}</span> </p>
+                    <div className="p-2 border rounded-3">
+                        <p className='p-0 m-0'>ETD: <span className="text-primary2"  style={{ fontWeight: "bold" , color: "#451197"}}>{dayjs(etd).format('YYYY-MM-DD')}</span> </p>
+                    </div>
+                    <div className="p-2 border rounded-3">
+                        <p className='p-0 m-0'>Valid Till: <span className="text-primary2"  style={{ fontWeight: "bold" , color: "#451197"}}>{dayjs(quotationValidityDate).format('YYYY-MM-DD')}</span> </p>
                     </div>
                 </Space>
                 </Col>
-                <Col span={24}>
+                {/* <Col span={24}>
                 <Space size={"large"}>
                     <div className="p-1 border rounded-3">
                         <p className='p-0 m-0'>VALID TILL <span className="text-primary2">{dayjs(quotationValidityDate).format('YYYY-MM-DD')}</span> </p>
                     </div>
                 </Space>
-                </Col>
+                </Col> */}
                 <Col span={24}>
                 <Space wrap>
                         {
@@ -123,25 +126,25 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
         </Col>
         <Col sm={24} md={6}>
             <Row gutter={[16, 8]}>
-                <Col span={24}>
+                <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
                     <Space className="border rounded-2 px-2 py-1">
                         <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}</p>
                         <p className='m-0'>USD {inclusiveFrightDollor}</p>
                     </Space>
                 </Col>
-                <Col span={24}>
+                <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
                     <Space className="border rounded-2 px-2 py-1">
                         <p className='m-0'>POL Cost:</p>
                         <p className='m-0'>{polCurrencyCode} {polChargeLocal}</p>
                     </Space>
                 </Col>
-                <Col span={24}>
+                <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
                     <Space className="border rounded-2 px-2 py-1">
                         <p className='m-0'>POD Cost:</p>
                         <p className='m-0'>{podCurrencyCode} {podChargeLocal}</p>
                     </Space>
                 </Col>
-                <Col span={24}>
+                <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
                     <Space className="border rounded-2 px-2 py-1 my-1">
                         <p className='m-0'>Total Landed Cost:</p>
                         <p className='m-0'>{polCurrencyCode} {totallandedCost}</p>

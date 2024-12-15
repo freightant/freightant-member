@@ -32,7 +32,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
     )
   }
   return (
-    <div className="p-3  min-vh-100" >
+    <div className="p-3  min-vh-100 " >
         {isLoading&&
         <div className="d-flex justify-content-center py-5">
             <div>
@@ -41,10 +41,10 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         </div>
         }
         {!isLoading&&
-        <div className="col-12 col-md-11 col-lg-10 mx-auto">
-      <Row justify={"space-between"} className={hideExtra?"d-none":""}>
+        <div className="col-12 col-md-11 col-lg-10 mx-auto " >
+      <Row justify={"space-between"} className={hideExtra?"d-none":""} style={{ marginBottom: "30px" }}>
         <Col>
-          <div className="rounded-5 border p-1 px-3 primary-bg-color fs-5">{d?.data?.organization?.companyName}</div>
+          <div className="rounded-5  p-1 px-4 primary-bg-color fs-5">{d?.data?.organization?.companyName}</div>
         </Col>
         <Col>
           <div className="rounded-5 p-1 px-3 bg-light border fs-5">Quote ID</div>
@@ -138,7 +138,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
           <div className="my-2">
             <Row gutter={[0, 10]}>
               <Col xs={24}>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                   <h6 style={{ fontWeight: 600, color: '#0A0049' }}>Exchange Rate</h6>
                   <span>USD/INR</span>
                   <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
@@ -147,7 +147,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 </div>
               </Col>
               <Col xs={24}>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' ,  }}>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                   <h6 style={{ fontWeight: 600, color: '#0A0049' }}>ETD</h6>
                   <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {dayjs(d?.data?.etd).format('YYYY-MM-DD')}
@@ -155,7 +155,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                   <h6 style={{ fontWeight: 600, color: '#0A0049' }}>SI Cut off Date & Time</h6>
                   <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {dayjs(d?.data?.siCutOff?.date).format('YYYY-MM-DD')}
@@ -166,7 +166,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                   <h6 style={{ fontWeight: 600, color: '#0A0049' }}>Port Cut off Date & Time</h6>
                   <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {dayjs(d?.data?.portCutOff?.date).format('YYYY-MM-DD')}
@@ -177,7 +177,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                   <h6 style={{ fontWeight: 600, color: '#0A0049' }}>POL Free Time</h6>
                   <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                   {processValues(d?.data,d?.data?.polFreeTimeStatus,d?.data?.rfq?.freeTimeDP,d?.data?.polFreeTimeDeclineValue)} Days
@@ -185,7 +185,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 </div>
               </Col>
               <Col xs={24} className='me-auto'>
-                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                   <h6 style={{ fontWeight: 600, color: '#0A0049' }}>POD Free Time</h6>
                   <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                     {processValues(d?.data,d?.data?.podFreeTimeStatus,d?.data?.rfq?.freeTimeLP,d?.data?.podFreeTimeDeclineValue)} Days
@@ -194,7 +194,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
               </Col>
                 <Col xs={24} className=''>
                     <div className="flex-column h-100 d-flex justify-content-end">
-                        <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '120%' , }}>
+                        <div className="card-content left-card rounded-2 p-3 d-flex flex-column align-items-center gap-2 border border-[#dedede] " style={{ width: '100%' ,marginLeft: '40px'  }}>
                             <h6 style={{ fontWeight: 600, color: '#0A0049' }}>Quotation validity Date</h6>
                             <div className="tag-content" style={{  backgroundColor: '#F6F4FF',  }}>
                               {dayjs(d?.data?.quotationValidityDate).format('YYYY-MM-DD')}
@@ -207,7 +207,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         </Col>
       
         <Col xs={24}>
-          <div className="card-content rounded-3 p-4 my-2 d-flex gap-3 align-items-center border border-[#dedede]" style={{ width: "107%", marginLeft: "-20px"}}>
+          <div className="card-content rounded-3 p-4 my-2 d-flex gap-3 align-items-center border border-[#dedede]" style={{ width: "105%", marginLeft: "-20px"}}>
             <span className='fw-semibold fs-5'>Payment Terms</span>
             <div className="">{d?.data?.paymentTermsStatus?
             d?.data?.rfq?.paymentTerms
@@ -226,7 +226,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         </Col>
       
         <Col xs={24}>
-  <div className="card-content rounded-3 p-4 my-2 border border-[#dedede] mx-" style={{ width: "107%", marginLeft: "-20px"}}>
+  <div className="card-content rounded-3 p-4 my-2 border border-[#dedede] mx-" style={{ width: "105%", marginLeft: "-20px"}}>
     <span className="fw-semibold fs-5">Terms and Conditions</span><br/>
     <Typography.Text>{d?.data?.termsCondition}</Typography.Text>
   </div>
