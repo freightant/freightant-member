@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image"; // Import Image component for optimized image rendering
+import Image from "next/image";
 import {
   FaTh,
   FaChartLine,
@@ -27,8 +27,6 @@ const menuItems: MenuItem[] = [
   { icon: <FaList />, label: "RFQ List", href: "/rfq-list" },
   { icon: <FaList />, label: "Order List", href: "/order-list" },
   { icon: <FaTruck />, label: "Shipment Status", href: "/shipment-status" },
-  
-
 ];
 
 const footerItems: MenuItem[] = [
@@ -38,17 +36,23 @@ const footerItems: MenuItem[] = [
 ];
 
 const Sidebar: React.FC = () => {
+  const [isHovered, setIsHovered] = useState(false);
   const [activeItem, setActiveItem] = useState<string>("Dashboard");
 
   return (
-    <div className="h-screen w-64 bg-white shadow-lg flex flex-col justify-between rounded-tr-[30px] rounded-br-[30px]">
-
+    <div
+      className={`h-screen ${
+        isHovered ? "w-64" : "w-16"
+      } bg-white shadow-lg flex flex-col justify-between rounded-tr-[30px] rounded-br-[30px] transition-all duration-300`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Logo Section */}
-      <div className="flex items-center px-10 py-4 mt-8">
+      <div className={`flex items-center px-4 py-4 mt-8 ${isHovered ? "px-10" : "justify-center"}`}>
         <Image
-          src="/Vector.png" // Adjust the path based on your Next.js `public` folder structure
+          src="/Vector.png"
           alt="freightAnt Logo"
-          width={150}
+          width={isHovered ? 150 : 40}
           height={50}
           priority
         />
@@ -68,16 +72,8 @@ const Sidebar: React.FC = () => {
                 }`}
                 onClick={() => setActiveItem(item.label)}
               >
-                <span
-                  className={`${
-                    activeItem === item.label
-                      ? "text-white"
-                      : "text-purple-600 hover:text-white"
-                  }`}
-                >
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
+                <span className="text-purple-600">{item.icon}</span>
+                {isHovered && <span>{item.label}</span>}
               </Link>
             </li>
           ))}
@@ -93,10 +89,8 @@ const Sidebar: React.FC = () => {
                 href={item.href}
                 className="flex items-center gap-3 text-gray-700 hover:bg-purple-600 hover:text-white p-2 rounded-md transition-colors duration-200"
               >
-                <span className="text-purple-600 hover:text-white">
-                  {item.icon}
-                </span>
-                <span>{item.label}</span>
+                <span className="text-purple-600">{item.icon}</span>
+                {isHovered && <span>{item.label}</span>}
               </Link>
             </li>
           ))}

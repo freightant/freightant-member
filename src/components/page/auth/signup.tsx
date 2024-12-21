@@ -111,15 +111,18 @@ const SignUpUI = () => {
           <Input placeholder="Enter your business email" />
         </Form.Item>
         <Form.Item className='mb-2' label="Password" name={"password"} 
-          rules={[{required:true},
-            {
-              pattern:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-              message: `Password should contain at least one lower case letter, upper case letter, number and special characters`
-           },
-           {min:8,max:16,message: "Passwords must be between 8 to 16 characters"}
-          ]}>
-          <Password placeholder="Enter a password" />
-        </Form.Item>
+    rules={[
+        { required: true },
+        {
+            pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_])[A-Za-z\d@$!%*?&_]{8,}$/,
+            message: `Password should contain at least one lowercase letter, uppercase letter, number, and special character (including _)`
+        },
+        { min: 8, max: 16, message: "Passwords must be between 8 to 16 characters" }
+    ]}
+>
+    <Password placeholder="Enter a password" />
+</Form.Item>
+
           <Form.Item label="Enter Phone number">
         <Row gutter={[8,0]}>
           <Col span={8}>
