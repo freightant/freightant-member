@@ -289,3 +289,32 @@ body {
 .text-purple {
   color: #451197;
 }
+
+/* .ant-table-thead th {
+  padding: 0 !important;
+  height: 0 !important;
+}
+
+.ant-table-thead > tr > th::before,
+.ant-table-thead > tr > th::after {
+  display: none !important;
+} */
+
+
+
+/* Begin: Custom styles to optimize table heading spacing and alignment */
+.ant-table-thead th {
+  padding: 8px 16px !important; /* Adjust padding for proper spacing */
+  line-height: 1.2 !important; /* Improve text alignment */
+  vertical-align: middle; /* Ensure headings align properly */
+}
+
+.ant-table-thead > tr > th::before,
+.ant-table-thead > tr > th::after {
+  display: none !important; /* Remove unnecessary lines */
+}
+
+.ant-table-thead > tr:nth-child(2) {
+  display: none; /* Hide the second header row entirely */
+}
+/* End: Custom styles to optimize table heading spacing and alignment */

@@ -16,6 +16,7 @@ import { getPaymentCode, locodeFormatedString, validateData } from '@/components
 import { AuthHOC } from '@/components/supportcomponents/auth/UnAuthHOC';
 import PostSuccessModal from '@/components/supportcomponents/rfq/postSuccessModal';
 import OfferDetail from './details';
+import moment from 'moment';
 
 const {Column, ColumnGroup} = Table
 const defaultValues = {
@@ -75,7 +76,7 @@ const OceanFreightForm=({id}:{id?:string | string[] | undefined})=>{
                               headerBg: "rgb(243,246,255)",
                               cellPaddingInline: 5,
                               cellPaddingBlock:10,
-                              fontSize: 13,
+                              fontSize: 12,
                               borderColor: "#A89CF7",
                           }
                       }
@@ -436,7 +437,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   
   return (
     <Form form={form} layout="vertical" onFinish={formFinish}>
-        <Row gutter={[16,16]}>
+        <Row gutter={[16,16]} style={{ width: '110%', marginLeft: '-10%', }}>
           <Col span={24}>
           <Space  >
             <Form.Item className='mb-1' name={"rfq"}>
@@ -489,7 +490,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
           }
             <Col span={24}>
               <Space>
-                <Form.Item name={"exchangeRate"} label="Exchange Rates" className='my-2' layout="horizontal" style={{  fontWeight: '600' ,  backgroundColor: '#F6F4FF'}}>
+                <Form.Item name={"exchangeRate"} label="Exchange Rates" className='my-2' layout="horizontal" style={{  fontWeight: '600' }}>
                   <Input readOnly addonBefore={"USD/"+currencyCode} />
                 </Form.Item>
               </Space>
@@ -551,33 +552,44 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 {
                                   title: "Units",
                                   key: "units",
+                                  
                                   children: [
                                     {
-                                      title: "",
+                                      title: null, // Add a meaningful title
                                       dataIndex: "unit",
                                       key: "ch1",
-                                      width:100,
-                                      render:(_:any,record:any,index:number)=>(
-                                          <Select className='w-100 text-wrap' value={freightData[index].unit} variant="borderless" options={
-                                            unitsOption(rfq?.modeOfShipment)
-                                          } placeholder="" onChange={e=>updateQuantity(e,index)}/>
-                                        )
+                                      width: 100,
+                                      
+                                      render: (_: any, record: any, index: number) => (
+                                        <Select
+                                          className="w-100 text-wrap"
+                                          value={freightData[index].unit}
+                                          variant="borderless"
+                                          options={unitsOption(rfq?.modeOfShipment)}
+                                          placeholder=""
+                                          onChange={(e) => updateQuantity(e, index)}
+                                        />
+                                      ),
                                     },
                                     {
-                                      title: "",
+                                      title: null, // Add a meaningful title
                                       dataIndex: "quantity",
                                       key: "ch2",
-                                      width:50,
-                                      render:(_:any,record:any,index:number)=>(
-                                          <Input className='p-0 m-0 text-center'  value={freightData[index].quantity} onChange={(e:any)=>handleInputChange(
-                                            index,
-                                            "quantity",
-                                            e.target.value
-                                          )} />
-                                        )
+                                      width: 50,
+                                                                      
+                                      render: (_: any, record: any, index: number) => (
+                                        <Input
+                                          className="p-0 m-0 text-center"
+                                          value={freightData[index].quantity}
+                                          onChange={(e: any) =>
+                                            handleInputChange(index, "quantity", e.target.value)
+                                          }
+                                        />
+                                      ),
                                     },
                                   ],
                                 },
+                                
                                 {
                                   title: "Currency",
                                   dataIndex: "currency",
@@ -816,6 +828,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost Category",
                                   dataIndex: "costCategory",
                                   key: "costCategory",
+                                  align: 'center',
                                   width:150,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -825,6 +838,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost heads",
                                   dataIndex: "costHead",
                                   key: "costHead",
+                                  align: 'center',
                                   width:"230px",
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -848,6 +862,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Receipted",
                                   dataIndex: "receipted",
                                   key: "costHead",
+                                  align: 'center',
                                   width:50,
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
@@ -865,6 +880,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Units",
                                   dataIndex: "units",
                                   key: "units",
+                                  align: 'center',
                                   children: [
                                     {
                                       title: "",
@@ -901,6 +917,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Currency",
                                   dataIndex: "currency",
                                   key: "currency",
+                                  align: 'center',
                                   render:(_:any,record:any,index:number)=>(
                                     <Select placeholder="Select" dropdownStyle={{ width: "102px" }} options={getCurrencyOPtion(rfq?.dischargePortObj?.currency,UnLoadingCountryCurrency).map((i:any)=>({label:i,value:i}))}
                                     disabled={!podChargesData[index].unit}
@@ -981,24 +998,115 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         </Col>
                         <Col sm={24} md={12} >
                             <Form.Item name={"noOfTransShipmentPorts"} label={`Transshipment ${rfq?.modeOfShipment === strings.air?"Airports":"Ports"}`} layout="horizontal">
-                                <Input placeholder={noOfTransShipmentPorts}
-                                  className='text-center'
-                                    addonBefore={<MinusOutlined onClick={e=>form.setFieldValue("noOfTransShipmentPorts",noOfTransShipmentPorts>0?noOfTransShipmentPorts-1:0)} />} 
-                                    addonAfter={<PlusOutlined onClick={e=>form.setFieldValue("noOfTransShipmentPorts",noOfTransShipmentPorts<15?noOfTransShipmentPorts+1:15)} />}
-                                    />
+                            <Input
+    placeholder={noOfTransShipmentPorts}
+    className="text-center"
+    addonBefore={
+        <MinusOutlined
+            onClick={e => form.setFieldValue("noOfTransShipmentPorts", noOfTransShipmentPorts > 0 ? noOfTransShipmentPorts - 1 : 0)}
+            style={{
+                backgroundColor: "#6A37F4",
+                borderRadius: "4px",
+                width: "24px",
+                height: "24px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "white",
+            }}
+        />
+    }
+    addonAfter={
+        <PlusOutlined
+            onClick={e => form.setFieldValue("noOfTransShipmentPorts", noOfTransShipmentPorts < 15 ? noOfTransShipmentPorts + 1 : 15)}
+            style={{
+                backgroundColor: "#6A37F4",
+                borderRadius: "4px",
+                width: "24px",
+                height: "24px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+                color: "white",
+                fontSize: "16px",
+                        fontWeight: "bold",
+            }}
+        />
+    }
+/>
+
                             </Form.Item>
                         </Col>
                         <Col span={24} className='border rounded-2 border-primary2 p-2' >
-                            <div className="d-flex justify-content-between" >
-                            <h5 className='text-primary2'>Transshipment {rfq?.modeOfShipment === strings.air?"Airports":"Ports"}</h5>
-                            <Form.Item name={"transitTime"} label={`Transit time`} layout="horizontal">
-                                <Input placeholder={noOfTransShipmentPorts}
-                                  className='text-center'
-                                    addonBefore={<MinusOutlined onClick={e=>form.setFieldValue("transitTime",transitTime>0?transitTime-1:0)} />} 
-                                    addonAfter={<PlusOutlined onClick={e=>form.setFieldValue("transitTime",transitTime?transitTime+1:1)} />}
-                                    />
-                            </Form.Item>
-                            </div>
+                        <div className="d-flex justify-content-between p-4">
+    <h5 className="text-primary2">Transshipment {rfq?.modeOfShipment === strings.air ? "Airports" : "Ports"}</h5>
+    <Form.Item
+    name={"transitTime"}
+    label={`Transit time`}
+    layout="horizontal"
+>
+    <Input
+        placeholder={noOfTransShipmentPorts}
+        className="text-center"
+        addonBefore={
+            <div
+                style={{
+                    backgroundColor: "#6A37F4",
+                    borderRadius: "4px",
+                    width: "24px",
+                    height: "24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                        fontWeight: "bold",
+                }}
+                onClick={(e) =>
+                    form.setFieldValue("transitTime", transitTime > 0 ? transitTime - 1 : 0)
+                }
+            >
+                <MinusOutlined
+                    style={{
+                        color: "#FFFFFF",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                    }}
+                />
+            </div>
+        }
+        addonAfter={
+            <div
+                style={{
+                    backgroundColor: "#6A37F4",
+                    borderRadius: "4px",
+                    width: "24px",
+                    height: "24px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                }}
+                onClick={(e) =>
+                    form.setFieldValue("transitTime", transitTime ? transitTime + 1 : 1)
+                }
+            >
+                <PlusOutlined
+                    style={{
+                        color: "#FFFFFF",
+                        fontSize: "16px",
+                        fontWeight: "bold",
+                    }}
+                />
+            </div>
+        }
+    />
+</Form.Item>
+
+</div>
+
                             <Space style={{minWidth:"400px"}}>
                               <Timeline
                                 style={{ padding: 10, margin: 10 }}
@@ -1031,37 +1139,49 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             </Space>
                         </Col>
                         <Col span={24}>
-                            <Form.Item rules={[{required:true}]} name={"etd"} label={`ETD`} layout="horizontal">
-                                <DatePicker  />
-                            </Form.Item>
-                        </Col>
+  <Form.Item 
+    rules={[{ required: true, message: 'Please select a date!' }]} 
+    name={"etd"} 
+    label={`ETD`} 
+    layout="horizontal"
+  >
+    <DatePicker
+      disabledDate={(current) => current && current < moment().startOf('day')}
+    />
+  </Form.Item>
+</Col>
                         {
                           rfq?.modeOfShipment !== strings.air &&
                           <Col span={24}>
-                              <Form.Item label={`SI Cut off Date & Time`} layout="horizontal">
-                                  <Space>
-                                  <Form.Item rules={[{required:true}]} name={["siCutOff","date"]} >
-                                    <DatePicker/>
-                                  </Form.Item>
-                                  <Form.Item rules={[{required:true}]} name={["siCutOff","time"]} >
-                                    <TimePicker format={"HH"}/>
-                                  </Form.Item>
-                                  </Space>
-                              </Form.Item>
-                          </Col>
+  <Form.Item label={`SI Cut off Date & Time`} layout="horizontal" required>
+    <Space>
+      <Form.Item rules={[{ required: true }]} name={["siCutOff", "date"]} noStyle>
+        <DatePicker
+          disabledDate={(current) => current && current < moment().startOf('day')}
+        />
+      </Form.Item>
+      <Form.Item rules={[{ required: true }]} name={["siCutOff", "time"]} noStyle>
+        <TimePicker format={"HH"} />
+      </Form.Item>
+    </Space>
+  </Form.Item>
+</Col>
                         }
-                        <Col span={24}>
-                            <Form.Item label={`Port Cut off Date & Time`} layout="horizontal">
-                              <Space>
-                                <Form.Item rules={[{required:true}]} name={["portCutOff", "date"]} >
-                                  <DatePicker />
-                                </Form.Item>
-                                <Form.Item rules={[{required:true}]} name={["portCutOff", "time"]} >
-                                  <TimePicker  format={"HH"}/>
-                                </Form.Item>
-                              </Space>
-                            </Form.Item>
-                        </Col>
+                       <Col span={24}>
+  <Form.Item label={`Port Cut off Date & Time`} layout="horizontal" required>
+    <Space>
+      <Form.Item rules={[{ required: true }]} name={["portCutOff", "date"]} noStyle>
+        <DatePicker
+          disabledDate={(current) => current && current < moment().startOf('day')}
+        />
+      </Form.Item>
+      <Form.Item rules={[{ required: true }]} name={["portCutOff", "time"]} noStyle>
+        <TimePicker format={"HH"} />
+      </Form.Item>
+    </Space>
+  </Form.Item>
+</Col>
+
                     </Row>
                 </Card>
             </Col>
@@ -1113,12 +1233,14 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                   </Card>
             </Col>
             <Col span={24}>
-                <Card styles={{body:{paddingBottom:9}}}>
-                    <Form.Item rules={[{required:true}]} name={"quotationValidityDate"} label={"Quotation Validity Date"}>
-                        <DatePicker />
-                    </Form.Item>
-                </Card>
-            </Col>
+  <Card styles={{ body:{ paddingBottom: 9 } }}>
+    <Form.Item rules={[{ required: true }]} name={"quotationValidityDate"} label={"Quotation Validity Date"}>
+      <DatePicker
+        disabledDate={(current) => current && current < moment().startOf('day')}
+      />
+    </Form.Item>
+  </Card>
+</Col>
             <Col span={24}>
                 <Card styles={{body:{paddingBottom:9}}}>
                     <Form.Item rules={[{required:true}]} name={"paymentTermsStatus"} label={`Payments Term`} layout="horizontal">

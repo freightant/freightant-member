@@ -296,9 +296,29 @@ const PostRFQUI = () => {
             <Card title="Port Pair" styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0 } }}
               extra={modeOfShipment !== strings.seaFCL &&
                 (<Space size={"small"} >
-                  <Form.Item className='border rounded-pill px-2 mt-1' label="Cargo Readiness Date" required={false} name={"readyDate"} rules={[{ required: true }]} layout="horizontal">
-                    <DatePicker onChange={(e, r) => form.setFieldValue("readyDate", dayjs(r.toString()))} size="small" styles={{}} style={{ border: 0, fontSize: "10px", paddingRight: "2px", paddingLeft: "2px" }} className='rounded-pill' />
-                  </Form.Item>
+               <Form.Item
+                  className='border rounded-pill px-2 mt-1'
+                  label="Cargo Readiness Date"
+                    required={false}
+                        name={"readyDate"}
+                      rules={[{ required: true }]}
+                      layout="horizontal"
+                  >
+                <DatePicker
+  onChange={(date) => {
+    if (date && date.isValid()) {
+      form.setFieldValue("readyDate", date); // Set valid date
+    }
+  }}
+  size="small"
+  style={{ border: 0, fontSize: "10px", paddingRight: "2px", paddingLeft: "2px" }}
+  className="rounded-pill"
+  disabledDate={(current) => {
+    // Check if the current date is before today
+    return current && current.isBefore(dayjs().startOf('day'), 'day');
+  }}
+/>
+</Form.Item>
                 </Space>)}
             >
               <Row justify={"space-between"} gutter={[8, 8]} className="ms-2 my-2">
@@ -1299,14 +1319,35 @@ const PostRFQUI = () => {
             </Card>
           </Col>
           <Col span={24}>
-            <div className="col-11 col-md-9 col-lg-7 col-xl-6 mx-auto d-flex justify-content-center">
-              <Space size={"small"} className='border rounded-pill px-2'>
-                <Form.Item label="RFQ closing date" required={false} name={"closingDate"} rules={[{ required: true }]} className="my-0" layout="horizontal">
-                  <DatePicker variant="borderless" onChange={(e, r) => form.setFieldValue("closingDate", dayjs(r.toString()))} size="small" styles={{}} style={{ paddingRight: "2px", paddingLeft: "2px" }} className='rounded-pill' />
-                </Form.Item>
-              </Space>
-            </div>
-          </Col>
+  <div className="col-11 col-md-9 col-lg-7 col-xl-6 mx-auto d-flex justify-content-center">
+    <Space size={"small"} className="border rounded-pill px-2">
+      <Form.Item
+        label="RFQ closing date"
+        required={false}
+        name={"closingDate"}
+        rules={[{ required: true }]}
+        className="my-0"
+        layout="horizontal"
+      >
+        <DatePicker
+          variant="borderless"
+          onChange={(date) => {
+            if (date && date.isValid()) { // Ensure date is valid before setting the value
+              form.setFieldValue("closingDate", date);
+            }
+          }}
+          size="small"
+          style={{
+            paddingRight: "2px",
+            paddingLeft: "2px",
+          }}
+          className="rounded-pill"
+          disabledDate={(current) => current && current.isBefore(dayjs().startOf('day'), 'day')} // Disable past dates
+        />
+      </Form.Item>
+    </Space>
+  </div>
+</Col>
           <Col span={24}>
             <div className="col-11 col-md-9 col-lg-7 col-xl-6 mx-auto d-flex justify-content-center">
               <Typography.Link onClick={()=>setPrviewModal(i=>!i)}>Preview RFQ <EyeOutlined /></Typography.Link>

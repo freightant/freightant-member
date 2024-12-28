@@ -296,10 +296,26 @@ const KYCForm = ({ setCurrentStep }: {setCurrentStep: Dispatch<SetStateAction<nu
                     </Form.Item>
                 </Col>
                 <Col xs={22} sm={22} md={12} lg={12}>
-                    <Form.Item label="Mobile No [Point of Contact / EXIM / Logistics Team]" required name={["pointSalesPricingTeam",`mobile`]} rules={[{ required: true, message: "This field is required." }, {min:10,max:11,message: 'Invalid Number'}]}>
-                        <Select mode={"tags"} showSearch={false} notFoundContent={<></>}  suffixIcon={null}/>
-                    </Form.Item>
-                </Col>
+    <Form.Item
+        label="Mobile No [Point of Contact / EXIM / Logistics Team]"
+        name={["pointSalesPricingTeam", "mobile"]}
+        rules={[
+            { required: true, message: "This field is required." },
+            {
+                pattern: /^\d{10,11}$/,
+                message: "Invalid Number.",
+            },
+        ]}
+    >
+        <Select
+            mode="tags"
+            showSearch={false}
+            notFoundContent={<></>}
+            suffixIcon={null}
+        />
+    </Form.Item>
+</Col>
+
 
                 <Col xs={22} sm={22} md={12} lg={12}>
                     <Form.Item label="Year of Company Incorporation" required name="yearOfIncorporation" rules={[{ required: true,  }]}>
@@ -326,10 +342,21 @@ const KYCForm = ({ setCurrentStep }: {setCurrentStep: Dispatch<SetStateAction<nu
                 </Col>
 
                 <Col xs={22} sm={22} md={12} lg={12}>
-                    <Form.Item label="Escalation/Emergency Contact Numbers" name="emergencyContactNumber" rules={[{ required: true, message: "This field is required." }, {min:10,max:11,message: 'Invalid Number'}]}>
-                        <Select mode="tags" showSearch={false} notFoundContent={<></>} />
-                    </Form.Item>
-                </Col>
+    <Form.Item
+        label="Escalation/Emergency Contact Numbers"
+        name="emergencyContactNumber"
+        rules={[
+            { required: true, message: "This field is required." },
+            {
+                pattern: /^\d{10,11}$/,
+                message: "Invalid Number.",
+            },
+        ]}
+    >
+        <Select mode="tags" showSearch={false} notFoundContent={<></>} />
+    </Form.Item>
+</Col>
+
 
                 <Col xs={22} sm={22} md={12} lg={12}>
                     <Form.Item label="Escalation/Emergency Email IDs" name="emergencyContactEmail" rules={[{ required: true,  }]}>
@@ -702,7 +729,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
     },[])
     return (
       <Form layout="vertical" initialValues={{"branches":[{}]}} validateMessages={validateMessages} form={form} onFinish={onFinish}>
-        <h3 className={`text-primary2`}>{title}</h3>
+        <h3 className={`text-primary2 my-4`} >{title}</h3>
         <Form.List name="branches">
           {(fields, { add, remove }) => (
             <>
@@ -711,7 +738,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                   
                   <Row gutter={16}>
                     <Col sm={24} md={24} lg={8}>
-                        <Form.Item label="Country" name={[index,"country"]} rules={[{ required: true,  }]}>
+                        <Form.Item label="Country" name={[index,"country"]} rules={[{ required: false,  }]}>
                             <Select
                                 showSearch
                                 allowClear
@@ -727,7 +754,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                         </Form.Item>
                     </Col>
                     <Col sm={24} md={12} lg={8}>
-                      <Form.Item name={[index,"state"]} rules={[{required:true}]} label="Select Branch State/Province">
+                      <Form.Item name={[index,"state"]} rules={[{required:false}]} label="Select Branch State/Province">
                             <StateSelectV4
                                 countryId={`${getCountryId(branches?.[index]?.country)}`}
                                 onChange={(e:any,a:any)=>{setStateId(a.key),form.setFieldValue(["branches",index,"city"],undefined)}}
@@ -740,7 +767,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                                 name={[index,"city"]}             
                                 f={()=>{}}
                                 onChange={()=>{}}
-                                required
+                                
                                 label='Select City'
                             />
                     </Col>               
@@ -749,7 +776,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                         {...field}
                         name={[field.name, 'address']}
                         label="Branch Address"
-                        rules={[{required:true}]}
+                        rules={[{required:false}]}
                       >
                         <Input.TextArea placeholder="Enter Address" />
                       </FormItem>
@@ -759,7 +786,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                         {...field}
                         name={[field.name, 'contactPersonName']}
                         label="Name [Point of Contact/EXIM/Logistics Team]"
-                        rules={[{required:true}]}
+                        rules={[{required:false}]}
                       >
                         <Select showSearch={false} notFoundContent={<></>} placeholder="Enter Name" mode="tags"/>
                       </FormItem>
@@ -769,7 +796,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                         {...field}
                         name={[field.name, 'contactPersonEmail']}
                         rules={[
-                            {required:true}
+                            {required:false}
                         ]}
                         label="Email ID [Point of Contact/EXIM/Logistics Team]"
                       >
@@ -782,7 +809,7 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
                         name={[field.name, 'contactPersonPhone']}
                         label="Mobile No [Point of Contact/EXIM/Logistics Team]"
                         rules={[
-                            {required:true}
+                            {required:false}
                         ]}
                       >
                         <Select showSearch={false} notFoundContent={<></>} mode="tags" placeholder="Enter Mobile No" />
@@ -798,8 +825,8 @@ export  const BranchDetailsForm = ({ setCurrentStep,title ,currentStep}: {curren
             </>
           )}
         </Form.List>
-        <Form.Item className='mx-5 px-2'>
-            <Button onClick={()=>form.submit()} block type="primary" shape="round">Submit</Button>
+        <Form.Item className='mx-5 my-4 px-2 '  style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button onClick={()=>form.submit()} block type="primary" shape="round" style={{ width: '400px' }}>Submit </Button>
         </Form.Item>
       </Form>
     );

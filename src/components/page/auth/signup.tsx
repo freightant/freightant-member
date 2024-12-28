@@ -14,6 +14,11 @@ import { SignUPType, signupotp } from '@/types/defaults';
 import instance from '@/network/instance';
 import { signIn } from 'next-auth/react';
 
+
+
+
+
+
 const {useForm} = Form
 
 
@@ -285,13 +290,22 @@ const SignUpCongratsUI =({f}:{f:any}) =>{
     },[])
     return(
         <div className='my-5'>
-            <motion.div
+            {/* <motion.div
                 variants={variants}
                 animate="big" // Start in the "big" state
                 initial="small" 
                 className="freightant-logo d-flex justify-content-center my-2 mb-3">
-                <img src={assetsRootPath + "image/auth/tick.png"} alt="otp Sent" />
-            </motion.div>
+                <img src={assetsRootPath + "image/auth/success_img.png"} alt="otp Sent" />
+            </motion.div> */}
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+  <img 
+    src={assetsRootPath + "image/auth/success_img.png"} 
+    alt="otp Sent" 
+    style={{ height: '200px', width: '200px' }} 
+  />
+</div>
+        
+
             <div className="freightant-logo d-flex flex-column justify-content-center align-items-center my-2 mb-3">
                 <Title className='text-primary2 text-center' level={3}>Congratulations</Title>
                 <p className="text-mute text-center">Your email id is verified successfully . Continue to the application.</p>

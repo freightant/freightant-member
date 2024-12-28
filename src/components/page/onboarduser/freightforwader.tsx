@@ -190,7 +190,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
                     <CitySelect label="City" name="city" onChange={form} f={form} stateId={stateId} />
                 </Col>
                 <Col xs={22} sm={22} md={12} lg={12}>
-                    <Form.Item label="pincode" name="pincode" rules={[{ required: true }]}>
+                    <Form.Item label="Pincode" name="pincode" rules={[{ required: true }]}>
                         <Input type="number" />
                     </Form.Item>
                 </Col>
@@ -362,7 +362,7 @@ const Licenses = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<
     }, [data])
     return (
         <div>
-            <h2 className="text-primary2">Upload licenses/Certifications</h2>
+            <h2 className="text-primary2">Upload Licenses/Certifications</h2>
             <Form layout="vertical"
                 form={form}
                 onFinish={onFinish}
@@ -454,7 +454,7 @@ const KYCUploadFormGlobal = ({ f }: { f: FormInstance<any> }) => {
                     <CustomFormUpload required style f={f} name={"registrationCertificate"} label={"Company Registration certificate"} />
                 </Col>
                 <Col xs={24} sm={24} md={12} lg={12}>
-                    <CustomFormUpload required style f={f} name={"taxRegistrationCopy"} label={"Tax registration Copy"} />
+                    <CustomFormUpload required style f={f} name={"taxRegistrationCopy"} label={"Tax Registration Copy"} />
                 </Col>
             </Row>
             <Row gutter={16}>
