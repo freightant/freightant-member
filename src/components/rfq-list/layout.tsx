@@ -1,7 +1,7 @@
 "use client"
 import { assetsRootPath } from '@/components/utils'
 import { getSessionCache } from '@/network/endpoints'
-import { EnvironmentOutlined,FileDoneOutlined,FileAddOutlined,RiseOutlined,FileSearchOutlined,CalendarOutlined, CompassOutlined, LogoutOutlined, OrderedListOutlined, ProductOutlined, SearchOutlined, StockOutlined, UnorderedListOutlined } from '@ant-design/icons'
+import { CalendarOutlined, CompassOutlined, LogoutOutlined, OrderedListOutlined, ProductOutlined, SearchOutlined, StockOutlined, UnorderedListOutlined } from '@ant-design/icons'
 import { Col, Dropdown, Input, Layout, Menu, Space } from 'antd'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
@@ -68,38 +68,33 @@ export const DashboardUI: React.FC<{ sideUI?: React.ReactNode, children: React.R
 const menuItems = [
     {
         key: '1',
-        label:  <Link href={"/dashboard"}>Dashboard</Link>,
-        icon: <ProductOutlined /> ,
+        label: 'Dashboard',
+        icon: <ProductOutlined />,
     },
     {
         key: '2',
         label: 'Spot Market',
-        icon: <RiseOutlined />,
+        icon: <StockOutlined />,
     },
     {
         key: '3',
-        label: <Link href={"/rfq/search"}>Search RFQ</Link>,
-        icon: <FileSearchOutlined />,
+        label: <Link href={"/rfq/post"}>Create RFQ</Link>,
+        icon: <CalendarOutlined />,
     },
     {
         key: '4',
-        label: <Link href={"/rfq/post"}>Create RFQ</Link>,
-        icon: <FileAddOutlined />,
-    },
-    {
-        key: '5',
         label:  <Link href={"/rfq-list"}>RFQ List</Link>,
         icon: <UnorderedListOutlined />,
     },
     {
-        key: '6',
-        label:  <Link href={"/order-list"}>Order List</Link>,
-        icon: <FileDoneOutlined />,
+        key: '5',
+        label: 'Order List',
+        icon: <OrderedListOutlined />,
     },
     {
-        key: '7',
+        key: '6',
         label: 'Shipment Status',
-        icon: <EnvironmentOutlined />,
+        icon: <CompassOutlined />,
     }
 ]
 
@@ -120,7 +115,6 @@ const contentStyle: React.CSSProperties = {
     lineHeight: '120px',
     color: '#fff',
     backgroundColor: '#F3F6FF',
-    
 };
 
 const siderStyle: React.CSSProperties = {

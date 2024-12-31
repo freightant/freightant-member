@@ -24,6 +24,22 @@ export const getSessionCache= async()=>{
     return user
 }
 
+// export const getSessionCache = async () => {
+//   if (user?.user?.name) {
+//       return user;
+//   }
+//   let tmp = await getSession();
+//   user = { user: tmp?.user, expires: tmp?.expires };
+  
+//   // Save user data to localStorage
+//   if (user?.user) {
+//       localStorage.setItem("userToken", JSON.stringify(user));
+//   }
+  
+//   return user;
+// };
+
+
 export const signUPEndPoint = async({
   fullName,
   businessEmail,
@@ -45,6 +61,19 @@ export const signUPEndPoint2 = async(v:signupType2) =>{
     .catch((error:any) =>({message:error.response.data.message,code:false}) 
     )
 }
+// export const signUPEndPoint2 = async (v: signupType2) => {
+//   const localStorageUser = localStorage.getItem("userToken");
+//   const token = localStorageUser ? JSON.parse(localStorageUser)?.user?.email : null;
+
+//   return instance.put(
+//       "user/signup/p2",
+//       v,
+//       { headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" } }
+//   )
+//   .then(r => ({ data: r.data, code: true, message: "" }))
+//   .catch((error: any) => ({ message: error.response.data.message, code: false }));
+// };
+
 export const signUPEndPoint3 = async(v:any) =>{
     let user = await getSessionCache()  
     
@@ -70,6 +99,22 @@ export const loginEndPoint = async({
     .catch((error:any) =>({message:error.response.data.message,code:false,data:null}) 
     )
 }
+
+// export const loginEndPoint = async ({
+//   businessEmail,
+//   password,
+// }: loginType) => {
+//     return instance.post("/auth/login", { email: businessEmail, password })
+//         .then(r => {
+//             // Store token in localStorage
+//             if (r.data?.token) {
+//                 localStorage.setItem("userToken", r.data.token);
+//             }
+//             return { data: r.data, code: true, message: "" };
+//         })
+//         .catch((error: any) => ({ message: error.response.data.message, code: false, data: null }));
+// };
+
 
 export const registerOtp = async(businessEmail:string,name:string) =>{
     return instance.post("otp/registerotp",{businessEmail,name})
@@ -282,5 +327,62 @@ export async function getUserOrg(){
     return { data: response.data[0].currencies, code: true, message: "" };
   } catch (error: any) {
     return { message: error.response?.data?.message || error?.message, code: false, data: null };
+  }
+}
+
+// export async function showOrder(data:any){
+//   try {
+
+//     let user = await getSessionCache()  
+//     const response = await instance.post(`order/show-order`,data,{headers:{Authorization: "Bearer " + user?.user?.email}})
+//     return { data: response.data, code: true, message: "" };
+//   } catch (error: any) {
+//     return { message: error.response?.data?.error || error?.error, code: false, data: null };
+//   }
+
+// }
+
+export async function showOrder(data: any) {
+  try {
+    // Retrieve user session
+    const user = await getSessionCache();
+
+    if (!user || !user.user || !user.user.email) {
+      throw new Error("User session is invalid or expired. Please log in again.");
+    }
+
+    // Make API call
+    const response = await instance.post(
+      `order/show-order`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${user.user.email}`, // Ensure this is indeed the intended token
+        },
+      }
+    );
+
+    // Return success response
+    return {
+      data: response.data,
+      code: true,
+      message: "",
+    };
+  } catch (error: any) {
+    // Improved error handling
+    const errorMessage =
+      error.response?.data?.error ||
+      error.message ||
+      "An unexpected error occurred while fetching orders.";
+
+    // Log for debugging purposes
+    console.error("API Error:", error);
+
+    // Return standardized error response
+    return {
+      message: errorMessage,
+      code: false,
+      data: null,
+    };
   }
 }

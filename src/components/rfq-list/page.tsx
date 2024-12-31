@@ -33,8 +33,7 @@ type CargoData = {
   hsCode: string[];
 };
 
-
-const DashboardHome = () => {
+const RFQList = () => {
   const [filters, setFilters] = useState<FilterState>({
     mode: "Sea-FCL",
     tradeType: "Export",
@@ -318,6 +317,7 @@ const DashboardHome = () => {
       >
         RFQ Status
       </th>
+      
       {/* Added dynamic column header based on filters.mode */}
       <th
         style={{
@@ -337,6 +337,17 @@ const DashboardHome = () => {
           : filters.mode === "Cross Border Trucking"
           ? "Truck Type"
           : ""}
+      </th>
+      <th
+        style={{
+          color: "#0A0049",
+          padding: "10px",
+          textAlign: "center",
+          fontSize: "14px",
+          fontWeight: "600",
+        }}
+      >
+       Quotes Received
       </th>
       <th
         style={{
@@ -435,6 +446,9 @@ const DashboardHome = () => {
 </td>
 
         <td style={{  color: "black", textAlign: "center" }}>
+          {shipment.quotationCount}
+        </td>
+        <td style={{  color: "black", textAlign: "center" }}>
           {shipment.createdAt}
         </td>
         <td style={{  color: "black", textAlign: "center" }}>
@@ -455,9 +469,9 @@ const DashboardHome = () => {
       position: 'fixed',
       top: '0',
       right: '0',
-      width: '400px',
+      width: '600px',
       height: '100vh',
-      backgroundColor: '#f9f9f9',
+      backgroundColor: '#fff',
       boxShadow: '-4px 0 12px rgba(0, 0, 0, 0.15)',
       zIndex: 1000,
       padding: '20px',
@@ -466,55 +480,86 @@ const DashboardHome = () => {
       overflowY: 'auto',
     }}
   >
+    {/* Close Button */}
     <button
       onClick={() => setSelectedRow(null)}
       style={{
         position: 'absolute',
-        top: '16px',
+        top: '-32px',
         right: '16px',
         backgroundColor: 'transparent',
         border: 'none',
-        fontSize: '24px',
-        color: '#6e44ff',
+        fontSize: '20px',
+        color: '#000000',
         cursor: 'pointer',
       }}
     >
-      &#10005; {/* Close Icon */}
+      &#10005;
     </button>
-    <h2 style={{ color: '#333', marginBottom: '16px', fontSize: '20px' }}>Shipment Details</h2>
-    {/* Display selected shipment data */}
+
+    {/* Title */}
+    <h2 style={{ color: '#0A0049', marginBottom: '32px', fontSize: '20px', fontWeight: 600 }}>
+      Shipment Details
+    </h2>
+
+    {/* Content */}
     {shipments
       .filter((shipment) => shipment.rfqNumber === selectedRow)
       .map((shipment) => (
-        <div key={shipment.rfqNumber} style={{ marginBottom: '20px' }}>
+        <div key={shipment.rfqNumber}>
           {[
             { label: 'RFQ Number', value: shipment.rfqNumber },
-            { label: 'Status', value: shipment.status },
             { label: 'Trade Type', value: shipment.tradeType },
             { label: 'Loading Port', value: shipment.loadingPort },
             { label: 'Discharge Port', value: shipment.dischargePort },
-            { label: 'Created At', value: shipment.createdAt },
-            { label: 'Closing Date', value: shipment.closingDate },
+            { label: 'RFQ Status', value: shipment.status },
+            {
+                label:
+                filters.mode === "Sea-FCL"
+                ? shipment.container?.[0]?._id || "-" // Replace with equipment if available
+                : filters.mode === "Sea-LCL"
+                ? shipment.container?.[0]?.cargo?.category?.[0] || "-" // Replace with mtCbm if available
+                : filters.mode === "Air"
+                ? shipment.container?.[0]?.cargo?.hsCode?.[0] || "-" // Replace with chargeableWeight if available
+                : filters.mode === "Cross Border Trucking"
+                ? "Truck type unavailable" // Replace with shipment.truckType if available
+                : "",
+              },
+              
+          
+            { label: 'Quotes Received', value: shipment.quotationCount },
+            { label: 'RFQ Created On', value: shipment.createdAt },
+            { label: 'RFQ Closing Date', value: shipment.closingDate },
           ].map((item, index) => (
             <div
               key={index}
               style={{
+                height: '40px',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                backgroundColor: '#fff',
-                padding: '10px 15px',
-                borderRadius: '8px',
-                marginBottom: '10px',
+                backgroundColor: '#f9f9f9',
+                padding: '0px 18px',
+                marginBottom: '14px',
+                borderRadius: '10px',
                 boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                transition: 'background-color 0.2s',
+                transition: 'background-color 0.2s, transform 0.2s',
                 cursor: 'pointer',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f1f1f1')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#F6F4FF';
+                e.currentTarget.style.color = '#ffffff';
+               
+                e.currentTarget.style.transform = 'scale(1.02)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f9f9f9';
+                e.currentTarget.style.color = '#000'; // Reset to default text color
+                e.currentTarget.style.transform = 'scale(1)';
+              }}
             >
-              <span style={{ fontWeight: 600, color: '#555' }}>{item.label}</span>
-              <span style={{ color: '#333' }}>{item.value}</span>
+              <span style={{ fontWeight: 500, color: '#000' }}>{item.label}</span>
+              <span style={{ color: '#000' }}>{item.value}</span>
             </div>
           ))}
         </div>
@@ -526,4 +571,4 @@ const DashboardHome = () => {
   );
 };
 
-export default DashboardHome;
+export default RFQList;

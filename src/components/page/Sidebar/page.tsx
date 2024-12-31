@@ -12,6 +12,9 @@ import {
   FaUserCog,
   FaDollarSign,
   FaSignOutAlt,
+  FaPencilAlt,
+  FaPlusSquare ,
+  FaSearch,
 } from "react-icons/fa";
 
 type MenuItem = {
@@ -23,7 +26,8 @@ type MenuItem = {
 const menuItems: MenuItem[] = [
   { icon: <FaTh />, label: "Dashboard", href: "/" },
   { icon: <FaChartLine />, label: "Spot Market", href: "/spot-market" },
-  { icon: <FaFileAlt />, label: "Create RFQ", href: "/create-rfq" },
+  { icon: <FaSearch />, label: "Search RFQ", href: "/search" },
+  { icon: <FaPlusSquare />, label: "Create RFQ", href: "/create-rfq" },
   { icon: <FaList />, label: "RFQ List", href: "/rfq-list" },
   { icon: <FaList />, label: "Order List", href: "/order-list" },
   { icon: <FaTruck />, label: "Shipment Status", href: "/shipment-status" },
