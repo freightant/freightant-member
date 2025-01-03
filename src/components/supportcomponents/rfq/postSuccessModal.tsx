@@ -16,7 +16,7 @@ export function PostSuccessModal({id,message}:{id:string,message?:string}) {
     <div className="d-flex justify-content-center align-items-center">
         <lottie-player 
             src="https://lottie.host/c2b356b1-dd03-4375-bd7b-96fe354da626/J2v6sjJdcE.json" 
-            background="#FFFFFF" 
+            background="" 
             speed="1" 
             style={{ width: "300px", height: "300px" }} 
             loop 

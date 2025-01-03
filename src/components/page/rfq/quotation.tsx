@@ -1068,6 +1068,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                     form.setFieldValue("transitTime", transitTime > 0 ? transitTime - 1 : 0)
                 }
             >
+              
                 <MinusOutlined
                     style={{
                         color: "#FFFFFF",
@@ -1100,6 +1101,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         fontWeight: "bold",
                     }}
                 />
+                  
             </div>
         }
     />
