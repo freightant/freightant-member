@@ -1044,11 +1044,11 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     <h5 className="text-primary2">Transshipment {rfq?.modeOfShipment === strings.air ? "Airports" : "Ports"}</h5>
     <Form.Item
     name={"transitTime"}
-    label={`Transit time`}
+    label={`Transit Time`}
     layout="horizontal"
 >
     <Input
-        placeholder={noOfTransShipmentPorts}
+        placeholder={noOfTransShipmentPorts+' Day'}
         className="text-center"
         addonBefore={
             <div
