@@ -1265,7 +1265,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
             </Col>
             <Col span={24} >
                 <Card title="Terms & Conditions" styles={{ header: { borderBottom: 0 } }} style={{ padding: '12px' }}>
-                    <Form.Item rules={[{required:true}]} name={"termsCondition"}>
+                    <Form.Item rules={[{required:true}]} name={"Terms & Conditions"}>
                         <Input.TextArea placeholder='Enter Here' className='rounded-2'/>
                     </Form.Item>
                 </Card>

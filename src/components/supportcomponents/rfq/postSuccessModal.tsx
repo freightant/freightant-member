@@ -11,22 +11,46 @@ export function PostSuccessModal({id,message}:{id:string,message?:string}) {
     const [loading,setLoading] = useState(false)
   const router = useRouter()
   return (
-    <div className='my-5'>
-    {/* <motion.div
-        variants={variants2}
-        animate="big" // Start in the "big" state
-        initial="small" 
-        className="freightant-logo d-flex justify-content-center">
-        <img src={assetsRootPath + "image/auth/success_img.png"} style={{width:"230px",height:"200px"}} alt="otp Sent" />
-    </motion.div> */}
-    <img src={assetsRootPath + "image/auth/success_img.png"} style={{width:"230px",height:"200px"}} alt="otp Sent" />
+    <div className="my-5">
+    {/* Include the Lottie animation */}
+    <div className="d-flex justify-content-center align-items-center">
+        <lottie-player 
+            src="https://lottie.host/c2b356b1-dd03-4375-bd7b-96fe354da626/J2v6sjJdcE.json" 
+            background="##FFFFFF" 
+            speed="1" 
+            style={{ width: "300px", height: "300px" }} 
+            loop 
+            controls 
+            autoplay 
+            direction="1" 
+            mode="normal">
+        </lottie-player>
+    </div>
+    
     <div className="freightant-logo d-flex flex-column justify-content-center align-items-center my-2 mb-3">
-        <Title className='text-primary2 text-center' level={3}>Congratulations</Title>
-        <p className="text-mute text-center">{message?message:`RFQ ${id} Posted Succefully.`}</p>
-        <Button disabled={loading} onClick={()=>location.reload()} type="primary" block shape='round' className='col-12'>Add New</Button>
-        <Button  onClick={()=>router.push("/")} block shape='round' className='col-12 my-2'>Go Home</Button>
+        <Title className="text-primary2 text-center" level={3}>Congratulations</Title>
+        <p className="text-mute text-center">
+            {message ? message : `RFQ ${id} Posted Successfully.`}
+        </p>
+        <Button 
+            disabled={loading} 
+            onClick={() => location.reload()} 
+            type="primary" 
+            block 
+            shape="round" 
+            className="col-12">
+            Add New
+        </Button>
+        <Button 
+            onClick={() => router.push("/")} 
+            block 
+            shape="round" 
+            className="col-12 my-2">
+            Go Home
+        </Button>
     </div>
 </div>
+
 )
 }
 
