@@ -739,9 +739,23 @@ const PostRFQUI = () => {
                             extra={
                               iIndex === 0 ?
                                 (<Space size={"small"} className='pt-2'>
-                                  <Form.Item className='border rounded-pill px-2' label="Cargo Readiness Date" required={false} name={[name, "readyDate"]} rules={[{ required: true }]} layout="horizontal">
-                                    <DatePicker onChange={(e, r) => form.setFieldValue("readyDate", dayjs(r.toString()))} size="small" styles={{}} style={{ border: 0, fontSize: "10px", paddingRight: "2px", paddingLeft: "2px" }} className='rounded-pill' />
-                                  </Form.Item>
+                                <Form.Item 
+  className='border rounded-pill px-2' 
+  label="Cargo Readiness Date" 
+  required={false} 
+  name={[name, "readyDate"]} 
+  rules={[{ required: true }]} 
+  layout="horizontal"
+>
+  <DatePicker 
+    onChange={(e, r) => form.setFieldValue("readyDate", dayjs(r.toString()))} 
+    size="small" 
+    style={{ border: 0, fontSize: "10px", paddingRight: "2px", paddingLeft: "2px" }} 
+    className='rounded-pill' 
+    disabledDate={(current) => current && current < dayjs().startOf('day')} // Disable past dates
+  />
+</Form.Item>
+
                                 </Space>) :
                                 <Button onClick={() => remove(iIndex)} shape="round">Delete <CloseOutlined className="text-danger fw-bold" /> </Button>
                             }
