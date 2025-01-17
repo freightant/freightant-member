@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import UnAuthHOC from "@/components/supportcomponents/auth/UnAuthHOC";
 import { useRouter } from "next/navigation";
+import { updateUserKYCStatus } from '@/network/endpoints'; 
 
 const SignInUI = () => {
   const router = useRouter();
@@ -48,6 +49,83 @@ const SignInUI = () => {
         setformLoading(false);
       });
   };
+  // const handleFinish = (user: { email: string; password: string }) => {
+  //   setformLoading(true);
+  //   signIn("credentials", {
+  //     email: user.email,
+  //     password: user.password,
+  //     redirect: false,
+  //   })
+  //     .then((r) => {
+  //       if (r?.ok && r?.status !== 401) {
+  //         // Mocked flag value for demonstration purposes
+  //         const flag = "verified"; // Replace this with the actual flag from your API or auth response
+  
+  //         if (flag === "in_review") {
+  //           // Show a link to the review page
+  //           router.replace("/auth/review");
+  //         }  else if (flag === "verified") {
+  //           router.replace("/dashboard"); // Redirect to normal flow (dashboard or home)
+  //         } else {
+  //           message.error("Invalid user state.");
+  //         }
+  //       } else {
+  //         message.error(r?.error);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log("err ", err.message);
+  //     })
+  //     .finally(() => {
+  //       setformLoading(false);
+  //     });
+  // };
+  
+  // const handleFinish = async (user: { email: string; password: string }) => {
+  //   setformLoading(true);
+  
+  //   try {
+  //     // Sign in the user
+  //     const response = await signIn("credentials", {
+  //       email: user.email,
+  //       password: user.password,
+  //       redirect: false,
+  //     });
+  
+  //     if (response?.ok && response?.status !== 401) {
+  //       // Fetch the user's KYC status after successful login
+  //       const userId = "USER_ID_FROM_AUTH_RESPONSE"; // Replace with actual user ID from the auth response
+  //       const kycStatusResponse = await updateUserKYCStatus(userId, "in_review");
+  
+  //       if (kycStatusResponse.code) {
+  //         const profileStatus = kycStatusResponse.data;
+  
+  //         if (profileStatus === "in_review") {
+  //           // Redirect to the review page if KYC is under review
+  //           router.replace("/auth/review");
+  //         } else if (profileStatus === "verified") {
+  //           // Redirect to the dashboard if KYC is verified
+  //           router.replace("/");
+  //         } else {
+  //           // Handle any other unexpected status
+  //           message.error("Invalid user state.");
+  //         }
+  //       } else {
+  //         // Handle errors while fetching the KYC status
+  //         message.error(kycStatusResponse.message || "Failed to fetch KYC status.");
+  //       }
+  //     } else {
+  //       // Handle login errors
+  //       message.error(response?.error || "Login failed.");
+  //     }
+  //   } catch (err: any) {
+  //     console.error("Error:", err.message);
+  //     message.error(err.message || "An unexpected error occurred.");
+  //   } finally {
+  //     setformLoading(false);
+  //   }
+  // };
+  
 
   // Request OTP (Forgot Password - Step 1)
   const requestOtp = async (values: { email: string }) => {
@@ -100,7 +178,7 @@ const SignInUI = () => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.2 }}
     >
       <div className="freightant-landing">
         <div className="freightant-logo d-flex justify-content-center my-2 mb-5">
@@ -114,7 +192,7 @@ const SignInUI = () => {
         <div className="freightant-login">
           <h3 className="text-center">Login</h3>
 
-          <Form layout="vertical" onFinish={handleFinish}>
+          <Form layout="vertical" onFinish={handleFinish} >
             <Form.Item
               label="Business email"
               name={"email"}
@@ -122,13 +200,14 @@ const SignInUI = () => {
                 { type: "email", message: "Please enter a valid email address" },
                 { required: true },
               ]}
+              
             >
-              <Input placeholder="Enter your business email" />
+              <Input placeholder="Enter your business email" style={{ padding: "10px" }}/>
             </Form.Item>
             <Form.Item label="Password" name={"password"}>
-              <Input.Password placeholder="Enter your password" />
+              <Input.Password placeholder="Enter your password" style={{ padding: "10px" }}/>
             </Form.Item>
-            <div className="float-end mb-2">
+            <div className="float-end mb-2 mt-1">
               <Button type="link" onClick={showModal}>
                 Forgot Password?
               </Button>
@@ -139,11 +218,12 @@ const SignInUI = () => {
               block
               shape="round"
               loading={formLoading}
+              style={{ padding: "16px" }}
             >
               Login
             </Button>
           </Form>
-          <div className="freightant-signup mt-1">
+          <div className="freightant-signup mt-3">
             <p>
               Don&apos;t have an account?{" "}
               <Link href="/auth/signup" className="signup-link">

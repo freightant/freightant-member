@@ -70,7 +70,10 @@ const OrderList = () => {
           portPair: `${item.portOfLoading || "N/A"} - ${
             item.portOfDischarge || "N/A"
           }`,
-          equipment: item.container?.length || "N/A",
+          equipment: item.container?.length
+  ? item.container.map((cont: { name: string; quantity: number }) => `${cont.name}*${cont.quantity}`).join(", ")
+  : "N/A",
+
           forwarder: item.quotationerOrganization || "N/A",
           quotationNumber: item.quotationNumber || "N/A",
           forwarderContact:
@@ -246,106 +249,108 @@ const OrderList = () => {
     borderCollapse: "collapse",
   }}
 >
-  <thead>
-    <tr>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        RFQ Number
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Order Number
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Order Date
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Port Pair
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Equipment
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Forwarder
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Quotation No.
-      </th>
-      <th
-        style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
-          width: "12%", // Adjust width as needed
-        }}
-      >
-        Forwarder Contact
-      </th>
-    </tr>
-  </thead>
+<thead>
+  <tr>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Quotation No.
+    </th>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Order Number
+    </th>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Order Date
+    </th>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Port Pair
+    </th>
+   
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Equipment
+    </th>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      FF Quotation No.
+    </th>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Forwarder
+    </th>
+    <th
+      style={{
+        color: "#0A0049",
+        padding: "10px",
+        textAlign: "center",
+        fontSize: "14px",
+        fontWeight: "600",
+        width: "11%", // Adjust width as needed
+      }}
+    >
+      Forwarder Contact
+    </th>
+  </tr>
+</thead>
+
         <tbody>
           {orders.map((order) => (
           <tr
@@ -378,10 +383,10 @@ const OrderList = () => {
                 {order.equipment}
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.forwarder}
+                {order.quotationNumber}
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.quotationNumber}
+                {order.forwarder}
               </td>
               <td style={{ padding: "10px", textAlign: "center" }}>
                 {order.forwarderContact}

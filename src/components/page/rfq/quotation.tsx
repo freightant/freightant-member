@@ -367,7 +367,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         .catch(r=>{})        
       }
     }
-    setFreightData([{}])
+    setFreightData([{key:generateRandomNumber(4),  costHead :null,unit:null,quantity:"",currency:"USD",rate:"",amount:0}])
     if(rfq?.tradeType===strings.export){
       setPolChargesData([{}])
     }
@@ -437,7 +437,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   
   return (
     <Form form={form} layout="vertical" onFinish={formFinish}>
-        <Row gutter={[16,16]} style={{ width: '110%', marginLeft: '-10%', }}>
+        <Row gutter={[16,16]} style={{ width: '120%', marginLeft: '-10%', }}>
           <Col span={24}>
           <Space  >
             <Form.Item className='mb-1' name={"rfq"}>
@@ -737,7 +737,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                       width:60,
                                       className: "text-center",
                                       render:(_:any,record:any,index:number)=>(
-                                          <Input className='p-0 m-0 text-center' variant="borderless" value={polChargesData[index]?.quantity} onChange={(e:any)=>handleInputChange(
+                                          <Input className='p-0 m-0 text-center border border-solid border-gray-600' style={{ width: '30px' }}  variant="borderless" value={polChargesData[index]?.quantity} onChange={(e:any)=>handleInputChange(
                                             index,
                                             "quantity",
                                             e.target.value,
@@ -1043,68 +1043,67 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                         <div className="d-flex justify-content-between p-4">
     <h5 className="text-primary2">Transshipment {rfq?.modeOfShipment === strings.air ? "Airports" : "Ports"}</h5>
     <Form.Item
-    name={"transitTime"}
-    label={`Transit Time`}
-    layout="horizontal"
+  name={"transitTime"}
+  label={`Transit Time`}
+  layout="horizontal"
 >
-    <Input
-        placeholder={noOfTransShipmentPorts+' Day'}
-        className="text-center"
-        addonBefore={
-            <div
-                style={{
-                    backgroundColor: "#6A37F4",
-                    borderRadius: "4px",
-                    width: "24px",
-                    height: "24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    fontSize: "16px",
-                        fontWeight: "bold",
-                }}
-                onClick={(e) =>
-                    form.setFieldValue("transitTime", transitTime > 0 ? transitTime - 1 : 0)
-                }
-            >
-              
-                <MinusOutlined
-                    style={{
-                        color: "#FFFFFF",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                    }}
-                />
-            </div>
+  <Input
+    placeholder={noOfTransShipmentPorts + " Day"}
+    className="text-center"
+    value={transitTime ? `${transitTime} ${transitTime > 1 ? "Days" : "Day"}` : ""}
+    addonBefore={
+      <div
+        style={{
+          backgroundColor: "#6A37F4",
+          borderRadius: "4px",
+          width: "24px",
+          height: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          fontSize: "16px",
+          fontWeight: "bold",
+        }}
+        onClick={() =>
+          form.setFieldValue("transitTime", transitTime > 0 ? transitTime - 1 : 0)
         }
-        addonAfter={
-            <div
-                style={{
-                    backgroundColor: "#6A37F4",
-                    borderRadius: "4px",
-                    width: "24px",
-                    height: "24px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                }}
-                onClick={(e) =>
-                    form.setFieldValue("transitTime", transitTime ? transitTime + 1 : 1)
-                }
-            >
-                <PlusOutlined
-                    style={{
-                        color: "#FFFFFF",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                    }}
-                />
-                  
-            </div>
+      >
+        <MinusOutlined
+          style={{
+            color: "#FFFFFF",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        />
+      </div>
+    }
+    addonAfter={
+      <div
+        style={{
+          backgroundColor: "#6A37F4",
+          borderRadius: "4px",
+          width: "24px",
+          height: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+        }}
+        onClick={() =>
+          form.setFieldValue("transitTime", transitTime ? transitTime + 1 : 1)
         }
-    />
+      >
+        <PlusOutlined
+          style={{
+            color: "#FFFFFF",
+            fontSize: "16px",
+            fontWeight: "bold",
+          }}
+        />
+      </div>
+    }
+  />
 </Form.Item>
 
 </div>

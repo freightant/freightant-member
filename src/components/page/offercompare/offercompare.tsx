@@ -124,7 +124,7 @@ const OfferCompare = ({id}:{id?:any}) => {
                     <Row gutter={[16, 16]}>
                         <Col span={12}>
                               <div className="d-flex flex-column gap-2">
-                                  <span className='fw-semibold fs-5'>Port of Landing</span>
+                                  <span className='fw-semibold fs-5'>Port of Loading</span>
                                   {rfq?.loadingPortObj?
                                   <PortUI i={rfq?.loadingPortObj?rfq?.loadingPortObj:""} />:
                                   <div className="p-1 border rounded-2">{`${rfq?.placeOfLoading?.address}, ${rfq?.placeOfLoading?.city}, ${rfq?.placeOfLoading?.state}, ${rfq?.placeOfLoading?.country}`}</div>
@@ -133,7 +133,7 @@ const OfferCompare = ({id}:{id?:any}) => {
                         </Col>
                         <Col span={12}>
                             <div className="d-flex flex-column gap-2">
-                                <span className='fw-semibold fs-5'>Port of UnLanding</span>
+                                <span className='fw-semibold fs-5'>Port of Discharge</span>
                                 {rfq?.loadingPortObj?
                                     <PortUI i={rfq?.dischargePortObj?rfq?.dischargePortObj:""} />:
                                   <div className="p-1 border rounded-2">{`${rfq?.placeOfUnLoading?.address}, ${rfq?.placeOfUnLoading?.city}, ${rfq?.placeOfUnLoading?.state}, ${rfq?.placeOfLoading?.country}`}</div>
@@ -188,6 +188,18 @@ const OfferCompare = ({id}:{id?:any}) => {
                                 </Space>
                             </Form.Item>
                         </Col>
+                        {/* Submit Button */}
+<Col span={24} className="text-center">
+  <Button
+    type="primary"
+    size="large"
+    onClick={handleFormSubmit}
+  >
+    Apply Filters
+  </Button>
+</Col>
+
+
                     </Row>
                     </Card>
             </Form>

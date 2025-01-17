@@ -259,7 +259,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
 
                 <Col span={24} className='px-5'>
                     <Form.Item className='col-10 col-md-8 mx-auto'>
-                        <Button shape="round" size="large" type="primary" block htmlType="submit">
+                        <Button shape="round" size="large" type="primary" block htmlType="submit" >
                             Next
                         </Button>
                     </Form.Item>

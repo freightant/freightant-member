@@ -1,6 +1,11 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
+import { Button, message } from 'antd';
+import { useRouter } from 'next/navigation';
+import { showRfq } from "@/network/endpoints";
+
+import axios from 'axios';
 
 type FilterState = {
   mode: string;
@@ -9,29 +14,56 @@ type FilterState = {
 };
 
 type ShipmentData = {
+  id:string;
   rfqNumber: string;
   status: string;
   tradeType: string;
+  modeOfShipment: string;
   loadingPort: string;
   dischargePort: string;
+  placeOfLoading: {
+    country: string;
+  };
+  placeOfUnLoading: {
+    country: string;
+  };
+  container: ContainerData[];
   createdAt: string;
   closingDate: string;
   quotationCount: number;
-  modeOfShipment: string;
-  placeOfLoading: Record<string, any>;
-  placeOfUnLoading: Record<string, any>;
-  container: ContainerData[]; // Add this field
+};
+
+type PortData = {
+  id: number;
+  Country: string;
+  Name: string;
+  Location: string;
+  Subdivision: string;
+  emoji: string;
+  countryname: string;
+  statename: string;
+  FullName: string;
+  currency: string;
 };
 
 type ContainerData = {
   cargo: CargoData;
   _id: string;
+  typee: string;
+  name: string;
+  quantity: number;
 };
 
 type CargoData = {
+  typee: string; // Container's cargo type
   category: string[];
+  weight: number;
   hsCode: string[];
 };
+
+
+
+
 
 const RFQList = () => {
   const [filters, setFilters] = useState<FilterState>({
@@ -39,6 +71,20 @@ const RFQList = () => {
     tradeType: "Export",
     status: "Awarded",
   });
+  
+  const router = useRouter();
+
+  
+
+  // Handle the compare button click
+  const handleCompareQuotationClick = (rfqId: string) => {
+    // Check if router is available before using it
+    if (router) {
+      router.push(`/rfq/offercompare?rfq=${rfqId}`);
+    } else {
+      console.error("Router is not available");
+    }
+  };
 
   const [shipments, setShipments] = useState<ShipmentData[]>([]);
   const [selectedRow, setSelectedRow] = useState<string | null>(null); // Track selected row
@@ -63,6 +109,7 @@ const RFQList = () => {
     alignItems: "center",
     justifyContent: "center",
   });
+  
 
   const handleSubmit = async () => {
     try {
@@ -71,29 +118,21 @@ const RFQList = () => {
         tradeType: filters.tradeType,
         status: filters.status,
       };
-
-      const response = await fetch(
-        "https://freightant-api.onrender.com/api/rfq-route/show-rfq",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch data");
+  
+      // Call the `showRfq` API function
+      const response = await showRfq(requestBody);
+  
+      if (!response.code) {
+        throw new Error(response.message);
       }
-
-      const data = await response.json();
-      setShipments(data); // Set the fetched data into state
+  
+      // Set the fetched data into state
+      setShipments(response.data);
     } catch (error) {
-      console.error("Error fetching shipments:", error);
+      console.error("Error fetching RFQs:", error);
     }
   };
-
+  
   
 
   return (
@@ -271,7 +310,7 @@ const RFQList = () => {
     marginTop: "0px",
   }}
 >
-  <thead>
+  <thead >
     <tr>
       <th
         style={{
@@ -291,6 +330,7 @@ const RFQList = () => {
           textAlign: "center",
           fontSize: "14px",
           fontWeight: "600",
+          width: "100px"
         }}
       >
         Trade Type
@@ -302,6 +342,7 @@ const RFQList = () => {
           textAlign: "center",
           fontSize: "14px",
           fontWeight: "600",
+          
         }}
       >
         Port Pair
@@ -313,6 +354,7 @@ const RFQList = () => {
           textAlign: "center",
           fontSize: "14px",
           fontWeight: "600",
+          width: "100px"
         }}
       >
         RFQ Status
@@ -340,22 +382,14 @@ const RFQList = () => {
       </th>
       <th
         style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
+          color: "#0A0049",          padding: "10px",          textAlign: "center",          fontSize: "14px",          fontWeight: "600",          width: "150px"
         }}
       >
        Quotes Received
       </th>
       <th
         style={{
-          color: "#0A0049",
-          padding: "10px",
-          textAlign: "center",
-          fontSize: "14px",
-          fontWeight: "600",
+          color: "#0A0049",  padding: "10px",      textAlign: "center",      fontSize: "14px",        fontWeight: "600",          width: "150px"
         }}
       >
         RFQ Created On
@@ -367,6 +401,7 @@ const RFQList = () => {
           textAlign: "center",
           fontSize: "14px",
           fontWeight: "600",
+          width: "150px"
         }}
       >
         RFQ Closing Date
@@ -435,11 +470,12 @@ const RFQList = () => {
         {/* Added dynamic column value based on filters.mode */}
         <td style={{ color: "black", textAlign: "center" }}>
   {filters.mode === "Sea-FCL"
-    ? shipment.container?.[0]?._id || "-" // Replace with equipment if available
+    ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}`
+ // Replace with equipment if available
     : filters.mode === "Sea-LCL"
-    ? shipment.container?.[0]?.cargo?.category?.[0] || "-" // Replace with mtCbm if available
+    ? `${shipment.container?.[0]?.typee || "-"} * ${shipment.container?.[0]?.quantity || 0}`// Replace with mtCbm if available
     : filters.mode === "Air"
-    ? shipment.container?.[0]?.cargo?.hsCode?.[0] || "-" // Replace with chargeableWeight if available
+    ? `${shipment.container?.[0]?.cargo.weight || 0}` // Replace with chargeableWeight if available
     : filters.mode === "Cross Border Trucking"
     ? "Truck type unavailable" // Replace with shipment.truckType if available
     : ""}
@@ -510,21 +546,22 @@ const RFQList = () => {
           {[
             { label: 'RFQ Number', value: shipment.rfqNumber },
             { label: 'Trade Type', value: shipment.tradeType },
-            { label: 'Loading Port', value: shipment.loadingPort },
+            { label: 'Loading Port', value: shipment.loadingPort},
             { label: 'Discharge Port', value: shipment.dischargePort },
             { label: 'RFQ Status', value: shipment.status },
             {
-                label:
+              label: filters.mode, // Set the label to the filter mode
+              value:
                 filters.mode === "Sea-FCL"
-                ? shipment.container?.[0]?._id || "-" // Replace with equipment if available
-                : filters.mode === "Sea-LCL"
-                ? shipment.container?.[0]?.cargo?.category?.[0] || "-" // Replace with mtCbm if available
-                : filters.mode === "Air"
-                ? shipment.container?.[0]?.cargo?.hsCode?.[0] || "-" // Replace with chargeableWeight if available
-                : filters.mode === "Cross Border Trucking"
-                ? "Truck type unavailable" // Replace with shipment.truckType if available
-                : "",
-              },
+                  ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}`
+                  : filters.mode === "Sea-LCL"
+                  ? `${shipment.container?.[0]?.typee || "-"} * ${shipment.container?.[0]?.quantity || 0}` // Replace with mtCbm if available
+                  : filters.mode === "Air"
+                  ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}` // Replace with chargeableWeight if available
+                  : filters.mode === "Cross Border Trucking"
+                  ? "Truck type unavailable" // Replace with shipment.truckType if available
+                  : "",
+            },
               
           
             { label: 'Quotes Received', value: shipment.quotationCount },
@@ -562,7 +599,16 @@ const RFQList = () => {
               <span style={{ color: '#000' }}>{item.value}</span>
             </div>
           ))}
+           <Button
+  type="primary"
+  size="large"
+  onClick={() => handleCompareQuotationClick(shipment.id)}
+>
+  Compare Quotation
+</Button>
+
         </div>
+        
       ))}
   </div>
 )}

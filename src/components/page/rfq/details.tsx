@@ -4,8 +4,8 @@ import { PortUI } from '@/components/page/rfq/search';
 import { strings } from '@/components/strings';
 import CustomTable from '@/components/supportcomponents/rfq/editableTable';
 import { processValues } from '@/components/utils';
-import { getQuotationById } from '@/network/endpoints';
-import { Avatar, Button, Checkbox, Col, ConfigProvider, Form, Input, Result, Row, Space, Spin, Table, Timeline, Typography } from 'antd';
+import { getQuotationById, confirmOrder } from '@/network/endpoints';
+import { Avatar, Button, Checkbox, Col, ConfigProvider, Form, Input, Result, Row, Space, Spin, Table, Timeline, Typography, message } from 'antd';
 import dayjs from 'dayjs';
 
 function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { id: string }, previewData?:any,hideExtra?:any }) {
@@ -24,6 +24,28 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
       return () => {}
     }, [data])
     
+  // Handle submit (confirm order)
+  const handleSubmit = async () => {
+    if (!d?.data?._id) {
+      message.error("Quotation ID is missing.");
+      return;
+    }
+
+    try {
+      const response = await confirmOrder({ quotationId: d.data._id });
+
+      if (response.code) {
+        message.success(response.message || "Order successfully confirmed");
+        // Additional logic after successful order confirmation, like redirecting or refreshing data
+      } else {
+        message.error(response.message || "Failed to confirm order");
+      }
+    } catch (error) {
+      message.error("Error confirming order");
+      console.error(error);
+    }
+  };
+
   if (!d?.code && !isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center p-5">
@@ -31,6 +53,8 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
       </div>
     )
   }
+
+  
   return (
     <div className="p-3  min-vh-100 " >
         {isLoading&&
@@ -256,13 +280,18 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         }
       </Row>
 
-      <Row className='my-3' justify={'center'}>
-        <Col xs={24} md={8}>
-          <div className={hideExtra?"d-none":""}>
-            <Button block className='rounded-5 submit-form-btn'>Confirm Order</Button>
-          </div>
-        </Col>
-      </Row>
+      <Row className="my-3" justify={'center'}>
+      <Col xs={24} md={8}>
+      <Button 
+        type="primary" 
+        onClick={handleSubmit} 
+        block 
+        className="rounded-5 submit-form-btn"
+      >
+        Confirm Order
+      </Button>
+      </Col>
+    </Row>
       </div>}
     </div>
   );
