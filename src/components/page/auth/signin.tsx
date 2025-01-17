@@ -37,7 +37,7 @@ const SignInUI = () => {
     })
       .then((r) => {
         if (r?.ok && r?.status !== 401) {
-          router.replace("/");
+          router.replace("/dashboard");
         } else {
           message.error(r?.error);
         }
