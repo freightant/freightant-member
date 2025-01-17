@@ -80,12 +80,11 @@ const SignInUI = () => {
   //       setformLoading(false);
   //     });
   // };
-  
+
   // const handleFinish = async (user: { email: string; password: string }) => {
   //   setformLoading(true);
-  
   //   try {
-  //     // Sign in the user
+  //     // Step 1: Sign In
   //     const response = await signIn("credentials", {
   //       email: user.email,
   //       password: user.password,
@@ -93,38 +92,49 @@ const SignInUI = () => {
   //     });
   
   //     if (response?.ok && response?.status !== 401) {
-  //       // Fetch the user's KYC status after successful login
-  //       const userId = "USER_ID_FROM_AUTH_RESPONSE"; // Replace with actual user ID from the auth response
-  //       const kycStatusResponse = await updateUserKYCStatus(userId, "in_review");
+  //       // Step 2: Fetch and Update KYC Status
+  //       const {
+  //         data: profileStatus,
+  //         code,
+  //         message: updateMessage,
+  //         user: updatedUser, // Renaming to avoid conflict
+  //       } = await updateUserKYCStatus(user.email, "in_review");
   
-  //       if (kycStatusResponse.code) {
-  //         const profileStatus = kycStatusResponse.data;
+  //       if (!code) {
+  //         // Handle error response from updateUserKYCStatus
+  //         message.error(updateMessage || "Failed to update user KYC status.");
+  //         return;
+  //       }
   
-  //         if (profileStatus === "in_review") {
-  //           // Redirect to the review page if KYC is under review
-  //           router.replace("/auth/review");
-  //         } else if (profileStatus === "verified") {
-  //           // Redirect to the dashboard if KYC is verified
-  //           router.replace("/");
-  //         } else {
-  //           // Handle any other unexpected status
-  //           message.error("Invalid user state.");
-  //         }
-  //       } else {
-  //         // Handle errors while fetching the KYC status
-  //         message.error(kycStatusResponse.message || "Failed to fetch KYC status.");
+  //       const userId = updatedUser?._id; // Extract the user ID from the response
+  //       console.log("User ID:", userId); // Log the user ID for debugging purposes
+  
+  //       // Step 3: Redirect based on the user's KYC status
+  //       switch (profileStatus) {
+  //         case "in_review":
+  //           router.replace("/auth/review"); // Redirect to the review page
+  //           break;
+  //         case "verified":
+  //           router.replace("/dashboard"); // Redirect to the dashboard
+  //           break;
+  //         default:
+  //           message.error("Invalid user state."); // Handle unexpected profile statuses
+  //           break;
   //       }
   //     } else {
-  //       // Handle login errors
-  //       message.error(response?.error || "Login failed.");
+  //       // Handle sign-in failure
+  //       message.error(response?.error || "Authentication failed.");
   //     }
   //   } catch (err: any) {
-  //     console.error("Error:", err.message);
+  //     console.log("Error:", err.message);
   //     message.error(err.message || "An unexpected error occurred.");
   //   } finally {
   //     setformLoading(false);
   //   }
   // };
+  
+  
+  
   
 
   // Request OTP (Forgot Password - Step 1)

@@ -495,11 +495,17 @@ export async function updateUserKYCStatus(userId: string, status: string) {
       throw new Error("Both userId and status are required.");
     }
 
+    // Retrieve the session or token
+    const user = await getSessionCache();
+    if (!user || !user.user || !user.user.email) {
+      throw new Error("User session is invalid or expired. Please log in again.");
+    }
+
     // Make the API request to update the user's KYC status
     const response = await fetch(`https://freightant-api.onrender.com/admin/updateStatus`, {
       method: "PATCH",
       headers: {
-        Authorization: `Bearer YOUR_AUTH_TOKEN`, // Replace with actual token
+        Authorization: `Bearer ${user.user.email}`, // Use the token from getSessionCache
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ userId, status }),
@@ -514,9 +520,10 @@ export async function updateUserKYCStatus(userId: string, status: string) {
     // Parse the response JSON
     const responseData = await response.json();
 
-    // Return the updated profile status
+    // Return the updated profile status and user object
     return {
-      data: responseData?.user?.profileStatus || null,
+      data: responseData?.user?.profileStatus || null, // Profile status (e.g., "in_review" or "verified")
+      user: responseData?.user || null, // User object from the response
       code: true,
       message: responseData?.message || "KYC status updated successfully.",
     };
@@ -526,9 +533,11 @@ export async function updateUserKYCStatus(userId: string, status: string) {
       message: error.message || "An unexpected error occurred.",
       code: false,
       data: null,
+      user: null, // Return null user in case of an error
     };
   }
 }
+
 
 export async function confirmOrder(data: { quotationId: string }) {
   try {
