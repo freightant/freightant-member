@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthHOC } from "@/components/supportcomponents/auth/UnAuthHOC";
 import React, { useState } from "react";
 
 type FilterState = {
@@ -526,4 +527,4 @@ const DashboardHome = () => {
   );
 };
 
-export default DashboardHome;
+export default  AuthHOC(DashboardHome) ;

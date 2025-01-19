@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get("token")?.value; // Replace with your auth token logic
-
+console.log(token,"hello")
   if (!token) {
     // If the token doesn't exist, redirect to the signin page
     return NextResponse.redirect(new URL("/auth/signin", request.url));
@@ -49,6 +49,25 @@ export async function middleware(request: NextRequest) {
 }
 
 // Add the matcher to apply the middleware to all routes
-export const config = {
-  matcher: "/:path*", // This applies the middleware to all routes
-};
+
+
+// import { NextResponse } from 'next/server'
+// import type { NextFetchEvent, NextRequest } from 'next/server'
+ 
+// export async function middleware(req: NextRequest) {
+//   const response = await fetch('https://freightant-api.onrender.com/api/user/profileStatus', {
+//     method: 'GET', // Consider using POST
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({ pathname: req.nextUrl.pathname }),
+//   });
+
+//   if (response.ok) {
+//     const data = await response.json();
+//     console.log(data)
+//     if (data.profileStatus === 'verified') {
+//       return NextResponse.next(); // Allow the request to proceed
+//     }
+//   }
+
+//   return NextResponse.redirect(new URL('/', req.url)); // Redirect otherwise
+// }

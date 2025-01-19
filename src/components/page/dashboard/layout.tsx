@@ -19,6 +19,7 @@ import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { getUserRole } from '@/network/endpoints';
+import { AuthHOC } from '@/components/supportcomponents/auth/UnAuthHOC';
 
 
 
@@ -137,6 +138,8 @@ export const DashboardUI: React.FC<{ sideUI?: React.ReactNode, children: React.R
         </Layout>
     );
 };
+
+
 
 const menuItemsForExporterImporter = [
     // {

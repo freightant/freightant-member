@@ -14,19 +14,22 @@ function UnAuthHOC(WrappedComponent: React.FC) {
     
     const router= useRouter()
     useEffect(()=>{
+      console.log(pathname) 
       getSessionCache()
       .then(session=>{
         if(session?.user){
           
           setSession(session)
-          if(pathname.includes("signin") || pathname.includes("signup")){
-            router.replace("/")
+          if(pathname=="/" || pathname.includes("signup")){
+          
+            router.replace("/dashboard")
           }
         }else{
           setLoading(false)          
-          if(!pathname.includes("signin") || !pathname.includes("signup")){
-            if (pathname.includes("signin")) {              
-              router.replace("/auth/signin")
+          if(!(pathname=="/") || !pathname.includes("signup")){
+            if (pathname=="/") { 
+                          
+              router.replace("/")
             }else if(pathname.includes("signup")){
               router.replace("/auth/signup")
             }else{}
@@ -35,8 +38,8 @@ function UnAuthHOC(WrappedComponent: React.FC) {
       })
       .catch(()=>{
         setLoading(false)
-        if(!pathname.includes("signin") || !pathname.includes("signup")){
-          router.replace("/auth/signin")
+        if(!(pathname=="/") || !pathname.includes("signup")){
+          router.replace("/")
         }
       })
       .finally()
