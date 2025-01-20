@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
     try {
+      console.log(request)
       let name:any = await request.nextUrl.searchParams
       let id:any = await request.nextUrl.searchParams
       let str:string = name?.get("name")?name?.get("name") :""

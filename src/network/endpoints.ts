@@ -204,7 +204,11 @@ export const verifyOtp = async(businessEmail:string,otp:String,token:String) =>{
 }
 export async function getCountry(){
     try {
-      const response = await axios("/api/location/country/n"); // Replace "location/countries" with your actual endpoint
+      const response = await axios("/api/location/country/n",{headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+    }}); // Replace "location/countries" with your actual endpoint
       return { data: response.data.data, code: true, message: "" };
     } catch (error: any) {
       return { message: error.response?.data?.message || "Error fetching countries", code: false, data: null };
@@ -255,7 +259,7 @@ export async function getCityV2(stateId?: string){
 export async function uploadFile(upload: any){
     try {
       let user = await getSessionCache()  
-      const response = await instance.post(`user/upload`,upload,{headers:{Authorization: "Bearer " + user?.user?.email,"Content-Type":"multipart/form-data"}})
+      const response = await instance.post(`/user/upload`,upload,{headers:{Authorization: "Bearer " + user?.user?.email,"Content-Type":"multipart/form-data"}})
       return { data: response.data, code: true, message: "" };
     } catch (error: any) {
       return { message: error.response?.data?.message || "Error uploading files", code: false, data: null };
