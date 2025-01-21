@@ -47,6 +47,9 @@ console.log(token,"hello")
     return NextResponse.redirect(new URL("/auth/signin", request.url));
   }
 }
+export const config = {
+  matcher: "/:path*", // Match all routes
+};
 
 // Add the matcher to apply the middleware to all routes
 
