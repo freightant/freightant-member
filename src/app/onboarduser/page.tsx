@@ -1,8 +1,9 @@
+import Freightforwader from '@/components/page/onboarduser/freightforwader'
 import React from 'react'
 
-function Page() {
+function Page(){
   return (
-    <div>Page</div>
+    <Freightforwader />
   )
 }
 

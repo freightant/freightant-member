@@ -1,0 +1,980 @@
+"use client"
+import { Button, Card, Col, Collapse, ConfigProvider, Form, Input, Rate, Row, Select, Space, Table, Typography } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { importIncotermOptions, incotermOptions, modeOfShipmentOptions, tradeTypeOptions } from './options';
+import { strings } from '@/components/strings';
+import { useWatch } from 'antd/es/form/Form';
+import { layParams3 } from './post';
+import { DownloadOutlined, DownOutlined, SearchOutlined, UpCircleOutlined } from '@ant-design/icons';
+import LocodeSelect from '@/components/supportcomponents/customcomponents/locodeselect';
+import { CountrySelect, CountrySelectV2, StateSelectV4 } from '@/components/supportcomponents/customcomponents/stateselect';
+import { locodeFormatedString, validateMessages } from '@/components/utils';
+import { getRfQ, locodeById } from '@/network/endpoints';
+import useSWR from 'swr';
+import dayjs from 'dayjs';
+import Link from 'next/link';
+import { AuthHOC } from '@/components/supportcomponents/auth/UnAuthHOC';
+
+function RfqSearchUI() {
+  const [form] = Form.useForm()
+  const [FormLoading, setFormLoading] = useState(false)
+  const [emptyResult, setemptyResult] = useState(false)
+
+  const [SrcLocation, setSrcLocation] = useState("")
+  const [DesLocation, setDesLocation] = useState("")
+  const [universal, setUniversal] = useState<any>(null)
+  const [inputUpdate, setinputUpdate] = useState(false)
+  const modeOfShipment = useWatch("modeOfShipment",form)
+  const tradeType = useWatch("tradeType",form)
+  const incoterm = useWatch("incoterm",{form,preserve:true})
+  const freeTimeLP = useWatch("freeTimeLP",{form,preserve:true})
+
+  const [RfqList, setRfqList] = useState([])
+  const [UniversalRfqList, setUniversalRfqList] = useState([])
+
+
+  const handleSubmit = (values:any) => {
+    if (universal) {      
+      
+      let localRfqList = UniversalRfqList;
+      if(inputUpdate){
+        setFormLoading(true)
+        form.resetFields()
+        getRfQ({ universal, only: true })
+        .then(r => {
+          if (r.code) {
+            setRfqList(r.data)
+            setUniversalRfqList(r.data)
+            setemptyResult(r.data.length < 1)
+          }
+        })
+        .catch(r => {
+        }).finally(() => {
+          setFormLoading(false);
+          setinputUpdate(false)
+        });
+      }
+
+      if (values?.origin?.country) {
+        localRfqList = localRfqList.filter((item: any) => {
+          if (values?.origin?.country === 'Any') {
+            return true; 
+          }          
+          return `${item?.placeOfLoading?.country}`.toLowerCase() === `${values?.origin?.country}`.toLowerCase();
+        });
+      }
+      
+      if (values?.origin?.state && (values?.origin?.state?values?.origin?.state:[]).length>0) {        
+        localRfqList = localRfqList.filter((item: any) => {
+          return `${item?.placeOfLoading?.state}`.toLowerCase() === `${values?.origin?.state}`.toLowerCase();
+        });
+      }
+      
+      if (values?.destination?.country) {        
+        localRfqList = localRfqList.filter((item: any) => {
+          if (values?.destination?.country === 'Any') {
+            return true; 
+          }
+          return `${item?.placeOfUnLoading?.country}`.toLowerCase() === `${values?.destination?.country}`.toLowerCase();
+        });
+      }
+      
+      if (values?.destination?.state && (values?.destination?.state?values?.destination?.state:[]).length>0) {        
+        localRfqList = localRfqList.filter((item: any) => {
+          return `${item?.placeOfUnLoading?.state}`.toLowerCase() === `${values?.destination?.state}`.toLowerCase();
+        });
+      }
+      
+      if (values?.modeOfShipment) {        
+        localRfqList = localRfqList.filter((item: any) => {
+          return item?.modeOfShipment === values?.modeOfShipment;
+        });
+      }
+      
+      if (values?.incoterm) {        
+        localRfqList = localRfqList.filter((item: any) => {
+          return item?.incoterm === values?.incoterm;
+        });
+      }
+      
+      if (values?.tradeType) {        
+        localRfqList = localRfqList.filter((item: any) => {
+          return item?.tradeType === values?.tradeType;
+        });
+      }
+
+      if (values?.portOfLoading&&(values?.portOfLoading?values?.portOfLoading:[]).length>0) {
+        localRfqList = localRfqList.filter((item: any) => {
+          return values.portOfLoading.includes(item?.loadingPort);
+        });
+      }
+
+      if (values?.portOfUnLoading&&(values?.portOfUnLoading?values?.portOfUnLoading:[]).length>0) {
+        localRfqList = localRfqList.filter((item: any) => {
+          return values.portOfUnLoading.includes(item?.dischargePort);
+        });
+      }
+      console.log(localRfqList);
+        setemptyResult(false)        
+        
+        if(localRfqList.length<1){
+          setemptyResult(true)
+        }
+        setRfqList(localRfqList)
+      return
+    }
+    setFormLoading(true)
+    getRfQ(values)
+    .then(r=>{
+      if(r.code){
+        setRfqList(r.data)
+        setUniversalRfqList(r.data)
+        setemptyResult(r.data.length<1)
+      }      
+    })
+    .catch(r=>{
+      console.log(r);
+      
+    })
+    .finally(() => {
+      setFormLoading(false);
+    })
+  };
+
+  useEffect(() => {
+    setinputUpdate(true);
+  }, [universal]); 
+
+  const resetHandle = () => {
+    form.resetFields()
+    setRfqList(UniversalRfqList)
+    setemptyResult(false)
+  }
+  return (
+    <div className={`bg-shade min-vh-100`} >
+      <Row justify={"center"} gutter={[8,8]} className='mx-0 py-5'>
+        <Col sm={23} md={20} lg={18} xxl={15} className="px-5 my-2">
+          <Input onChange={e=>setUniversal(e.target.value)} placeholder="Search Input" variant="filled" size="large" prefix={<SearchOutlined />} />
+        </Col>
+        <Col sm={23} md={20} lg={18} xxl={15}>
+          <Card className="border-primary2">
+            <h4 className='text-primary2 text-center'>Filter by</h4>
+            <Form 
+              form={form}
+              onFinish={handleSubmit}
+              layout="vertical"
+              validateMessages={validateMessages}
+            >
+              <Row gutter={[16,8]}>
+                <Col span={24}>
+                  <Form.Item name={"modeOfShipment"} label={<h6 className="text-primary2">Mode of Shipment</h6>}>
+                    <Row gutter={[16, 16]}>
+                      {modeOfShipmentOptions.map((e: string) => (
+                        <Col {...layParams3} key={e}>
+                          <Button size="large" block shape="round" style={{ textWrap: "wrap", lineHeight: 1 }} type={modeOfShipment === e ? "primary" : "default"} onClick={() => {
+                            form.setFieldValue("modeOfShipment", e)
+                            form.setFieldValue("cargoDetail", {})
+                          }}>{e}</Button>
+                        </Col>
+                      ))}
+                    </Row>
+                  </Form.Item>
+                </Col>
+                <Col span={24}>
+                  <Form.Item name={"tradeType"} label={<h6 className="text-primary2 m-0">Trade Type</h6>} layout="horizontal">
+                    <Row gutter={[16, 16]}>
+                      {tradeTypeOptions.map((e: string) => (<Col key={e} {...layParams3}><Button size="large" block shape="round" style={{ textWrap: "wrap", lineHeight: 1 }} type={tradeType === e ? "primary" : "default"} onClick={() => {
+                        form.setFieldValue("tradeType", e)
+                        form.setFieldValue(["addOnService", "status"], true)
+                        form.setFieldValue("incoterm", e !== strings.import ? incotermOptions[0] : importIncotermOptions[0])
+
+                      }}>{e}</Button></Col>))}
+                    </Row>
+                  </Form.Item>
+                </Col>
+                <Col {...lParams}>
+                  <Form.Item  name={["origin","country"]} label={<h6 className="m-0 text-primary2">Origin Country</h6>}>
+                    <CountrySelectV2
+                      {...{className:"border rounded-pill",variant:"borderless"}}
+                      all={true}
+                      onChange={(e:any)=>{
+                        setSrcLocation(e.id)
+                        form.setFieldsValue({origin:{country:e.name,state:[]}})
+                      }}
+                      
+                    />
+  
+                  </Form.Item>                
+                </Col>
+                <Col {...lParams}>
+                  <Form.Item name={["origin","state"]} label={<h6 className="m-0 text-primary2">Origin State/Province</h6>}>
+                    <StateSelectV4
+                    {...{className:"border rounded-3",variant:"borderless",mode:"multiple"}}
+                    countryId={SrcLocation} onChange={(e:any)=>{}} />
+                  </Form.Item>                
+                </Col>
+                <Col {...lParams}>
+                  <Form.Item  name={["destination","country"]} label={<h6 className="m-0 text-primary2">Dest. Country</h6>}>
+                    <CountrySelectV2
+                    {...{className:"border rounded-pill",variant:"borderless"}}
+                    all={true}
+                      onChange={(e:any)=>{
+                        setDesLocation(e.id)
+                        form.setFieldsValue({destination:{country:e.name,state:[]}})
+                      }}
+                    />
+                    </Form.Item>
+                </Col>
+                <Col {...lParams}>
+                  <Form.Item name={["destination","state"]} label={<h6 className="m-0 text-primary2">Dest. State/Province</h6>}>
+                    <StateSelectV4
+                      {...{ className: "border rounded-3", variant: "borderless", mode: "multiple" }}
+                      countryId={DesLocation} onChange={(e: any) => {}} />
+                  </Form.Item>                
+                </Col>
+                <ConfigProvider 
+                  theme={{
+                      "components": {
+                        "Select": {
+                          "multipleItemBg": "#F3F6FF",
+                          multipleItemHeight:32,
+                          "colorText": "#6A37F4",
+                          multipleItemBorderColor: "#6937f46c"
+                        }
+                      }
+                  }}
+                >
+                <Col sm={22} md={12}>
+                  <Form.Item name={"portOfLoading"} label={<h6 className="m-0 text-primary2">Port of Loading</h6>}>
+                    <LocodeSelect
+                      change={()=>{}}
+                      wholeValue={(e:any)=>{form.setFieldValue("portOfLoading",e.map((v:any)=>`${v.value}`))}}
+                      mode="multiple"
+                    />
+                  </Form.Item>
+                </Col>
+                <Col sm={22} md={12}>
+                  <Form.Item name={"portOfUnLoading"} label={<h6 className="m-0 text-primary2">Port of Discharge</h6>}>
+                    <LocodeSelect
+                      change={()=>{}}
+                      wholeValue={(e: any) => { form.setFieldValue("portOfUnLoading",e.map((v:any)=>`${v.value}`)) }}
+                      mode="multiple"
+                    />
+                  </Form.Item>
+                </Col>
+                </ConfigProvider>
+              </Row>
+              <Form.Item rootClassName="d-flex justify-content-center">
+                <Button size="large" className="px-5" type="primary" htmlType="submit" shape="round" loading={FormLoading}>
+                  Search
+                </Button>
+              </Form.Item>
+              <Form.Item rootClassName="d-flex justify-content-center">
+                <Button className="px-5" type="link" onClick={()=>resetHandle()}>
+                  Reset
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+        {RfqList.length > 0 &&
+          <Col sm={23} md={20} lg={18} xxl={15}>
+          <h4 className='text-primary2 text-center'>{RfqList.length} live RFQs</h4>
+          </Col>
+        }
+        <ConfigProvider
+          theme={{
+            "components": {
+              "Select": {
+                "multipleItemBg": "#F3F6FF",
+                multipleItemHeight: 32,
+                "colorText": "#6A37F4",
+                multipleItemBorderColor: "#6937f46c"
+              },
+              "Input": {
+                colorBgContainerDisabled: "rgb(243,246,255)",
+                colorTextDisabled: "rgba(69, 17, 151, 1)",
+                "colorBorder": "rgb(243,246,255)",
+                borderRadius:48,
+              },
+              "Collapse": {
+                "headerBg": "rgba(255,255,255,0.02)",
+                padding:0,
+                contentPadding:0,
+              },
+              "Form": {
+                "labelColor": "rgb(10,0,73)"
+              },
+              "Card":{
+                colorTextHeading:"rgba(69, 17, 151, 1)",
+              },
+              Table:{
+                colorTextHeading:"rgba(69, 17, 151, 1)",
+                headerBg: "rgb(243,246,255)",
+                padding:10,
+                fontSize:13,
+                borderColor:"#A89CF7",
+              }
+            }
+          }}
+        >
+          {RfqList.map((i:any) =>
+            <Col key={i?._id} sm={23} md={20} lg={18} xxl={15}>
+              <RFQCard rfqData={i} />
+            </Col>
+          )}
+        </ConfigProvider>
+        {
+          emptyResult && 
+          <Col sm={23} md={20} lg={18} xxl={15} >
+            <Row justify="center" className="py-5">
+              <Col sm={23} md={20} lg={18} xxl={15} className='p-3' style={{border:"1px dashed #6A37F4"}}>
+                <p className='text-center m-0 p-0'>
+                  No RFQ to show with the applied filters.
+                </p>
+              </Col>
+            </Row>
+          </Col>
+        }
+      </Row>
+    </div>
+  )
+}
+
+
+export default  AuthHOC(RfqSearchUI)
+export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,showSubmit?:boolean,hideExpoter?:boolean}) => {
+  const [form] = Form.useForm();
+  const [expand, setexpand] = useState(false)
+  
+  const {
+    _id,
+    modeOfShipment,
+    tradeType,
+    incoterm,
+    freeTimeLP,
+    freeTimeDP,
+    readyDate,
+    cargoDetail,
+    loadingPort,
+    dischargePort,
+    loadingPortObj,
+    dischargePortObj,
+    organization,
+    paymentTerms,
+    remarks,
+    container,
+    addOnService,
+    placeOfLoading,
+    placeOfUnLoading
+  } = rfqData;
+
+  useEffect(()=>{
+    form.setFieldsValue(rfqData)
+  },[rfqData])
+  
+  return (
+    <Form
+      form={form} 
+    >
+      <Card title={
+    <span style={{ fontWeight: '600', textDecoration: 'underline', fontSize: '22px' }}>
+      RFQ ID: {"rfqId"}
+    </span>
+} styles={{header:{borderBottomWidth:0}}} className='my-3 '
+        extra={<Button className={expand?"":"d-none"} size="large" type="link" onClick={()=>setexpand(false)} icon={<UpCircleOutlined className='fs-4' />}/>}
+      >
+        <Row gutter={[48, 8]} className='my-2'>
+        
+        <Col span={8}>
+  <Form.Item
+    name={"modeOfShipment"}
+    label={
+      <span style={{ fontSize: "18px", fontWeight: "500" }}>
+        Mode of Shipment
+      </span>
+    }
+  >
+    <Input
+      disabled
+      className="text-center"
+      style={{ backgroundColor: "#F6F4FF", fontSize: "16px",fontWeight: "600" }}
+    />
+  </Form.Item>
+</Col>
+<Col span={6}>
+  <Form.Item
+    name={"tradeType"}
+    label={
+      <span style={{ fontSize: "18px", fontWeight: "500" }}>
+        Trade Type
+      </span>
+    }
+  >
+    <Input
+      disabled
+      className="text-center"
+      style={{ backgroundColor: "#F6F4FF", fontSize: "16px",fontWeight: "600" }}
+    />
+  </Form.Item>
+</Col>
+<Col span={6}>
+  <Form.Item
+    name={"incoterm"}
+    label={
+      <span style={{ fontSize: "18px", fontWeight: "500" }}>
+        Incoterm
+      </span>
+    }
+  >
+    <Input
+      disabled
+      className="text-center"
+      style={{ backgroundColor: "#F6F4FF", fontSize: "16px",fontWeight: "600" }}
+    />
+  </Form.Item>
+</Col>
+
+
+
+
+          
+{/* {
+  loadingPort && (
+    <Col span={8} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
+      <Form.Item
+        label={
+          <span style={{ fontWeight: 600, fontSize: "18px" }}>
+            Port of Loading
+          </span>
+        }
+        layout="vertical"
+      >
+        <PortUI i={loadingPortObj} />
+      </Form.Item>
+    </Col>
+  )
+}
+{
+  dischargePort && (
+    <Col span={8} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
+      <Form.Item
+        label={
+          <span style={{ fontWeight: 600, fontSize: "18px" }}>
+            Port of Discharge
+          </span>
+        }
+        layout="vertical"
+      >
+        <PortUI i={dischargePortObj} />
+      </Form.Item>
+    </Col>
+  )
+} */}
+
+<Row gutter={[16, 16]} style={{ flexWrap: "wrap" }} className='px-4'>
+  {loadingPort && (
+    <Col span={10} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
+      <Form.Item
+        label={
+          <span style={{ fontWeight: 600, fontSize: "18px" }}>
+            Port of Loading
+          </span>
+        }
+        layout="vertical"
+      >
+        <PortUI i={loadingPortObj} />
+      </Form.Item>
+    </Col>
+  )}
+  {dischargePort && (
+    <Col span={10} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
+      <Form.Item
+        label={
+          <span style={{ fontWeight: 600, fontSize: "18px" }}>
+            Port of Discharge
+          </span>
+        }
+        layout="vertical"
+      >
+        <PortUI i={dischargePortObj} />
+      </Form.Item>
+    </Col>
+  )}
+  {/* Ensure the container type starts on a new line */}
+  <Col span={24}>
+    <Row gutter={16} className=" py-4 mx-1">
+      {(container ? container : []).map((i: any, index: number) => (
+        <Col {...lParams} key={index}>
+          <Form.Item layout="horizontal">
+            <Input
+              value={`${i?.name} x ${i?.quantity}`}
+              disabled
+              className="text-center"
+              style={{
+                backgroundColor: "#F6F4FF",
+                fontWeight: "bold",
+                padding: "8px",
+                
+              }}
+            />
+          </Form.Item>
+        </Col>
+      ))}
+    </Row>
+  </Col>
+</Row>
+
+
+
+          {/* <Row gutter={16} style={{ marginTop: '40px', marginLeft: '20px'}}>
+          {freeTimeLP && (
+  <Col span={10}>
+    <Form.Item
+      label={
+        <span style={{ fontWeight: 500, fontSize: "18px" }}>
+          Free time required at POL
+        </span>
+      }
+    >
+      <Input
+        value={`${freeTimeLP} Days`}
+        disabled
+        className="text-center"
+        style={{ fontSize: "16px", backgroundColor: "#F6F4FF",fontWeight: "600"}}
+      />
+    </Form.Item>
+  </Col>
+)}
+{freeTimeDP && (
+  <Col span={10}>
+    <Form.Item
+      label={
+        <span style={{ fontWeight: 500, fontSize: "18px" }}>
+          Free time required at POD
+        </span>
+      }
+    >
+      <Input
+        value={`${freeTimeDP} Days`}
+        disabled
+        className="text-center"
+        style={{ fontSize: "16px", backgroundColor: "#F6F4FF",fontWeight: "600" }}
+      />
+    </Form.Item>
+  </Col>
+)}
+
+</Row> */}
+{/* <Row  className="my-2 py-4 mx-3">
+  {(container ? container : []).map((i: any, index: number) => (
+    <Col {...lParams} key={index}>
+      <Form.Item layout="horizontal">
+        <Input
+          value={`${i?.name} x ${i?.quantity}`}
+          disabled
+          className="text-center"
+          style={{
+            backgroundColor: "#F6F4FF",
+            fontWeight: "bold",
+            padding: "8px",
+            
+          }}
+        />
+      </Form.Item>
+     
+    </Col>
+  ))}
+</Row> */}
+
+{/* <div style={{ display: "flex", flexWrap: "wrap" }}>
+  
+  <Row className="" style={{ flexBasis: "100%" }}>
+    {(container ? container : []).map((i: any, index: number) => (
+      <Col {...lParams} key={index}>
+        <Form.Item layout="horizontal">
+          <Input
+            value={`${i?.name} x ${i?.quantity}`}
+            disabled
+            className="text-center"
+            style={{
+              backgroundColor: "#F6F4FF",
+              fontWeight: "bold",
+              padding: "8px",
+            }}
+          />
+        </Form.Item>
+      </Col>
+    ))}
+  </Row>
+</div> */}
+
+{
+  (placeOfLoading && !loadingPort) && (
+    <Col span={12}>
+      <Form.Item 
+        label={<span style={{ fontWeight: 500, fontSize: "18px" }}>Place of Loading</span>} 
+        layout="vertical"
+      >
+        <Input 
+          className="rounded-2" 
+          value={`${placeOfLoading?.address}, ${placeOfLoading?.city}, ${placeOfLoading?.state}, ${placeOfLoading?.country}`} 
+          style={{ backgroundColor: "#FFFFFF", fontSize: "16px" }} 
+        />
+      </Form.Item>
+    </Col>
+  )
+}
+{
+  (placeOfUnLoading && !dischargePort) && (
+    <Col span={12}>
+      <Form.Item 
+        label={<span style={{ fontWeight: 500, fontSize: "18px" }}>Place of Unloading</span>} 
+        layout="vertical"
+      >
+        <Input 
+          className="rounded-2" 
+          value={`${placeOfUnLoading?.address}, ${placeOfUnLoading?.city}, ${placeOfUnLoading?.state}, ${placeOfUnLoading?.country}`} 
+          style={{ backgroundColor: '#ffffff' , fontSize: "16px"}} 
+        />
+      </Form.Item>
+    </Col>
+  )
+}
+        </Row>
+
+        
+        <Collapse bordered={false} activeKey={[expand?1:-1]}>
+          <Collapse.Panel showArrow={false} header="" extra={<Button shape="round" onClick={()=>setexpand(true)}  className={expand?"d-none":""}>View Details</Button>} key="1">
+            { (cargoDetail?.category?cargoDetail?.category:[]).length>0&&
+              <Card title={"Cargo Details"} styles={{  header: { borderBottom: 0, fontWeight: "bold" }, body: { padding: 10 } }}
+              className="my-1"
+                extra={<p className='m-0 p-4 border text-primary1 rounded-2'>Cargo Ready Date: {dayjs(readyDate).format("DD/MM/YY")}</p>}
+              >
+                {
+                    <Row gutter={[16, 16]} className='my-3 '>
+                      <Col {...lParams} >
+                        <Form.Item label={`Cargo Category`} layout="vertical" >
+                          <Input value={cargoDetail?.category} disabled className='text-center' />
+                        </Form.Item>
+                      </Col>
+                      <Col {...lParams}>
+                        <Form.Item label={"HS code"} layout="vertical">
+                          <Input disabled className='text-center' />
+                        </Form.Item>
+
+                      </Col>
+                      <Col {...lParams}>
+                        <Form.Item label={"Volume"} layout="vertical">
+                          <Input value={cargoDetail?.totalCBM} disabled className='text-center' />
+                        </Form.Item>
+                      </Col>
+                      <Col {...lParams}>
+                        <Form.Item label={"Weight"} layout="vertical">
+                          <Input value={cargoDetail?.totalGrossWeight || cargoDetail?.weight} disabled className='text-center' />
+                      </Form.Item>                        
+                      </Col>
+                      {
+                        (cargoDetail?.packageDetail?cargoDetail?.packageDetail:[]).length > 0 &&
+                        <Col sm={24} md={22} lg={12}>
+                          <Table className='my-2' bordered dataSource={
+                            (cargoDetail?.packageDetail?cargoDetail?.packageDetail:[])
+                            .map((i:any,iIndex:number)=>({
+                              key:i?._id,
+                              package:iIndex+1,
+                              dimensions:`L:${i?.dimensions?.length} ${cargoDetail?.measurement1}, B:${i?.dimensions?.breadth} ${cargoDetail?.measurement1}, H:${i?.dimensions?.height} ${cargoDetail?.measurement1}`,
+                              weight:`${i?.weight} ${cargoDetail?.measurement2}`,
+                            }))
+                          } columns={columns} pagination={false} />
+                        </Col>
+                      }
+                    </Row>
+                }
+              </Card>
+            }
+                 <Row gutter={16} >
+          {freeTimeLP && (
+  <Col span={10}>
+    <Form.Item
+      label={
+        <span style={{ fontWeight: 500, fontSize: "18px" }}>
+          Free time required at POL
+        </span>
+      }
+    >
+      <Input
+        value={`${freeTimeLP} Days`}
+        disabled
+        className="text-center"
+        style={{ fontSize: "16px", backgroundColor: "#F6F4FF",fontWeight: "600"}}
+      />
+    </Form.Item>
+  </Col>
+)}
+{freeTimeDP && (
+  <Col span={10}>
+    <Form.Item
+      label={
+        <span style={{ fontWeight: 500, fontSize: "18px" }}>
+          Free time required at POD
+        </span>
+      }
+    >
+      <Input
+        value={`${freeTimeDP} Days`}
+        disabled
+        className="text-center"
+        style={{ fontSize: "16px", backgroundColor: "#F6F4FF",fontWeight: "600" }}
+      />
+    </Form.Item>
+  </Col>
+)}
+
+</Row>
+            {(container?container:[]).length>0&&
+            
+              <Card title={"Cargo Details"} className="my-2 font-weight-bold" styles={{  header:{borderBottom: 0, fontWeight: 'bold', fontSize: '20px'},body:{padding:20}}}
+                extra={<p className='m-0 p-2 border text-primary1 rounded-2 text-bold' style={{ color: '#451197', fontWeight: 'bold' }}>Cargo Ready Date: {dayjs(container?.[0]?.readyDate).format("DD/MM/YY")}</p>}
+              >
+                            
+
+                {
+                  (container?container:[]).map((i: any, index: number) => (
+                    <Row gutter={[16, 16]} key={index} className='my-3 py-2'>
+                      <Col {...lParams}>
+                        <Form.Item label={!index?`Container`:null} layout="vertical">
+                          <Input value={(i?.cargo?.category?i?.cargo?.category:[]).join()} disabled className='text-center' style={{ backgroundColor: '#F6F4FF' , fontWeight: 'bold',  padding: '8px'}}/>
+                        </Form.Item>
+                      </Col>
+                      <Col {...lParams}>
+                        <Form.Item label={!index?"Hs Code":null} layout="vertical">
+                          <Input disabled className='text-center' style={{ backgroundColor: '#F6F4FF' , fontWeight: 'bold',  padding: '8px'}}/>
+                        </Form.Item>
+                        
+                      </Col>
+                      <Col {...lParams}>
+                        <Form.Item label={!index?"Container Type":null} layout="vertical">
+                          <Input value={`${i?.name} x ${i?.quantity}`} disabled className='text-center' style={{ backgroundColor: '#F6F4FF' , fontWeight: 'bold',  padding: '8px'}}/>
+                        </Form.Item>
+                        { i?.cargo?.gaugeStatus&&
+                          <input value={i?.cargo?.gaugeStatus} disabled className='text-center rounded-2 border p-1 my-5 d-inline text-primary1' />
+                        }
+                      </Col>
+                      <Col {...lParams}>
+                        <Form.Item label={!index?"Weight/Container":null} layout="vertical">
+                          <Input value={`${i?.cargo?.weight} MT`} disabled className='text-center' style={{ backgroundColor: '#F6F4FF', fontWeight: 'bold' ,  padding: '8px'}}/>
+                        </Form.Item>
+                        { i?.cargo?.gaugeStatus&&
+                          <input value={`L:${i?.cargo?.dimensions?.length} mm,B:${i?.cargo?.dimensions?.breadth} mm,H:${i?.cargo?.dimensions?.height} mm`} disabled className='text-center rounded-2 border p-1 my-5 d-inline text-primary1 ' />
+                        }
+                      </Col>
+                    </Row>
+                  ))
+                }
+              </Card>
+            }
+            {
+              (addOnService && addOnService.status)&&            
+              <Card title={`Add on Services at port of loading ${tradeType===strings.export?"[POL]":"[POD]"}`} styles={{header:{borderBottom:0, fontWeight: 'bold', fontSize: '20px'},body:{padding:20}}} className="my-2">
+                <Row gutter={[16,8]}>
+                  <Col span={24}>
+                    <Form.Item>
+                      <Space size={"large"}>
+                        {(addOnService.services?addOnService.services:[]).map((service :string,iIndex:number)=>(
+                          <Input key={service+iIndex} value={service} disabled className='rounded-2 text-center' style={{ backgroundColor: '#F6F4FF', fontWeight: 'bold' ,  padding: '8px'}}/>
+                        ))}
+                      </Space>
+                    </Form.Item>
+                  </Col>
+                    {
+                      addOnService.placeOfLoading &&
+                      <Col span={24}>
+                        <Form.Item label={"Place of Loading"} className='d-inline-flex'>
+                          <Input value={`${addOnService?.placeOfLoading?.address}, ${addOnService?.placeOfLoading?.city}, ${addOnService?.placeOfLoading?.state}, ${addOnService?.placeOfLoading?.country}`} disabled className='text-center' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'120%'  }}/>
+                        </Form.Item>
+                      </Col>
+                    }
+                    {
+                      addOnService.placeOfUnLoading &&
+                      <Col span={24} >
+                        <Form.Item label={"Place of UnLoading"} className='d-inline-flex'>
+                          <Input value={`${addOnService?.placeOfUnLoading?.address}, ${addOnService?.placeOfUnLoading?.city}, ${addOnService?.placeOfUnLoading?.state}, ${addOnService?.placeOfUnLoading?.country}`} disabled className='text-center' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'120%'  }}/>
+                        </Form.Item>
+                      </Col>
+                    }
+                    {
+                      addOnService.stuffingLocationType&&
+                      <Col span={12}>
+                        <Form.Item label={ tradeType === strings.import?"De Stuffing Location":"Stuffing Location"}>
+                          <Input value={addOnService?.stuffingLocationType} disabled className='text-center' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'70%'  }}/>
+                        </Form.Item>
+                      </Col>
+                    }
+                      <Col span={12}>
+                    {
+                      (addOnService.truckType?addOnService.truckType:[]).length>0&&
+                        <Form.Item label={"Truck/Trailer Type"}>
+                          {
+                            (addOnService.truckType?addOnService.truckType:[]).map((truckType:any,iIndex:number)=>(
+                              <Input key={truckType.typee+iIndex} value={`${truckType.typee} * ${truckType.quantity}`} disabled className='text-center my-1' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'70%'  }}/>
+                            ))
+                          }
+                        </Form.Item>
+                    }
+                      </Col>
+                    {
+                      addOnService.eSeal&&
+                      <Col sm={8} span={6}>
+                        <Form.Item label={"E Seal Facility"}>
+                          <Input value={addOnService.eSeal?"Yes":"No"} disabled className='text-center' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'50%'  }}/>
+                        </Form.Item>
+                      </Col>
+                    }
+                    {
+                      <Col sm={16} span={7}>
+                          <Space wrap>
+                            <Form.Item label={"Insurance"}>
+                              <Input value={addOnService.insuranceRequired?"Yes":"No"} disabled className='text-center' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'50%'  }}/>
+                            </Form.Item>
+                            {addOnService.insuranceRequired&&<div className='pb-2'><input value={`Cargo Value: `+addOnService.cargoValue +` USD`} disabled className='text-center rounded-2 border p-2 mb-3 text-primary1' style={{    fontWeight: 'semibold' ,width:'145%'  }}/></div>}
+                          </Space>
+                      </Col>
+                    }
+                    {
+                      (addOnService.miscServices?addOnService.miscServices:[]).length>0&&
+                      <Col sm={24} span={11}>
+                        <Form.Item label={"Misc Services"} className='d-inline-flex'>
+                          <Input.TextArea rows={1} value={addOnService.miscServices.join()+ `${addOnService.miscServices.includes(strings.others)?", "+addOnService?.miscOtherValue:""}`} disabled className='text-center text-wrap ' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'150%'  }}/>
+                        </Form.Item>
+                      </Col>
+                    }
+                </Row>
+              </Card>
+            }
+            <Card>
+              <Form.Item label={"Payment Terms"} className='d-inline-flex '>
+                <Input.TextArea rows={2} value={paymentTerms} disabled className='text-center text-wrap ' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'400px',  marginRight:'40px'}}/>
+              </Form.Item>
+              <Form.Item label={"Remarks"} className='d-inline-flex'>
+                <Input value={remarks} disabled className='text-center text-wrap' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'80%'  }}/>
+              </Form.Item>
+            </Card>
+            {
+              !hideExpoter&&
+              <Card className='my-2'>
+                <Row gutter={[16,16]}>
+                  <Col span={24}>
+                    <Space size={"large"} align="center">
+                      <h5 className="text-primary3 fw-semibold">Exporter : <span className="border p-2 rounded text-center text-2xl">{organization?.companyName}</span></h5>
+                      <div className="pb-2">
+                      <Input
+                      value={organization?.businessType}
+                      disabled
+                    style={{
+                    textAlign: "center", // Center the text
+                    backgroundColor: "#F6F4FF", // Set the background color
+                    fontWeight: 500 , fontSize: "16px"
+                          }}
+/>
+
+                      </div>
+                    </Space>
+                  </Col>
+                  <Col span={24}>
+                    <div className='d-flex gap-2 align-items-center'>
+                      {organization?.starExportHouseRating&& <Rate disabled value={organization?.starExportHouseRating}/>}
+                      {organization?.exportPromotionOrganisationMembership&& 
+                        <>
+                        <Input
+                        value={"AEO"}
+                        disabled
+                        style={{
+                        width: "70px", // Set width
+                        backgroundColor: "#F6F4FF",fontWeight: 500, fontSize:"16px" // Set background color
+                      }}
+                      className="text-center "
+                        />
+
+                        <Input value={organization?.exportPromotionOrganisationMembership} disabled style={{width:"55%", backgroundColor: "#F6F4FF",fontWeight: 500, fontSize:"16px"}} className='text-center' />
+                        </>
+                      }
+                    </div>
+                  </Col>
+                    {organization?.pointSalesPricingTeam&& 
+                    <>
+                    {
+                      (organization?.pointSalesPricingTeam?.name?organization.pointSalesPricingTeam?.name:[]).map((r:any,iIndex:number)=>(
+                      <Col span={20} key={iIndex}>
+                        <Space>
+                          {iIndex===0&& <p className="m-0 fw-semibold">POC</p>}
+                          <Input value={organization?.pointSalesPricingTeam?.name?.[iIndex]} disabled style={{width:"100px", backgroundColor: "#F6F4FF",fontWeight: 500, fontSize: "16px"}} className='text-center' />
+                          <Input value={organization?.pointSalesPricingTeam?.email?.[iIndex]} disabled style={{width:"100%", backgroundColor: "#F6F4FF",fontWeight: 500, fontSize: "16px"}} className='text-center' />
+                          <Input value={organization?.pointSalesPricingTeam?.mobile?.[iIndex]} disabled style={{width:"80%", backgroundColor: "#F6F4FF",fontWeight: 500, fontSize: "16px"}} className='text-center' />
+
+                        </Space>
+                      </Col>
+
+                      ))
+                    }
+                    </>
+                    }
+                </Row>
+              </Card>
+            }
+            <Col span={24} className='my-4 '>
+              {!showSubmit&&<div className="d-flex justify-content-between mx-0">
+                <Button icon={<DownloadOutlined className="fw-bold fs-5 text-primary2" />} >Download as pdf</Button>
+                <Link target="_blank" href={"/rfq/quotation?rfq="+_id}>
+                  <Button type="primary" >Submit quotation</Button>
+                </Link>
+              </div>}
+            </Col>
+          </Collapse.Panel>
+        </Collapse>
+      </Card>
+    </Form>
+  );
+};
+
+const lParams={
+  sm:24,
+  md:12,
+  lg:6,
+  xl:6,
+  xxl:6
+}
+
+const TextUI = ({children}: {children?:string})=> <span className='bg-shade text-primary1 p-1 px-3 rounded-pill'>{children}</span>
+export const PortUI = ({i,...props}:{i:any,props?:any})=>{
+  
+  return (
+    <ConfigProvider
+    theme={{
+      "components": {
+        "Input": {
+          colorBgContainerDisabled: "rgb(243,246,255)",
+          colorTextDisabled: "rgba(69, 17, 151, 1)",
+          "colorBorder": "rgb(243,246,255)",
+          borderRadius:48,
+        },}}}>
+          <Input {...props} disabled className='border rounded-1 bg-white p-2 ' value={locodeFormatedString(i)}/>
+        </ConfigProvider>
+        )
+}
+const columns = [
+  {
+    title: 'Package',
+    dataIndex: 'package',
+    key: 'package',
+  },
+  {
+    title: 'Dimensions',
+    dataIndex: 'dimensions',
+    key: 'dimensions',
+  },
+  {
+    title: 'Weight',
+    dataIndex: 'weight',
+    key: 'weight',
+  },
+];

@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 /* :root {
   --max-width: 1100px;
   --border-radius: 12px;
@@ -105,6 +110,211 @@ a {
     color-scheme: dark;
   }
 } */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 .text-primary2{
+  color: #0A0049 !important;
+}
+.text-primary1{
+  color: #6A37F4 !important;
+}
+.text-primary3{
+  color: #451197;
+}
+.border-primary2{
+  border-color: #6937f46c !important;
+}
+.bg-primary2{
   color: #0A0049;
 }
+.bg-primary3{
+  background-color: #A89CF7;
+}
+.bg-shade{
+  background-color: #F3F6FF;
+}
+.upload-0 > .ant-upload-select{
+  display: block !important;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.demo-logo-vertical{
+  height: 32px;
+  margin: 16px;
+  background: rgba(255,255,255,.2);
+  border-radius: 6px;
+}
+
+
+/* TABLE CSS */
+
+.table-card {
+  width: 110%; /* Adjust as needed */
+  max-width: 1200px; /* Optional: Limit max width */
+  margin-left: -50px; /* Move the element towards the left */
+}
+.table-container {
+  border: 1px solid #dedede !important;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%; /* Set table container to full width */
+  max-width: 1200px; /* Optional: limit maximum width */
+  height: auto; /* Ensure the height adjusts based on content */
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  h6 {
+    font-size: 1.3rem;
+  }
+}
+
+.table-header .header-tag-content {
+  padding: 5px 15px;
+  border-radius: 30px;
+  background-color: rgb(243,246,255);
+  color: #6A37F4 !important;
+  font-weight: 500;
+}
+
+.card-content {
+  background-color: #fff;
+  
+}
+
+.cust-table {
+  border: 1px solid #6A37F4 !important;;
+}
+
+.currency-total {
+  font-size: 1.5rem;
+}
+
+.shipping-details-header {
+  p {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  span {
+    border: 1px solid #6A37F4 !important;;
+    min-width: 70px;
+    height: 30px;
+    display: flex;
+    padding: 5px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 30px;
+  }
+}
+
+.shippment-port-container {
+  border: 1px solid #dedede !important;;
+  border-radius: 10px;
+  position: relative; /* Ensure it can be moved relative to its normal flow */
+    width: 113%; /* Increase the width as needed */
+    margin-left: -50px; /* Move it to the left */
+}
+
+.transshipment-card-label{
+  p{
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.tranship-card{
+  background: rgb(243,246,255);
+}
+
+.submit-form-btn{
+  background-color: #a261fd;
+  color: #fff;
+  font-weight: 500;
+}
+
+.left-card{
+  span{
+    font-size: 1rem;
+    font-weight: 400;
+  }
+}
+
+.tag-content{
+  background-color: rgb(243,246,255);
+  /* width: 150px; */
+  padding: 5px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50px;
+}
+
+.primary-bg-color{
+  background-color: #a261fd;
+  color: #fff;
+}
+
+/* TABLE CSS */
+
+.text-purple {
+  color: #451197;
+}
+
+/* .ant-table-thead th {
+  padding: 0 !important;
+  height: 0 !important;
+}
+
+.ant-table-thead > tr > th::before,
+.ant-table-thead > tr > th::after {
+  display: none !important;
+} */
+
+
+
+/* Begin: Custom styles to optimize table heading spacing and alignment */
+.ant-table-thead th {
+  padding: 8px 16px !important; /* Adjust padding for proper spacing */
+  line-height: 1.2 !important; /* Improve text alignment */
+  vertical-align: middle; /* Ensure headings align properly */
+}
+
+.ant-table-thead > tr > th::before,
+.ant-table-thead > tr > th::after {
+  display: none !important; /* Remove unnecessary lines */
+}
+
+.ant-table-thead > tr:nth-child(2) {
+  display: none; /* Hide the second header row entirely */
+}
+/* End: Custom styles to optimize table heading spacing and alignment */

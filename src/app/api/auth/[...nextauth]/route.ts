@@ -1,29 +1,37 @@
+import { loginEndPoint } from "@/network/endpoints";
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
+
 const handler = NextAuth({
-    // Configure one or more authentication providers
     providers: [
         CredentialsProvider({
             name: 'Credentials',
-            credentials: {},
+            credentials: {
+              email: {},
+              password: {},
+            },
             async authorize(credentials, req) {
-              // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
-              // (i.e., the request IP address)
               console.log(credentials);
-              
-              const res = await fetch("https://fakestoreapi.com/products/1")
-              const user = await null
-        
-              // If no error and we have user data, return it
-              if (res.ok ) {
-                return { id: "1", name: ""}
+              if(credentials?.email && credentials?.password){                
+                const res = await loginEndPoint({businessEmail:credentials?.email, password:credentials?.password})
+                console.log(res);
+                
+                if (res.code ) {
+                  return { id:"",email: res.data.token,name: res.data.name}
+                }else{
+                  throw new Error(res?.message);
+                }
               }
-              // Return null if user data could not be retrieved
+
+              
               return null
             }
           })
       ],
+      session:{
+        maxAge: 7*24*60*60
+      }
 })
 
 export { handler as GET, handler as POST }
