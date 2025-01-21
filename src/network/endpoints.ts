@@ -203,14 +203,10 @@ export const verifyOtp = async(businessEmail:string,otp:String,token:String) =>{
     .catch((error:any) =>({message:error.response.data.message,code:false,data:null}))
 }
 export async function getCountry(){
-    try {
-      const response = await axios("/api/location/country/n",{headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0',
-    }}); // Replace "location/countries" with your actual endpoint
-      return { data: response.data.data, code: true, message: "" };
-    } catch (error: any) {
+  try {
+    const response = await axios("/api/location/country/n"); // Replace "location/countries" with your actual endpoint
+    return { data: response.data.data, code: true, message: "" };
+  } catch (error: any) {
       return { message: error.response?.data?.message || "Error fetching countries", code: false, data: null };
     }
   }
