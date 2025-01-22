@@ -3,6 +3,7 @@ import {Dispatch, SetStateAction } from "react"
 
 export type SignUPType = {
     fullName:string,
+    
     businessEmail:string,
     password:string,
     mobile:string,
