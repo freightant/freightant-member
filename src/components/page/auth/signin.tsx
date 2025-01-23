@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { signIn } from "next-auth/react";
 import UnAuthHOC from "@/components/supportcomponents/auth/UnAuthHOC";
 import { useRouter } from "next/navigation";
-import { updateUserKYCStatus } from '@/network/endpoints'; 
+import { updateUserKYCStatus, getSessionCache } from '@/network/endpoints'; 
 
 const SignInUI = () => {
   const router = useRouter();
@@ -28,27 +28,81 @@ const SignInUI = () => {
   };
 
   // Handle login
-  const handleFinish = (user: { email: string; password: string }) => {
+  // const handleFinish = (user: { email: string; password: string }) => {
+  //   setformLoading(true);
+  //   signIn("credentials", {
+  //     email: user.email,
+  //     password: user.password,
+  //     redirect: false,
+  //   })
+  //     .then((r) => {
+  //       if (r?.ok && r?.status !== 401) {
+  //         router.replace("/");
+  //       } else {
+  //         message.error(r?.error);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log("err ", err.message);
+  //     })
+  //     .finally(() => {
+  //       setformLoading(false);
+  //     });
+  // };
+
+  //updated handlefinish
+
+  const handleFinish = async (user: { email: string; password: string }) => {
     setformLoading(true);
-    signIn("credentials", {
-      email: user.email,
-      password: user.password,
-      redirect: false,
-    })
-      .then((r) => {
-        if (r?.ok && r?.status !== 401) {
-          router.replace("/");
-        } else {
-          message.error(r?.error);
-        }
-      })
-      .catch((err) => {
-        console.log("err ", err.message);
-      })
-      .finally(() => {
-        setformLoading(false);
+  
+    try {
+      // Sign in the user
+      const signInResponse = await signIn("credentials", {
+        email: user.email,
+        password: user.password,
+        redirect: false,
       });
+  
+      if (signInResponse?.ok && signInResponse?.status !== 401) {
+        // Fetch user session to get the token
+        const userSession = await getSessionCache();
+        const token = userSession?.user?.email;
+  
+        // Call Profile Status Check API
+        const profileResponse = await fetch(
+          "https://freightant-api.onrender.com/api/user/profileStatus",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+  
+        if (profileResponse.ok) {
+          const data = await profileResponse.json();
+          // Redirect based on profile status
+          if (data.profileStatus === "incomplete") {
+            router.replace("/onboarduser");
+          } else if (data.profileStatus === "verified") {
+            router.replace("/dashboard");
+          } else {
+            message.error("Unknown profile status");
+          }
+        } else {
+          message.error("Failed to check profile status");
+        }
+      } else {
+        message.error(signInResponse?.error || "Login failed");
+      }
+    } catch (err: any) {
+      console.log("Error:", err.message);
+      message.error("An unexpected error occurred");
+    } finally {
+      setformLoading(false);
+    }
   };
+  
   
   // const handleFinish = (user: { email: string; password: string }) => {
   //   setformLoading(true);

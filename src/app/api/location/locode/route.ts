@@ -24,17 +24,24 @@ select distinct
   t2.emoji,
   t2.currency,
   t2.name as countryname,
-  ${sql`COALESCE(MAX(t3.name), '') AS statename`},
-  t1."FullName"
+  COALESCE(MAX(t3.name), '') AS statename,
+  t1."FullName",
+  CONCAT(
+    t1."Location",
+    ' ',
+    SPLIT_PART(t1."Name", ' ', 1), -- Extract the first word from the "Name" column
+    ' ',
+    t2.name
+  ) AS formatted_port
 from
   locode as t1
   inner join countries as t2 on t2.iso2 = t1."Country"
   left join states as t3 on t3.iso2 = t1."Subdivision"
 where
-  t1."Location" ilike ${"%"+str + "%"}
-  or t1."Country" ilike ${"%"+str + "%"}
-  or t1."Name" ilike ${"%"+str + "%"}
-  or t1."FullName" ilike ${"%"+str + "%"}
+  t1."Location" ilike ${"%" + str + "%"}
+  or t1."Country" ilike ${"%" + str + "%"}
+  or t1."Name" ilike ${"%" + str + "%"}
+  or t1."FullName" ilike ${"%" + str + "%"}
 group by
   t1.id,
   t1."Country",
