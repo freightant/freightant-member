@@ -62,15 +62,96 @@
 //     </div>
 //   );
 // }
+// "use client";
+
+// import Layout from "@/app/auth/layout";
+// import Signin from "./auth/signin/page"; // Adjust the path as needed
+
+// export default function Home() {
+//   return (
+//     <Layout>
+//       <Signin />
+//       </Layout>
+//   );
+// }
+// "use client";
+
+// import { useEffect } from "react";
+// import { useRouter } from "next/navigation"; // Use next/navigation instead of next/router
+// import { getSession } from "next-auth/react";
+// import Layout from "@/app/auth/layout";
+// import Signin from "./auth/signin/page"; // Adjust the path as needed
+
+// export default function Home() {
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const checkProfileStatus = async () => {
+//       try {
+//         const session = await getSession();
+
+//         if (session) {
+//           const token = session?.user?.email;
+
+//           const response = await fetch(
+//             "https://freightant-api.onrender.com/api/user/profileStatus",
+//             {
+//               method: "GET",
+//               headers: {
+//                 Authorization: `Bearer ${token}`,
+//               },
+//             }
+//           );
+
+//           if (response.ok) {
+//             const data = await response.json();
+
+//             // Redirect based on profile status
+//             if (data.profileStatus === "incomplete") {
+//               router.replace("/onboarduser");
+//             } else if (data.profileStatus === "verified") {
+//               router.replace("/dashboard");
+//             } else {
+//               console.error("Unknown profile status");
+//             }
+//           } else {
+//             console.error("Failed to check profile status");
+//           }
+//         } else {
+//           console.log("No session found");
+//         }
+//       } catch (error) {
+//         console.error("Error during profile status check:", error);
+//       }
+//     };
+
+//     checkProfileStatus();
+//   }, [router]);
+
+//   return (
+//     <Layout>
+//       <Signin />
+//     </Layout>
+//   );
+// }
+
 "use client";
 
+import { useEffect } from "react";
+import { signOut } from "next-auth/react"; // Import NextAuth's signOut method
 import Layout from "@/app/auth/layout";
 import Signin from "./auth/signin/page"; // Adjust the path as needed
 
 export default function Home() {
+  useEffect(() => {
+    // Clear the session data by signing out the user
+    signOut({ redirect: false }); // `redirect: false` ensures it doesn't reload the page
+    localStorage.removeItem("profileStatus"); // Remove profile status if stored locally
+  }, []);
+
   return (
     <Layout>
       <Signin />
-      </Layout>
+    </Layout>
   );
 }
