@@ -42,7 +42,7 @@ export function PostSuccessModal({id,message}:{id:string,message?:string}) {
             Add New
         </Button>
         <Button 
-            onClick={() => router.push("/")} 
+            onClick={() => router.push("/dashboard")} 
             block 
             shape="round" 
             className="col-12 my-2">

@@ -17,6 +17,7 @@ import useSWR from 'swr';
 import { CountryListType } from '@/types/defaults';
 import { CustomFormUpload } from './freightforwader';
 import { FormRules } from '@/components/strings';
+import { signOut } from 'next-auth/react';
 import { abort } from 'process';
 
 const ExportImportUI = () => {
@@ -98,6 +99,22 @@ export const SideUI = ({ step, updateSteps }: { step: number, updateSteps: (e: n
                     },
                 ]}
             />
+            <div className="d-flex justify-content-center mt-4">
+    <button
+      className="btn "
+      onClick={() => {
+        // Perform necessary cleanup
+        sessionStorage.clear();
+        
+        // Sign the user out and redirect
+        signOut({ callbackUrl: "/auth/signin" });
+      }}
+      
+    >
+      Logout
+    </button>
+  </div>
+            
         </div>
     );
 }

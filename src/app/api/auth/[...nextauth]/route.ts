@@ -12,7 +12,7 @@ const handler = NextAuth({
               password: {},
             },
             async authorize(credentials, req) {
-              console.log(credentials);
+              
               if(credentials?.email && credentials?.password){                
                 const res = await loginEndPoint({businessEmail:credentials?.email, password:credentials?.password})
                 console.log(res);
