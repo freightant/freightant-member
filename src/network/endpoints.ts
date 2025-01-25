@@ -669,3 +669,48 @@ export async function showRfq(data: any) {
     };
   }
 }
+
+export async function showOrderFF(data: any) {
+  try {
+    // Retrieve user session
+    const user = await getSessionCache();
+
+    if (!user || !user.user || !user.user.email) {
+      throw new Error("User session is invalid or expired. Please log in again.");
+    }
+
+    // API call to fetch Orders for FF
+    const response = await instance.post(
+      `https://freightant-api.onrender.com/api/order/show-order/ff`,
+      data, // Pass the request body here
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.user.email}`, // Add Authorization if required
+        },
+      }
+    );
+
+    // Return success response
+    return {
+      data: response.data,
+      code: true,
+      message: "Orders successfully retrieved",
+    };
+  } catch (error: any) {
+    // Handle errors
+    const errorMessage =
+      error.response?.data?.error ||
+      error.message ||
+      "An unexpected error occurred while fetching the orders.";
+
+    console.error("API Error:", error);
+
+    return {
+      message: errorMessage,
+      code: false,
+      data: null,
+    };
+  }
+}
+
