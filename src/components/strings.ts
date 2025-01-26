@@ -86,3 +86,5 @@ const FormRules = {
     pincodes:{min:5,max:8,message: 'Invalid Pincode'},
 }
 export {strings, FormRules} 
+
+
