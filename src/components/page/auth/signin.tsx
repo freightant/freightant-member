@@ -86,8 +86,15 @@ const SignInUI = () => {
             router.replace("/onboarduser");
           } else if (data.profileStatus === "verified") {
             router.replace("/dashboard");
-          } else {
-            message.error("Unknown profile status");
+          }
+          else if (data.profileStatus === "rejected") {
+            message.error("Your profile was not approved due to KYC issues. Please review and sign up again. Thank you!");
+          }
+          else if (data.profileStatus === "in_review") {
+            message.error("Your profile is being validated, please check back with us soon or kindly reach out to us at hello@freightant.com ");
+          }
+          else {
+            message.error("Your Profile is under review kindly wait until it's verified.");
           }
         } else {
           message.error("Failed to check profile status");

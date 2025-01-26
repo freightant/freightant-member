@@ -211,28 +211,61 @@ const SignUpOTPUI:React.FC<signupotp> =({setSteps,f,token,setToken,value}) =>{
       }
     })
   }
-  const handleFinish = ()=>{
-    setFormLoading(true)
-    verifyOtp(f.getFieldValue("businessEmail"),otp,token)
-    .then(r=>{
-      if(r.code){
-        signUPEndPoint(value)
-        .then(r=>{
-          if(r.code){
-            setSteps(i=>++i)
-          }else{         
-            message.error(r?.message)
-          }
-        })
-        .catch(r=>{
-          console.log(r.message);        
-        }).finally(()=>setFormLoading(false))
-      }
-    })
-    .catch(r=>{
-      console.log(r);
-    }).finally(()=>setFormLoading(false))
-  } 
+  // const handleFinish = ()=>{
+  //   setFormLoading(true)
+  //   verifyOtp(f.getFieldValue("businessEmail"),otp,token)
+  //   .then(r=>{
+  //     if(r.code){
+  //       signUPEndPoint(value)
+  //       .then(r=>{
+  //         if(r.code){
+  //           setSteps(i=>++i)
+  //         }else{         
+  //           message.error(r?.message)
+  //         }
+  //       })
+  //       .catch(r=>{
+  //         console.log(r.message);        
+  //       }).finally(()=>setFormLoading(false))
+  //     }
+  //   })
+  //   .catch(r=>{
+  //     console.log(r);
+  //   }).finally(()=>setFormLoading(false))
+  // } 
+
+  const handleFinish = () => {
+    setFormLoading(true);
+  
+    verifyOtp(f.getFieldValue("businessEmail"), otp, token)
+      .then((r) => {
+        if (r.code) {
+          // If OTP verification is successful
+          signUPEndPoint(value)
+            .then((res) => {
+              if (res.code) {
+                setSteps((i) => ++i); // Proceed to the next step
+              } else {
+                // Show error message if sign-up fails
+                message.error(res?.message || "Sign-up failed. Please try again.");
+              }
+            })
+            .catch((err) => {
+              console.log(err.message);
+            })
+            .finally(() => setFormLoading(false));
+        } else {
+          // Show error toast for invalid OTP
+          message.error(r.message || "Invalid OTP. Please try again.");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        message.error(err.message || "An error occurred. Please try again.");
+      })
+      .finally(() => setFormLoading(false));
+  };
+  
     useEffect(() => {
       if(token){
         setResentCounters(60)

@@ -103,7 +103,7 @@ const QuotationList = () => {
             rfqNumber: item.rfqNumber || "N/A",
             tradeType: item.tradeType || "N/A",
             portOfLoading: item.portOfLoading || "N/A", 
-            portOfDischarge: item.portOfDischarge || "N/A", 
+            portOfDischarge: item.dischargePortFullNameCountry            || "N/A", 
             rfqStatus: item.rfqStatus || "N/A", 
             modeOfShipment: item.modeOfShipment || "N/A", // updated to take mode from API response
             quotationNumber: item.quotationNumber || "N/A", // updated to match quotationNumber
@@ -443,7 +443,8 @@ const QuotationList = () => {
             { label: "RFQ Number", value: quotation.rfqNumber },
             { label: "Trade Type", value: quotation.tradeType },
             { label: "Port of Loading", value: quotation.portOfLoading },
-            { label: "Port of Discharge", value: quotation.portOfDischarge },
+            { label: "Port of Discharge", value: quotation.portOfDischarge
+            },
             { label: "RFQ Status", value: quotation.rfqStatus },
             {
               label: filters.mode, // Set the label to the filter mode
