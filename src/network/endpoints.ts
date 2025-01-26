@@ -4,6 +4,7 @@ import { getSession } from "next-auth/react";
 import type { SignUPType, loginType, signupType2 } from "@/types/defaults";
 import axios from "axios";
 
+
 export interface DefaultSessionLocal {
     user?: {
       name?: string | null
