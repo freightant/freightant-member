@@ -17,7 +17,7 @@ type QuotationData = {
   rfqStatus: string;
   modeOfShipment: string;
   quotationNumber: string;
-  quotationCreationDate: string;
+  quotationDate: string;
   containerDetails: ContainerDetails[];
 };
 
@@ -102,14 +102,13 @@ const QuotationList = () => {
           const mappedData: QuotationData[] = response.data.quotations.map((item: any) => ({
             rfqNumber: item.rfqNumber || "N/A",
             tradeType: item.tradeType || "N/A",
-            portOfLoading: item.portOfLoading || "N/A", 
+            portOfLoading: item.loadingPortFullNameCountry || "N/A", 
             portOfDischarge: item.dischargePortFullNameCountry            || "N/A", 
             rfqStatus: item.rfqStatus || "N/A", 
             modeOfShipment: item.modeOfShipment || "N/A", // updated to take mode from API response
             quotationNumber: item.quotationNumber || "N/A", // updated to match quotationNumber
-            quotationCreationDate: item.quotationCreationDate
-              ? new Date(item.quotationCreationDate).toLocaleDateString()
-              : "N/A",
+            quotationDate: item.quotationCreationDate
+              || "N/A",
             containerDetails: item.containerDetails?.map((container: any) => ({
               typee: container.typee || "N/A",
               name: container.name || "N/A",
@@ -378,7 +377,7 @@ const QuotationList = () => {
         {quotation.quotationNumber}
       </td>
       <td style={{ color: "black", textAlign: "center" }}>
-        {quotation.quotationCreationDate}
+        {quotation.quotationDate}
       </td>
     </tr>
   ))}
@@ -471,7 +470,7 @@ const QuotationList = () => {
             { label: "Quotation Number", value: quotation.quotationNumber },
             {
               label: "Quotation Created On",
-              value: quotation.quotationCreationDate,
+              value: quotation.quotationDate,
             },
           ].map((item, index) => (
             <div

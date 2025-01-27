@@ -119,6 +119,7 @@ export const SideUI = ({ step, updateSteps }: { step: number, updateSteps: (e: n
     );
 }
 
+
 const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<number>> }) => {
     const [form] = Form.useForm();
     const [countryList, setCountryList] = useState<CountryListType[]>([])
@@ -230,7 +231,10 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
     }, [])
     const layout = {};
 
+    const { data, error, isLoading } = useSWR("/", getUser);
+    
     return (
+        
         <Form
             {...layout}
             layout='vertical'
@@ -239,7 +243,27 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
             autoComplete="off"
             validateMessages={validateMessages}
         >
-            <h3 className="text-primary2 fw-bolder mb-5">KYC Details - Exporter / Importer - {+countryId === 101 ? "India" : "Global"}</h3>
+            
+           <div className="d-flex justify-content-between align-items-center mb-5">
+  <h3 className="text-primary2 fw-bolder">
+    KYC Details - Exporter / Importer - {+countryId === 101 ? "India" : "Global"}
+  </h3>
+  
+  {/* <h4 className="mb-0">Welcome {}</h4> */}
+
+  
+          {
+            // Define userName here before rendering it
+            (() => {
+              const userName = data?.data?.user?.name;
+              return <h6 style={{ borderRadius: "50px" }} className="bg-white border border-gray-300  rounded-lg p-3 shadow-md ml-8">
+              <span role="img" aria-label="Hi emoji">👋</span> Welcome, {userName || "Guest"}!
+            </h6>;
+            })()
+          }
+        
+</div>
+
             <Row gutter={[16, 8]} justify={"center"}>
                 <Col xs={22} md={24}>
                     <Form.Item label="Company Name" className='col-12 col-md-8' required name="companyName" rules={[{ required: true, }]}>
