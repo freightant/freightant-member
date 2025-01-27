@@ -13,12 +13,45 @@ type OrderData = {
   rfqNumber: string;
   orderNumber: string;
   orderDate: string;
-  portPair: string;
-  equipment: string;
-  forwarder: string;
+  portOfLoading: string; // Updated field name
+  portOfDischarge: string; // Updated field name
+  container: ContainerDetails[]; // Matches the array of containers
   quotationNumber: string;
-  forwarderContact: string;
+  quotationerOrganization: string; // Updated field name
+  pointOfContact: PointOfContact[]; // Matches the array of contacts
+  rfqStatus: string; // Added field
 };
+
+type ContainerDetails = {
+  cargo: CargoData; // Matches the nested "cargo" object
+  typee: string; // Container type
+  name: string; // Container name
+  quantity: number; // Number of containers
+  _id: string; // Unique ID
+};
+
+type CargoData = {
+  typee: string; // Cargo type
+  category: string[]; // Array of categories
+  hsCode: string[]; // Array of HS codes
+  weight: number; // Cargo weight
+  imoClass?: string; // Optional IMO class
+  unNumber?: string; // Optional UN number
+  packagingMaterial?: string; // Optional packaging material
+  msdsDocument?: string; // Optional MSDS document
+  temperature?: string; // Optional temperature
+  humidity?: string; // Optional humidity
+  remarks?: string; // Optional remarks
+  gaugeStatus?: string; // Optional gauge status
+};
+
+type PointOfContact = {
+  name: string; // Contact person's name
+  mobile: string; // Contact person's mobile number
+  email: string; // Contact person's email
+  _id: string; // Unique ID
+};
+
 
 const OrderList = () => {
   const [filters, setFilters] = useState<FilterState>({
@@ -61,26 +94,46 @@ const OrderList = () => {
       const response = await showOrder(requestBody);
 
       if (response.code) {
-        const mappedData = response.data.map((item: any) => ({
+        const mappedData: OrderData[] = response.data.map((item: any) => ({
           rfqNumber: item.rfqNumber || "N/A",
           orderNumber: item.orderNumber || "N/A",
-          orderDate: item.orderDate
-            ? new Date(item.orderDate).toLocaleDateString()
-            : "N/A",
-          portPair: `${item.portOfLoading || "N/A"} - ${
-            item.portOfDischarge || "N/A"
-          }`,
-          equipment: item.container?.length
-  ? item.container.map((cont: { name: string; quantity: number }) => `${cont.name}*${cont.quantity}`).join(", ")
-  : "N/A",
-
-          forwarder: item.quotationerOrganization || "N/A",
+          orderDate: item.orderDate || "N/A",
+          portOfLoading: item.portOfLoading || "N/A",
+          portOfDischarge: item.portOfDischarge || "N/A",
+          container: item.container?.map((cont: any) => ({
+            cargo: {
+              typee: cont.cargo.typee || "N/A",
+              category: cont.cargo.category || ["N/A"],
+              hsCode: cont.cargo.hsCode || [],
+              weight: cont.cargo.weight || 0,
+              imoClass: cont.cargo.imoClass || undefined,
+              unNumber: cont.cargo.unNumber || undefined,
+              packagingMaterial: cont.cargo.packagingMaterial || undefined,
+              msdsDocument: cont.cargo.msdsDocument || undefined,
+              temperature: cont.cargo.temperature || undefined,
+              humidity: cont.cargo.humidity || undefined,
+              remarks: cont.cargo.remarks || undefined,
+              gaugeStatus: cont.cargo.gaugeStatus || undefined,
+            },
+            typee: cont.typee || "N/A",
+            name: cont.name || "N/A",
+            quantity: cont.quantity || 0,
+            _id: cont._id || "N/A",
+          })) || [],
           quotationNumber: item.quotationNumber || "N/A",
-          forwarderContact:
-            item.pointOfContact?.[0]?.email || "Contact Not Available",
+          quotationerOrganization: item.quotationerOrganization || "N/A",
+          pointOfContact: item.pointOfContact?.map((contact: any) => ({
+            name: contact.name || "N/A",
+            mobile: contact.mobile || "N/A",
+            email: contact.email || "N/A",
+            _id: contact._id || "N/A",
+          })) || [],
+          rfqStatus: item.rfqStatus || "N/A",
         }));
+    
         setOrders(mappedData);
-      } else {
+      } 
+       else {
         message.error(response.message || "Failed to fetch orders.");
       }
     } catch (err: any) {
@@ -135,15 +188,8 @@ const OrderList = () => {
         }}
       >
         {/* Mode of Shipment */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left" as "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Mode of Shipment
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -175,15 +221,8 @@ const OrderList = () => {
         </div>
 
         {/* Trade Type */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left" as "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Trade Type
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -250,7 +289,7 @@ const OrderList = () => {
   }}
 >
 <thead>
-  <tr>
+  <tr style={{lineHeight:"30px"}}>
     <th
       style={{
         color: "#0A0049",
@@ -294,7 +333,7 @@ const OrderList = () => {
         textAlign: "center",
         fontSize: "14px",
         fontWeight: "600",
-        width: "11%", // Adjust width as needed
+        width: "100px" // Adjust width as needed
       }}
     >
       Port Pair
@@ -310,7 +349,15 @@ const OrderList = () => {
         width: "11%", // Adjust width as needed
       }}
     >
-      Equipment
+      {filters.mode === "Sea-FCL"
+        ? "Equipment"
+        : filters.mode === "Sea-LCL"
+        ? "MT/CBM"
+        : filters.mode === "Air"
+        ? "Chargeable Weight (Kg)"
+        : filters.mode === "Cross Border Trucking"
+        ? "Truck Type"
+        : "Equipment"}
     </th>
     <th
       style={{
@@ -352,45 +399,74 @@ const OrderList = () => {
 </thead>
 
         <tbody>
+        <style jsx>
+{`
+  tr:nth-child(even) {
+    background-color: #f3f6ff; /* Light blue for even rows */
+  }
+  tr:nth-child(odd) {
+    background-color: white; /* White for odd rows */
+  }
+  tr.selected {
+    background-color: #f6f4ff !important; /* Highlight selected row */
+    border: 1px solid #6a37f4; /* Selected row border */
+  }
+`}
+</style>
           {orders.map((order) => (
           <tr
           key={order.rfqNumber}
-          onClick={() => setSelectedRow(order.rfqNumber)} // Set selected row
+          className={selectedRow === order.rfqNumber ? "selected" : ""}
+          onClick={() => setSelectedRow(order.rfqNumber )} // Set selected row
           style={{
-            backgroundColor:
-              selectedRow === order.rfqNumber ? "#F6F4FF" : "white",
-            border:
-              selectedRow === order.rfqNumber ? "1px solid #6A37F4" : "none",
+           // Odd row background (light grey)
+           
             cursor: "pointer",
             transition: "background-color 0.3s ease",
             color: "black", // Set text color to black
+            fontSize:"12px",
+            lineHeight:"30px",
+            borderRadius: "20px",
           }}
         >
         
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.rfqNumber}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.orderNumber}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.orderDate}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.portPair}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.equipment}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.quotationNumber}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.forwarder}
-              </td>
-              <td style={{ padding: "10px", textAlign: "center" }}>
-                {order.forwarderContact}
-              </td>
+        <td style={{ padding: "10px", textAlign: "center" }}>
+  {order.rfqNumber}
+</td>
+<td style={{ padding: "10px", textAlign: "center" }}>
+  {order.orderNumber}
+</td>
+<td style={{ padding: "10px", textAlign: "center" }}>
+  {order.orderDate}
+</td>
+<td style={{ padding: "10px", textAlign: "center" }}>
+{`${order.portOfLoading} - ${order.portOfDischarge}`} 
+</td>
+{/* Dynamic column value based on filters.mode */}
+<td style={{ color: "black", textAlign: "center" }}>
+  {filters.mode === "Sea-FCL" || filters.mode === "Sea-LCL"
+    ? `${order.container?.[0]?.name || "-"} * ${
+        order.container?.[0]?.quantity || 0
+      }`
+    : filters.mode === "Air"
+    ? `${order.container?.[0]?.cargo?.weight || 0}` // Replace with chargeableWeight if available
+    : filters.mode === "Cross Border Trucking"
+    ? "Truck type unavailable" // Replace with truckType if applicable
+    : ""}
+</td>
+<td style={{ padding: "10px", textAlign: "center" }}>
+  {order.quotationNumber}
+</td>
+<td style={{ padding: "10px", textAlign: "center" }}>
+  {order.quotationerOrganization || "Not Available"}
+</td>
+
+<td style={{ padding: "10px", textAlign: "center" }}>
+  {order.pointOfContact?.[0]?.email || order.pointOfContact?.[0]?.mobile}
+    
+</td>
+
+
             </tr>
           ))}
         </tbody>
@@ -448,28 +524,51 @@ const OrderList = () => {
       .map((shipment) => (
         <div key={shipment.rfqNumber}>
           {[
-            { label: 'RFQ Number', value: shipment.rfqNumber },
-            { label: 'Order Number', value: shipment.orderNumber },
-            { label: 'Order Date', value: shipment.orderDate },
-            { label: 'Port Pair', value: shipment.portPair},
-           
-            {
-              label: 'Equipment',
-              value:
-                filters.mode === 'Sea-FCL'
-                  ? shipment.equipment || '-'
-                  : filters.mode === 'Sea-LCL'
-                  ? shipment.equipment || '-'
-                  : filters.mode === 'Air'
-                  ? shipment.equipment || '-'
-                  : filters.mode === 'Cross Border Trucking'
-                  ? 'Truck type unavailable'
-                  : '',
-            },
-            
-            { label: 'Forwarder', value: shipment.forwarder },
-            { label: 'Quaotation Number', value: shipment.quotationNumber },
-            { label: 'Forwarder Contact', value: shipment.forwarderContact},
+          {
+            label: 'RFQ Number',
+            value: shipment.rfqNumber || 'N/A',
+          },
+          {
+            label: 'Order Number',
+            value: shipment.orderNumber || 'N/A',
+          },
+          {
+            label: 'Order Date',
+            value: shipment.orderDate || 'N/A',
+          },
+          {
+            label: 'Port Pair',
+            value: `${shipment.portOfLoading || 'N/A'} - ${shipment.portOfDischarge || 'N/A'}`,
+          },
+          {
+            label: 'Equipment',
+            value:
+            filters.mode === "Sea-FCL" || filters.mode === "Sea-LCL"
+              ? `${shipment.container?.[0]?.name || "-"} * ${
+                  shipment.container?.[0]?.quantity || 0
+                }`
+              : filters.mode === "Air"
+              ? `${shipment.container?.[0]?.cargo?.weight || 0}` // Replace with chargeableWeight if available
+              : filters.mode === "Cross Border Trucking"
+              ? "Truck type unavailable" // Replace with truckType if applicable
+              : ""
+          },
+          {
+            label: 'Forwarder',
+            value: shipment.quotationerOrganization || "N/A",
+          },
+          {
+            label: 'Quotation Number',
+            value: shipment.quotationNumber || 'N/A',
+          },
+          {
+            label: 'Forwarder Contact',
+            value: shipment.pointOfContact?.[0]
+              ? `${shipment.pointOfContact[0].email || 'Email not available'}, ${shipment.pointOfContact[0].mobile || 'Mobile not available'}`
+              : 'Contact not available',
+          },
+          
+          
           ].map((item, index) => (
             <div
               key={index}
