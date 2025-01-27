@@ -154,15 +154,9 @@ const RFQList = () => {
         }}
       >
         {/* Mode of Shipment */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left" as "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+
+          <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Mode of Shipment
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -194,15 +188,9 @@ const RFQList = () => {
         </div>
 
         {/* Trade Type */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left" as "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+
+        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Trade Type
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -222,15 +210,9 @@ const RFQList = () => {
         </div>
 
         {/* Status */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+
+          <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Status
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -419,10 +401,10 @@ const RFQList = () => {
             selectedRow === shipment.rfqNumber ? "#F6F4FF" : "white",
           border:
             selectedRow === shipment.rfqNumber ? "1px solid #6A37F4" : "none",
-          cursor: "pointer", // Add cursor pointer to indicate it's clickable
-
-          
+          cursor: "pointer", // Add cursor pointer to indicate it's clickable  
           transition: "background-color 0.3s ease", 
+          fontSize: "12px",
+        lineHeight:"36px",
         }}
       >
         <td style={{ color: "black", textAlign: "center" }}>

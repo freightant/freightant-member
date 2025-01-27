@@ -137,6 +137,8 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
             console.log(r,"h");            
         })
     },[])
+
+    const { data } = useSWR("/", getUser);
     return (
         <Form
             {...layout}
@@ -147,7 +149,26 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
             autoComplete="off"
             validateMessages={validateMessages}
         >
-            <h3 className="text-primary2 fw-bolder mb-5">KYC Details - Freight forwarder - {+countryId === 101 ? "India" : "Global"}</h3>
+            {/* <h3 className="text-primary2 fw-bolder mb-5">KYC Details - Freight forwarder - {+countryId === 101 ? "India" : "Global"}</h3> */}
+
+            <div className="d-flex justify-content-between align-items-center mb-5">
+  <h3 className="text-primary2 fw-bolder">
+   KYC Details - Freight forwarder - {+countryId === 101 ? "India" : "Global"}
+  </h3>
+    
+          {
+            // Define userName here before rendering it
+            (() => {
+              const userName = data?.data?.user?.name;
+              return <h6 style={{ borderRadius: "50px" }} className="bg-white border border-gray-300  rounded-lg p-3 shadow-md mr-8">
+              <span role="img" aria-label="Hi emoji">👋</span> Welcome, {userName || "Guest"}!
+            </h6>;
+            })()
+          }
+        
+</div>
+
+
             <Row gutter={[16, 8]} justify={"center"}>
                 <Col xs={22} md={24}>
                     <Form.Item label="Company Name" className='col-12 col-md-8' required name="companyName" rules={[{ required: true, message: "Field Required" }]}>

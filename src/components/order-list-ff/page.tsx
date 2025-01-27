@@ -117,15 +117,8 @@ const OrderListFF = () => {
         }}
       >
         {/* Mode of Shipment */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left" as "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Mode of Shipment
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -157,15 +150,8 @@ const OrderListFF = () => {
         </div>
 
         {/* Trade Type */}
-        <div style={{ backgroundColor: "white", padding: "16px", borderRadius: "20px" }}>
-          <div
-            style={{
-              fontSize: "16px",
-              color: "black",
-              textAlign: "left" as "left",
-              margin: "-40px 10px",
-            }}
-          >
+        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
             Trade Type
           </div>
           <div style={{ display: "flex", gap: "12px" }}>
@@ -232,7 +218,7 @@ const OrderListFF = () => {
   }}
 >
 <thead>
-  <tr>
+  <tr style={{lineHeight:"30px"}}>
     <th
       style={{
         color: "#0A0049",
@@ -276,7 +262,7 @@ const OrderListFF = () => {
         textAlign: "center",
         fontSize: "14px",
         fontWeight: "600",
-        width: "11%", // Adjust width as needed
+        width: "100px" // Adjust width as needed
       }}
     >
       Port Pair
@@ -346,6 +332,8 @@ const OrderListFF = () => {
             cursor: "pointer",
             transition: "background-color 0.3s ease",
             color: "black", // Set text color to black
+            fontSize:"12px",
+            lineHeight:"30px",
           }}
         >
         

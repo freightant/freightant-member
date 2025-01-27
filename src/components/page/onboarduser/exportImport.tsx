@@ -231,7 +231,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
     }, [])
     const layout = {};
 
-    const { data, error, isLoading } = useSWR("/", getUser);
+    const { data } = useSWR("/", getUser);
     
     return (
         
@@ -256,7 +256,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
             // Define userName here before rendering it
             (() => {
               const userName = data?.data?.user?.name;
-              return <h6 style={{ borderRadius: "50px" }} className="bg-white border border-gray-300  rounded-lg p-3 shadow-md ml-8">
+              return <h6 style={{ borderRadius: "50px" }} className="bg-white border border-gray-300  rounded-lg p-3 shadow-md mr-8">
               <span role="img" aria-label="Hi emoji">👋</span> Welcome, {userName || "Guest"}!
             </h6>;
             })()

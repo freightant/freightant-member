@@ -219,9 +219,9 @@ const headerStyle: React.CSSProperties = {
 };
 
 const contentStyle: React.CSSProperties = {
-    textAlign: 'center',
+    // textAlign: 'center',
     minHeight: 120,
-    lineHeight: '120px',
+    lineHeight: '60px',
     color: '#fff',
     backgroundColor: '#F3F6FF',
 };
