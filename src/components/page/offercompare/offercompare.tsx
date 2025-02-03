@@ -163,6 +163,7 @@ const OfferCompare = ({id}:{id?:any}) => {
                         <Col span={5}>
                             <Form.Item rules={[{ required: true }]} label={`Transhipment Ports`}>
                                 <LocodeSelect 
+                                form={form}
                                 change={(e:any)=>{}}
                                 wholeValue={(e:any)=>{form.setFieldValue("transhipmentPorts",JSON.stringify(e.title))}}
                                 />
@@ -184,6 +185,7 @@ const OfferCompare = ({id}:{id?:any}) => {
                                     <Form.Item rules={[{ required: true }]} name={"to"}  layout="horizontal">
                                         <DatePicker placeholder='To'/>
                                     </Form.Item>
+       
 
                                 </Space>
                             </Form.Item>

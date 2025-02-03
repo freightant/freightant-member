@@ -23,6 +23,8 @@ import { getUserRole } from '@/network/endpoints';
 
 
 
+
+
 const { Sider, Content, Header } = Layout;
 
 // Define a union type for roles
@@ -43,7 +45,7 @@ export const DashboardUI: React.FC<{ sideUI?: React.ReactNode, children: React.R
                 }
             })
             .catch(r => {
-                console.error("Error fetching session:", r);
+                console.error("Error fetching session details:", r);
             });
     }, []);
 
