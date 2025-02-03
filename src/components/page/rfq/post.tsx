@@ -567,7 +567,7 @@ let globalContainer: ContainerItem[] = [
                   ) &&
                     <>
                       <p>Place of Unloading , Destination Factory / warehouse address</p>
-                      <Row gutter={[8, 0]} justify={"center"} className='px-2' style={{ width: "90%" }}>
+                      {/* <Row gutter={[8, 0]} justify={"center"} className='px-2' style={{ width: "90%" }}>
                         <Col {...layParams2}>
                           <CountrySelect
                             f={form}
@@ -600,7 +600,47 @@ let globalContainer: ContainerItem[] = [
                             />
                           </Form.Item>
                         </Col>
-                      </Row>
+                      </Row> */}
+                      <Row gutter={[8, 0]} justify={"center"} className='px-2' style={{ width: "90%" }}>
+                          <Col {...layParams2}>
+                            <CountrySelect
+                              f={form}
+                              name={["placeOfLoading", "country"]}
+                              onChange={(e: any) => { setCountryID(e); form.setFieldsValue({ placeOfLoading: { state: null, city: null, address: null } }) }}
+                              required={true}
+                            />
+                          </Col>
+                          <Col {...layParams2}>
+                            <StateSelectV3
+                              f={form}
+                              name={["placeOfLoading", "state"]}
+                              onChange={(e: any) =>{
+                                 setStateID(e)
+                                 form.setFieldValue(["placeOfLoading", "city"],null)
+                                }}
+                              label=""
+                              countryId={`${getCountryId(placeOfLoading?.country)}`}
+                              required={true}
+
+                            />
+                          </Col>
+                          <Col {...layParams2}>
+                            <CitySelectV3
+                              f={() => { }}
+                              name={["placeOfLoading", "city"]}
+                              onChange={(e: any) => form.setFieldValue(["placeOfLoading", "city"], e)}
+                              label=""
+                              stateId={placeOfLoading?.state}
+                            />
+                          </Col>
+                          <Col span={24}>
+                            <Form.Item name={["placeOfLoading", "address"]} rules={[{ required: true }]}>
+                              <Input.TextArea
+                                placeholder="Full Address"
+                              />
+                            </Form.Item>
+                          </Col>
+                        </Row>
                     </>
                   }
                 </Col>

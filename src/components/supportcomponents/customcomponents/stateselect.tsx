@@ -198,6 +198,7 @@ export const CitySelectV2 = ({ name, label, stateId, onChange,f ,props}:{props?:
 
   const handleChange = (value:any) => {
     f((a:any)=>[...a.map((i:any,Index:number)=>(Index===name?{...i,city:value}:i))])
+    console.log(value)
     onChange(value);
   };
 
