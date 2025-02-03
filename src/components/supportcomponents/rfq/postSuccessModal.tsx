@@ -33,7 +33,7 @@ export function PostSuccessModal({id,message}:{id:string,message?:string}) {
     <div className="freightant-logo d-flex flex-column justify-content-center align-items-center my-2 mb-3">
         <Title className="text-primary2 text-center" level={3}>Congratulations</Title>
         <p className="text-mute text-center">
-            {message ? message : `RFQ ${id} Posted Successfully.`}
+            {message ? message : `${id} Posted Successfully.`}
         </p>
         <Button 
             disabled={loading} 

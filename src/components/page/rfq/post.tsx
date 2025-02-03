@@ -60,6 +60,8 @@ const defaultValue = {
   modeOfShipment: modeOfShipmentOptions[0],
 }
 const PostRFQUI = () => {
+
+  const [globalRfqNumber, setGlobalRfqNumber] = useState("");
   const [formLoading, setformLoading] = useState(false)
   const [SuccessModal, setSuccessModal] = useState(false)
   
@@ -225,11 +227,17 @@ const PostRFQUI = () => {
         readyDate: container?.readyDate || ""
       })) || []
     };
-    
-    console.log(e);
 
+    // globalRfqNumber =formValues?.rfqNumber || "N/A";
+    // console.log(globalRfqNumber)
+
+    console.log(e);
+    
     postRfQ(e).then(r => {
+      setGlobalRfqNumber(r.data.rfqNumber);
+      console.log(globalRfqNumber);
       console.log(r);
+
       if (r.code) {
         setSuccessModal(true)
         setId(r.data._id)
@@ -1574,7 +1582,7 @@ let globalContainer: ContainerItem[] = [
         </ConfigProvider>
       </Modal>
       <Modal open={SuccessModal} footer={null} closable={false}>
-        <PostSuccessModal id={Id} />
+        <PostSuccessModal id={globalRfqNumber} />
       </Modal>
     </>
   )
