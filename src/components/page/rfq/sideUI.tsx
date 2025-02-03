@@ -20,6 +20,7 @@ export const RFQSideUI = ({ step,updateSteps }: { step: number,updateSteps:(e:nu
                 current={step}
                 onChange={updateSteps}
                 items={o.state}
+                
                 />
         </div>
     );
