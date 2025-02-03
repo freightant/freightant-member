@@ -56,7 +56,7 @@ export const locodeFormatedString = (locodeObj:any):string=>{
   if (locodeObj === null || locodeObj === undefined) {
     return '';
 }
-  return `${locodeObj?.emoji} ${locodeObj?.Country}${locodeObj?.Location} - ${locodeObj?.Name},${isNumber(locodeObj.Subdivision)?"":`[${locodeObj.Subdivision}],`} ${locodeObj?.countryname}`
+  return `${locodeObj?.PortCode} ${locodeObj?.PortName}${locodeObj?.City} - ${locodeObj?.Country}`
 } 
 
 export {assetsRootPath, errorMessage, validateMessages, inter, updateArray,CBMCalculate}

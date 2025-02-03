@@ -281,14 +281,11 @@ export async function getUser(){
       return { message: error.response?.data?.message || "Error fetching cities", code: false, data: null };
     }
   }
-export async function locode(name:string){
-    try {
-      const response = await axios(`/api/location/locode?name=`+name)
-      return { data: response.data.data, code: true, message: "" };
-    } catch (error: any) {
-      return { message: error.response?.data?.message || "Error fetching cities", code: false, data: null };
-    }
-}
+  export const locode = (name: string, modeOfShipment: string) => {
+    return fetch(`/api/location/locode?name=${name}&modeOfShipment=${modeOfShipment}`)
+      .then(res => res.json());
+  };
+  
 export async function 
 locodeById(name:string){
     try {
@@ -310,6 +307,58 @@ export async function postRfQ(body:any){
     return { message: error.response?.data?.message || error?.message, code: false, data: null };
   }
 }
+
+// export async function postRfQ(body: any) {
+//   try {
+//     let user = await getSessionCache();
+
+//     // Ensure the request body structure matches the API requirement
+//     const requestBody = {
+//       modeOfShipment: body.modeOfShipment,
+//       tradeType: body.tradeType,
+//       incoterm: body.incoterm,
+//       loadingPort: body.loadingPort,
+//       dischargePort: body.dischargePort,
+//       loadingPortObj: body.loadingPortObj,
+//       dischargePortObj: body.dischargePortObj,
+//       container: body.container?.map((item: any) => ({
+//         typee: item.typee,
+//         name: item.name,
+//         quantity: item.quantity,
+//         readyDate: item.readyDate,
+//       })),
+//       closingDate: body.closingDate,
+//       cargo: {
+//         typee: body.cargo?.typee,
+//         category: body.cargo?.category,
+//         weight: body.cargo?.weight,
+//       },
+//       freeTimeLP: body.freeTimeLP,
+//       freeTimeDP: body.freeTimeDP,
+//       paymentTerms: body.paymentTerms,
+//       placeOfLoading: body.placeOfLoading,
+//       placeOfUnLoading: body.placeOfUnLoading,
+//       remarks: body.remarks,
+//       addOnService: body.addOnService,
+//     };
+
+//     const response = await instance.post(
+//       `/rfq/post`,
+//       requestBody,
+//       { headers: { Authorization: "Bearer " + user?.user?.email } }
+//     );
+
+//     return { data: response.data.data, code: true, message: "" };
+//   } catch (error: any) {
+//     console.log(error.message);
+//     return {
+//       message: error.response?.data?.message || error?.message,
+//       code: false,
+//       data: null,
+//     };
+//   }
+// }
+
 export async function getRfQ(body:any){
   try {
     let user = await getSessionCache()  
@@ -360,6 +409,7 @@ export async function verifytoken(){
 export async function postQuotation(body:any){
   try {
     let user = await getSessionCache()  
+    console.log(body);
     const response = await instance.post(`/rfq/quotation/post`,{...body},{headers:{Authorization: "Bearer " + user?.user?.email}})
     return { data: response.data.data, code: true, message: "" };
   } catch (error: any) {

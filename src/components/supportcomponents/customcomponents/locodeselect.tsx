@@ -59,36 +59,92 @@ interface UserValue {
   value: string;
 }
 
-async function fetchUserList(username: string): Promise<any> {  
-  if(username.length<3){
-    return [];
-  }
-  return locode(username)
-         .then(r=>{
-            return r.data.map((i:any)=>({...i,key:(Math.random()*1000).toFixed(0),value:i.id,label:`${i.emoji} ${i.Country}${i.formatted_port}`,title:i}))
-         })
-         .catch(r=>{
+// async function fetchUserList(username: string): Promise<any> {  
+//   if(username.length<3){
+//     return [];
+//   }
+//   return locode(username)
+//          .then(r=>{
+//           console.log(r.data);
+//             return r.data.map((i:any)=>({...i,key:(Math.random()*1000).toFixed(0),value:i.sea_port_code,label:`${i.sea_port_code} ${i.port_name} ${i.country}`,title:i}))
+//          })
+//          .catch(r=>{
             
-         })   ;
+//          })   ;
+// }
+async function fetchUserList(username: string, modeOfShipment: string): Promise<any> {  
+  if (username.length < 3) return [];
+
+  return locode(username, modeOfShipment)  // Pass modeOfShipment to the API
+    .then(r => {
+      console.log(r.data);
+
+      return r.data.map((i: any) => {
+        // Determine the fields based on modeOfShipment
+        const value = (modeOfShipment.toLowerCase() === "air") ? i.iata_code : i.sea_port_code;
+        const label = (modeOfShipment.toLowerCase() === "air") 
+          ? `${i.iata_code} ${i.airport_name} ${i.city} ${i.country}`
+          : `${i.sea_port_code} ${i.port_name} ${i.country}`;
+
+        return {
+          ...i,
+          key: (Math.random() * 1000).toFixed(0),
+          value: value,
+          label: label,
+          title: i
+        };
+      });
+    })
+    .catch(r => {
+      console.error("Error fetching locodes:", r);
+      return [];
+    });
 }
 
-const LocodeSelect = ({change,changeLocation,wholeValue,...props}:{wholeValue?:any,props?:any,mode?:any,change:any,changeLocation?:any}) => {
-  const [value, setValue] = useState<UserValue[]>([]);
+
+
+// const LocodeSelect = ({change,changeLocation,wholeValue,...props}:{wholeValue?:any,props?:any,mode?:any,change:any,changeLocation?:any}) => {
+//   const [value, setValue] = useState<UserValue[]>([]);
   
+//   return (
+//     <DebounceSelect
+//       value={value}
+//       style={{ width: '90%' }}
+//       {...props}
+//       placeholder="Select Port"
+//       suffixIcon={null}
+//       fetchOptions={fetchUserList}
+//       onChange={(newValue:any) => {
+//         if(changeLocation){
+//           changeLocation(newValue?.title.countryname,newValue?.title.statename);
+//         }
+//         if(wholeValue){
+//           wholeValue(newValue)
+//         }
+//         change(newValue?.value);
+//         setValue(newValue as UserValue[]);
+//       }}
+//     />
+//   );
+// };
+
+const LocodeSelect = ({ change, changeLocation, wholeValue, form, ...props }: { wholeValue?: any, props?: any, mode?: any, change: any, changeLocation?: any, form: any }) => {
+  const [value, setValue] = useState<UserValue[]>([]);
+
   return (
     <DebounceSelect
       value={value}
-      style={{ width: '90%' }}
+      style={{ width: "90%" }}
       {...props}
       placeholder="Select Port"
       suffixIcon={null}
-      fetchOptions={fetchUserList}
-      onChange={(newValue:any) => {
-        if(changeLocation){
-          changeLocation(newValue?.title.countryname,newValue?.title.statename);
+      fetchOptions={(username) => fetchUserList(username, form.getFieldValue("modeOfShipment"))} // Pass modeOfShipment
+      onChange={(newValue: any) => {
+        if (changeLocation) {
+          changeLocation(newValue?.title.countryname, newValue?.title.statename);
         }
-        if(wholeValue){
-          wholeValue(newValue)
+        if (wholeValue) {
+          wholeValue(newValue);
         }
         change(newValue?.value);
         setValue(newValue as UserValue[]);
@@ -96,5 +152,6 @@ const LocodeSelect = ({change,changeLocation,wholeValue,...props}:{wholeValue?:a
     />
   );
 };
+
 
 export default LocodeSelect;

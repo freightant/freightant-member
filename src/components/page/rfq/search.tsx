@@ -247,6 +247,7 @@ function RfqSearchUI() {
                 <Col sm={22} md={12}>
                   <Form.Item name={"portOfLoading"} label={<h6 className="m-0 text-primary2">Port of Loading</h6>}>
                     <LocodeSelect
+                     form={form} 
                       change={()=>{}}
                       wholeValue={(e:any)=>{form.setFieldValue("portOfLoading",e.map((v:any)=>`${v.value}`))}}
                       mode="multiple"
@@ -256,6 +257,7 @@ function RfqSearchUI() {
                 <Col sm={22} md={12}>
                   <Form.Item name={"portOfUnLoading"} label={<h6 className="m-0 text-primary2">Port of Discharge</h6>}>
                     <LocodeSelect
+                     form={form} 
                       change={()=>{}}
                       wholeValue={(e: any) => { form.setFieldValue("portOfUnLoading",e.map((v:any)=>`${v.value}`)) }}
                       mode="multiple"
@@ -366,12 +368,15 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
     container,
     addOnService,
     placeOfLoading,
-    placeOfUnLoading
+    placeOfUnLoading,
+    rfqNumber,
   } = rfqData;
 
   useEffect(()=>{
     form.setFieldsValue(rfqData)
   },[rfqData])
+
+  
   
   return (
     <Form
@@ -379,7 +384,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
     >
       <Card title={
     <span style={{ fontWeight: '600', textDecoration: 'underline', fontSize: '22px' }}>
-      RFQ ID: {"rfqId"}
+      RFQ ID: {rfqNumber}
     </span>
 } styles={{header:{borderBottomWidth:0}}} className='my-3 '
         extra={<Button className={expand?"":"d-none"} size="large" type="link" onClick={()=>setexpand(false)} icon={<UpCircleOutlined className='fs-4' />}/>}
@@ -473,7 +478,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
 } */}
 
 <Row gutter={[16, 16]} style={{ flexWrap: "wrap" }} className='px-4'>
-  {loadingPort && (
+  
     <Col span={10} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
       <Form.Item
         label={
@@ -486,7 +491,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
         <PortUI i={loadingPortObj} />
       </Form.Item>
     </Col>
-  )}
+  
   {dischargePort && (
     <Col span={10} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
       <Form.Item

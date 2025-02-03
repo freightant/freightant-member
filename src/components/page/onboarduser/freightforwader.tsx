@@ -249,7 +249,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
                 </Col>
 
                 <Col xs={22} sm={22} md={12} lg={12}>
-                    <Form.Item label="Annual Turnover in Last FY" name="annualTurnover" rules={[{ required: true }]}>
+                    <Form.Item label="Annual Turnover in Last FY" name="annualTurnover" rules={[{ required: false }]}>
                         <Input type='number' addonAfter={<p className='p-0 m-0'>{Currency}</p>} />
                     </Form.Item>
                 </Col>

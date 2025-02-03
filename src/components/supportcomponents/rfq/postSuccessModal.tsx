@@ -5,6 +5,8 @@ import Title from 'antd/es/typography/Title'
 import { m, motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { CheckCircleFilled } from "@ant-design/icons";
+import Lottie from "lottie-react";
 
 
 export function PostSuccessModal({id,message}:{id:string,message?:string}) {
@@ -14,19 +16,20 @@ export function PostSuccessModal({id,message}:{id:string,message?:string}) {
     <div className="my-5">
     {/* Include the Lottie animation */}
     <div className="d-flex justify-content-center align-items-center">
-        <lottie-player 
-            src="https://lottie.host/c2b356b1-dd03-4375-bd7b-96fe354da626/J2v6sjJdcE.json" 
-            background="" 
-            speed="1" 
-            style={{ width: "300px", height: "300px" }} 
-            loop 
-            controls 
-            autoplay 
-            direction="1" 
-            mode="normal">
-        </lottie-player>
+      <CheckCircleFilled 
+        style={{ fontSize: "80px", color: "green", animation: "pop 0.5s ease-out" }} 
+      />
+      <style>
+        {`
+          @keyframes pop {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+          }
+        `}
+      </style>
     </div>
-    
+
     <div className="freightant-logo d-flex flex-column justify-content-center align-items-center my-2 mb-3">
         <Title className="text-primary2 text-center" level={3}>Congratulations</Title>
         <p className="text-mute text-center">

@@ -531,89 +531,126 @@
 'use client';
 
 import { AuthHOC } from "@/components/supportcomponents/auth/UnAuthHOC";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getUserRole } from '@/network/endpoints';
+import { getSessionCache } from '@/network/endpoints';
 
+type Role = "FF" | "exporter/importer";
 
 const DashboardHome = () => {
-  
+  const [role, setRole] = useState<Role | null>(null);
+  const [user, setUser] = useState<any>({});
+
+  useEffect(() => {
+    // Fetch user session
+    getSessionCache()
+      .then(r => {
+        if (r?.user) {
+          setUser(r.user);
+        }
+      })
+      .catch(err => {
+        console.error("Error fetching session:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Fetch user role dynamically
+    async function fetchRole() {
+      try {
+        const result = await getUserRole();
+        console.log("Fetched Role:", result);
+
+        if (result.code && result.data) {
+          const userRole = result.data as Role;
+          setRole(userRole);
+        } else {
+          console.error("Error fetching role:", result.message);
+          setRole(null);
+        }
+      } catch (error) {
+        console.error("Error in fetchRole:", error);
+      }
+    }
+
+    fetchRole();
+  }, []);
+
   return (
     <div
-    className=""
-    style={{
-      marginTop: "3rem",
-      maxWidth: "1200px",
-      marginInline: "auto",
-      overflowY: "auto",
-      maxHeight: "500px",
-    }}
-  >
-    <div
-      style={{ borderRadius: "16px" }}
-      className="flex bg-white border border-gray-300 rounded-2xl shadow-md text-center w-full p-5"
+      className=""
+      style={{
+        marginTop: "3rem",
+        maxWidth: "1200px",
+        marginInline: "auto",
+        overflowY: "auto",
+        maxHeight: "500px",
+      }}
     >
-      {/* Centered Heading */}
-      <h1 className="text-2xl font-bold text-black pt-5 pb-4">
-        <span role="img" aria-label="Hi emoji">👋</span> Welcome to Freightant!
-      </h1>
-  
-      {/* Flex Container for Two Sections */}
-      <div className="flex flex-wrap justify-between gap-5 w-full">
-        {/* Steps for Exporters/Importers Section */}
-        <section
-          className="p-4 mb-4"
-          style={{
-            flex: "1", // Ensures both sections take equal space
-            minWidth: "48%", // Ensures that both sections maintain proper space
-            borderRadius: "16px",
-            border: "2px solid #d1d5db", // Light gray border
-            backgroundColor: "#f9fafb", // Light background color
-          }}
-        >
-          <h3 className="font-semibold text-xl mb-3 text-black">
-            Steps for Exporters/Importers
-          </h3>
-          <div className="mb-2 text-black">
-            <strong>Create RFQ</strong>: Start by creating a Request for Quotation (RFQ) to get quotes from suppliers.
-          </div>
-          <div className="mb-2 text-black">
-            <strong>See RFQ in RFQ List</strong>: View your RFQ in the RFQ list to track its status and responses.
-          </div>
-          <div className="mb-4 text-black">
-            <strong>See Order List</strong>: Once the RFQ is finalized, check your order list to view all confirmed orders.
-          </div>
-        </section>
-  
-        {/* Steps for Freight Forwarders Section */}
-        <section
-          className="p-4"
-          style={{
-            flex: "1", // Ensures both sections take equal space
-            minWidth: "48%", // Ensures that both sections maintain proper space
-            borderRadius: "16px",
-            border: "2px solid #d1d5db", // Light gray border
-            backgroundColor: "#f9fafb", // Light background color
-          }}
-        >
-          <h3 className="font-semibold text-xl mb-3 text-black">
-            Steps for Freight Forwarders
-          </h3>
-          <div className="mb-2 text-black">
-            <strong>Search RFQ</strong>: Search for the RFQs posted by exporters/importers to find relevant ones.
-          </div>
-          <div className="mb-2 text-black">
-            <strong>See Quotation List</strong>: Check the list of quotations received for your RFQ.
-          </div>
-          <div className="mb-4 text-black">
-            <strong>See Order List</strong>: Track and confirm orders once they have been finalized.
-          </div>
-        </section>
+      <div
+        style={{ borderRadius: "16px" }}
+        className="flex bg-white border border-gray-300 rounded-2xl shadow-md text-center w-full p-5"
+      >
+        <h1 className="text-2xl font-bold text-black pt-5 pb-4">
+          <span role="img" aria-label="Hi emoji">👋</span> Welcome to Freightant!
+        </h1>
+
+        <div className="flex flex-wrap justify-between gap-5 w-full">
+          {role === "exporter/importer" && (
+            <section
+              className="p-4 mb-4"
+              style={{
+                flex: "1",
+                minWidth: "48%",
+                borderRadius: "16px",
+                border: "2px solid #d1d5db",
+                backgroundColor: "#f9fafb",
+              }}
+            >
+              <h3 className="font-semibold text-xl mb-3 text-black">
+                Steps for Exporters/Importers
+              </h3>
+              <div className="mb-2 text-black">
+                <strong>Create RFQ</strong>: Start by creating a Request for Quotation (RFQ) to get quotes from suppliers.
+              </div>
+              <div className="mb-2 text-black">
+                <strong>See RFQ in RFQ List</strong>: View your RFQ in the RFQ list to track its status and responses.
+              </div>
+              <div className="mb-4 text-black">
+                <strong>See Order List</strong>: Once the RFQ is finalized, check your order list to view all confirmed orders.
+              </div>
+            </section>
+          )}
+
+          {role === "FF" && (
+            <section
+              className="p-4"
+              style={{
+                flex: "1",
+                minWidth: "48%",
+                borderRadius: "16px",
+                border: "2px solid #d1d5db",
+                backgroundColor: "#f9fafb",
+              }}
+            >
+              <h3 className="font-semibold text-xl mb-3 text-black">
+                Steps for Freight Forwarders
+              </h3>
+              <div className="mb-2 text-black">
+                <strong>Search RFQ</strong>: Search for the RFQs posted by exporters/importers to find relevant ones.
+              </div>
+              <div className="mb-2 text-black">
+                <strong>See Quotation List</strong>: Check the list of quotations received for your RFQ.
+              </div>
+              <div className="mb-4 text-black">
+                <strong>See Order List</strong>: Track and confirm orders once they have been finalized.
+              </div>
+            </section>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-  
-
-  
   );
 };
 
-export default  AuthHOC(DashboardHome) ;
+export default AuthHOC(DashboardHome);

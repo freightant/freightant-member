@@ -434,14 +434,15 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
       setLoading(false)
     });
   }
-  
+  console.log("test",rfq?.container);
   return (
     <Form form={form} layout="vertical" onFinish={formFinish}>
         <Row gutter={[16,16]} style={{ width: '120%', marginLeft: '-10%', }}>
           <Col span={24}>
           <Space  >
             <Form.Item className='mb-1' name={"rfq"}>
-              <Input value={id} disabled className='border rounded-pill p-1 fs-6' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
+           
+              <Input value={rfq?.rfqNumber} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item className='mb-1'>
               <Input value={rfq?.modeOfShipment} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
@@ -637,6 +638,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                           title={
                             <Space>
                               {"Port of Loading [POL] Charges"}
+                              
                                 {(rfq?.container?rfq?.container:[]).length>0?
                                 rfq?.container.map((i:any)=>(<Button type="primary" key={`${i?.name}*${i?.quantity}`} className="rounded-pill">{i?.name}*{i?.quantity}</Button>))
                                 :null
@@ -783,7 +785,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 
                             <Button className='my-2' shape="round" icon={<PlusCircleFilled className="text-primary1 fs-5" />}  onClick={() => handleAddRow('polCharges')}>Add New Row</Button>
                             <div className="col-12 col-md-8 col-lg-6">
-                              <Form.Item name={"polRemark"}>
+                              <Form.Item name={"polRemark"} rules={[{required:false}]}>
                                 <Input placeholder='Enter Remarks & T&C (If any)' />
                               </Form.Item>
                             </div>
@@ -947,7 +949,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                             
                             <Button className='my-2' shape="round" icon={<PlusCircleFilled className="text-primary1 fs-5" />}  onClick={() => handleAddRow('podCharges')}>Add New Row</Button>
                             <div className="col-12 col-md-8 col-lg-6">
-                              <Form.Item rules={[{required:true}]} name={"podRemark"}>
+                              <Form.Item rules={[{required:false}]} name={"podRemark"}>
                                 <Input placeholder='Enter Remarks & T&C (If any)' />
                               </Form.Item>
                             </div>
@@ -1123,6 +1125,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                       children: (
                                         <Form.Item name={["transShipmentPorts", index]} layout="horizontal">
                                           <LocodeSelect
+                                           form={form} 
                                             {...{style:{minWidth:"300px",maxWidth:"370px"}}}
                                             change={() => { }}
                                             wholeValue={(value: any) => handleTransshipmentPortChange(value.title, index)}

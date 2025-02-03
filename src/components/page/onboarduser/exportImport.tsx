@@ -19,6 +19,9 @@ import { CustomFormUpload } from './freightforwader';
 import { FormRules } from '@/components/strings';
 import { signOut } from 'next-auth/react';
 import { abort } from 'process';
+import { Modal } from "antd";
+
+import { CheckCircleTwoTone } from "@ant-design/icons";
 
 const ExportImportUI = () => {
     const [currentStep, setCurrentStep] = useState<number>(0)
@@ -363,7 +366,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
                 </Col>
 
                 <Col xs={22} sm={22} md={12} lg={12}>
-                    <Form.Item label="Annual Turnover in Last FY" name="annualTurnover" rules={[{ required: true, }]}>
+                    <Form.Item label="Annual Turnover in Last FY" name="annualTurnover" rules={[{ required: false, }]}>
                         <Input addonAfter={Currency} />
                     </Form.Item>
                 </Col>
@@ -391,7 +394,7 @@ const KYCForm = ({ setCurrentStep }: { setCurrentStep: Dispatch<SetStateAction<n
             },
             {
                 pattern: /^[0-9]{10,11}$/, // Matches 10 or 11 digits
-                message: "Invalid Number. Please enter a valid 10 or 11 digit number."
+                message: "Invalid Number."
             }
         ]}
     >
@@ -537,18 +540,37 @@ const KYCUploadForm = ({ setCurrentStep, step }: { step: number, setCurrentStep:
                         </Col>
                     </Row>
 
-                    <Form.Item label="Export promotion organization membership certificate ( APEDA / MPEDA / CAPEXIL etc)">
-                        <Row gutter={[48, 0]}>
-                            <Col {...responsiveItemLayout} >
-                                <Form.Item name={"exportPromotionOrganisationMembership"}>
-                                    <Select showSearch options={indianExportOrganizations.map(i => ({ key: i, label: i, value: i }))} />
-                                </Form.Item>
-                            </Col>
-                            <Col {...responsiveItemLayout} >
-                                <CustomFormUpload required style f={form} label={""} name={"exportPromotionOrganisationMembershipDocument"} />
-                            </Col>
-                        </Row>
-                    </Form.Item>
+                    <Form.Item label="Export promotion organization membership certificate (APEDA / MPEDA / CAPEXIL etc)">
+    <Row gutter={[48, 0]}>
+        <Col {...responsiveItemLayout}>
+            <Form.Item name={"exportPromotionOrganisationMembership"}>
+                <Select
+                    showSearch
+                    options={indianExportOrganizations.map(i => ({ key: i, label: i, value: i }))}
+                    onChange={(value) => {
+                        form.setFieldsValue({ showUpload: !!value }); // Set the state to toggle upload
+                    }}
+                />
+            </Form.Item>
+        </Col>
+        <Col {...responsiveItemLayout}>
+            <Form.Item noStyle shouldUpdate={(prev, current) => prev.showUpload !== current.showUpload}>
+                {() => 
+                    form.getFieldValue("showUpload") && (
+                        <CustomFormUpload
+                            required
+                            style
+                            f={form}
+                            label={""}
+                            name={"exportPromotionOrganisationMembershipDocument"}
+                        />
+                    )
+                }
+            </Form.Item>
+        </Col>
+    </Row>
+</Form.Item>
+
                     <Row gutter={[48, 0]}>
                         <Col sm={24} md={12} lg={12} >
                             <Form.Item name={"aeo"} label="AEO Certificate" layout="horizontal">
@@ -683,13 +705,33 @@ export const BranchDetailsForm = ({ setCurrentStep, title, currentStep }: { curr
 
     const branches = useWatch("branches", form)
 
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [actionType, setActionType] = useState("");
+    const handleOpenModal = (type: "skip" | "submit") => {
+        setActionType(type);
+        setIsModalVisible(true);
+    };
+    const handleConfirm = () => {
+        setIsModalVisible(false);
+        if (actionType === "submit") {
+            form.submit(); // Submit form
+        } else {
+            console.log("Skipped"); // Skip logic
+        }
+        setIsModalVisible(true);
+    };
 
+    const handleDone = () => {
+        setIsModalVisible(false);
+         signOut({ callbackUrl: "/auth/signin" }); // Redirect using window.location
+    };
     const [countryList, setCountryList] = useState<CountryListType[]>([])
     const handleCountrySelect = (e: any, index: number) => {
 
         setDataList((a: any) => [...a.map((i: any, Index: number) => (Index === index ? { ...i, countryId: hashCountry[e].id, country: e } : i))])
     }
 
+    
     // Simulate fetching country options (replace with actual API call)
     useEffect(() => {
         const fetchCountries = async () => {
@@ -770,6 +812,8 @@ export const BranchDetailsForm = ({ setCurrentStep, title, currentStep }: { curr
 
             })
     }, [])
+   
+    
     return (
       <Form layout="vertical" initialValues={{"branches":[{}]}} validateMessages={validateMessages} form={form} onFinish={onFinish}>
         <h3 className={`text-primary2`}>{title}</h3>
@@ -789,7 +833,7 @@ export const BranchDetailsForm = ({ setCurrentStep, title, currentStep }: { curr
                                 options={countryList}
                                 optionRender={(option) => (
                                     <Space>
-                                        <div className='overflow-hidden rounded-circle'><div className='p-1' style={{transform:"scale(2.8)"}}>{option.data.emoji}</div></div>
+                                        {/* <div className='overflow-hidden rounded-circle'><div className='p-1' style={{transform:"scale(2.8)"}}></div></div> */}
                                         {option.data.desc}
                                     </Space>
                                 )}
@@ -868,9 +912,64 @@ export const BranchDetailsForm = ({ setCurrentStep, title, currentStep }: { curr
             </>
           )}
         </Form.List>
-        <Form.Item className='mx-5 px-2'>
-            <Button onClick={()=>form.submit()} block type="primary" shape="round">Submit</Button>
-        </Form.Item>
+        <Form.Item className="mx-5 px-2">
+    {/* <Row gutter={[16, 0]}>
+        <Col span={12}>
+            <Button
+                block
+                type="default"
+                shape="round"
+                onClick={() => form.submit()} // Replace with your skip logic
+            >
+                Skip & Submit
+            </Button>
+        </Col>
+        <Col span={12}>
+            <Button
+                block
+                type="primary"
+                shape="round"
+                onClick={() => form.submit()} // Submit the form
+            >
+                Submit
+            </Button>
+        </Col>
+    </Row> */}
+
+<Row gutter={[16, 0]}>
+                <Col span={12}>
+                    <Button block type="default" shape="round" onClick={() => handleOpenModal("skip")}>
+                        Skip & Submit
+                    </Button>
+                </Col>
+                <Col span={12}>
+                    <Button block type="primary" shape="round" onClick={() => handleOpenModal("submit")}>
+                        Submit
+                    </Button>
+                </Col>
+            </Row>
+
+            <Modal
+                title={
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <CheckCircleTwoTone twoToneColor="#52c41a" />
+                        <span>Submission Successful</span>
+                    </div>
+                }
+                open={isModalVisible}
+                onOk={handleDone} // Redirect on clicking "Done"
+                cancelButtonProps={{ style: { display: "none" } }} // Hides the Cancel button
+                okText="Done" // Changed from "Got it" to "Done"
+            >
+                <p>Your profile has now been submitted for review.</p>
+                <p>For any further queries, write to us at <b>hello@freightant.com</b>.</p>
+            </Modal>
+    
+
+</Form.Item>
+
+
+
       </Form>
     );
 };

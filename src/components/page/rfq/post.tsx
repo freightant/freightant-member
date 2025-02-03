@@ -62,7 +62,7 @@ const defaultValue = {
 const PostRFQUI = () => {
   const [formLoading, setformLoading] = useState(false)
   const [SuccessModal, setSuccessModal] = useState(false)
-
+  
   const [prviewModal, setPrviewModal] = useState(false)
   const [formValue, setformValue] = useState({})
 
@@ -83,6 +83,9 @@ const PostRFQUI = () => {
   const cargoDetail = useWatch("cargoDetail",{ form, preserve: true })
   const paymentTerms = useWatch("paymentTerms",{ form, preserve: true })
   const dischargePort = useWatch("dischargePort",{ form, preserve: true })
+  const loadingPortObj = useWatch("loadingPortObj", { form, preserve: true });
+  const dischargePortObj = useWatch("dischargePortObj", { form, preserve: true });
+
 
   const [countryID, setCountryID] = useState("")
   const [stateID, setStateID] = useState("")
@@ -193,8 +196,36 @@ const PostRFQUI = () => {
     
     let formValues = form.getFieldsValue()
     console.log(formValues);
+
     setformLoading(true)
-    let e = { ...formValues }
+    
+    let e1 = { ...formValues }
+    console.log(e1)
+    type ContainerType = {
+      typee?: string;
+      name?: string;
+      quantity?: number;
+      readyDate?: string;
+    };
+    
+    let e = { 
+      modeOfShipment: formValues?.modeOfShipment || "",
+      tradeType: formValues?.tradeType || "",
+      incoterm: formValues?.incoterm || "",
+      loadingPort: formValues?.loadingPort || "",
+      dischargePort: formValues?.dischargePort || "",
+    
+      loadingPortObj: formValues?.loadingPortObj || {},
+      dischargePortObj: formValues?.dischargePortObj || {},
+    
+      container: (formValues?.container as ContainerType[])?.map((container: ContainerType) => ({
+        typee: container?.typee || "N/A",
+        name: container?.name || "N/A",
+        quantity: container?.quantity || 0,
+        readyDate: container?.readyDate || ""
+      })) || []
+    };
+    
     console.log(e);
 
     postRfQ(e).then(r => {
@@ -210,7 +241,8 @@ const PostRFQUI = () => {
 
       }).finally(() => { setformLoading(false) });
   }
-
+ 
+  
   const FinishFailed = (errorFields: any) => {
     if (errorFields?.errorFields.length < 3) {
       errorFields?.errorFields.forEach((field: any) => {
@@ -239,6 +271,53 @@ const PostRFQUI = () => {
       }
     }
   }, [addOnService])
+
+  // Global variable to store loading port details
+let globalLoadingPortObj: {
+  Country: string;
+  PortName: string;
+  PortCode: string;
+  City: string;
+} = {
+  Country: "",
+  PortName: "",
+  PortCode: "",
+  City: ".",
+};
+
+// Global variable to store discharge port details
+let globalDischargePortObj: {
+  Country: string;
+  PortName: string;
+  PortCode: string;
+  City: string;
+} = {
+  Country: "",
+  PortName: "",
+  PortCode: "",
+  City: ".",
+};
+
+type ContainerItem = {
+  typee: string;
+  name: string;
+  quantity: number;
+  readyDate: string;
+};
+
+
+// global container 
+let globalContainer: ContainerItem[] = [
+  {
+    typee: "20ft",
+    name: "standard",
+    quantity: 1,
+    readyDate: "",
+  },
+];
+
+
+
   return (
     <>
       <Form
@@ -256,6 +335,7 @@ const PostRFQUI = () => {
                   <Col {...layParams3} key={e}>
                     <Button size="large" block shape="round" style={{ textWrap: "wrap", lineHeight: 1 }} type={modeOfShipment === e ? "primary" : "default"} onClick={() => {
                       form.setFieldValue("modeOfShipment", e)
+                      console.log(e)
                       form.setFieldValue("cargoDetail", {})
                     }}>{e}</Button>
                   </Col>
@@ -308,6 +388,10 @@ const PostRFQUI = () => {
   onChange={(date) => {
     if (date && date.isValid()) {
       form.setFieldValue("readyDate", date); // Set valid date
+      globalContainer = globalContainer.map((item) => ({
+        ...item,
+        readyDate: date.format("YYYY-MM-DD"), // Convert Dayjs to string
+      }));
     }
   }}
   size="small"
@@ -378,16 +462,32 @@ const PostRFQUI = () => {
                   <>
                     <Col {...layParams} lg={13}>
                       <Form.Item label="Port of Loading" name={"loadingPort"} layout="vertical" rules={[{ required: true }]}>
-                        <LocodeSelect
-                          change={(e: any) => form.setFieldValue("loadingPort", e)}
-                          wholeValue={(e: any) => form.setFieldValue("loadingPortObj", e?.title)}
-                          changeLocation={(country: string, state: string) => {
-                            form.setFieldValue(["placeOfLoading", "country"], country)
-                            // form.setFieldValue(["placeOfLoading", "state"], state)
-                            form.setFieldValue(["addOnService", "placeOfLoading"], {country,state:null,city:null})
+                      <LocodeSelect
+  form={form} // ✅ Pass form to get modeOfShipment inside LocodeSelect
+  change={(e: any) => form.setFieldValue("loadingPort", e)}
+  wholeValue={(e: any) => {
+    // Update global variable
+    globalLoadingPortObj = {
+      Country: e?.title?.country || "",
+      PortName: e?.title?.port_name || e?.airport_name || "",
+      PortCode: e?.title?.sea_port_code || e?.iata_code || "",
+      City: e?.title?.city || "",
+    };
 
-                          }}
-                        />
+    form.setFieldValue("globalLoadingPortObj", e)
+    console.log(e)
+    // Update form field
+    form.setFieldValue("loadingPortObj", globalLoadingPortObj);
+
+    console.log("Updated Global loadingPortObj:", globalLoadingPortObj);
+  }}
+  changeLocation={(country: string, state: string) => {
+    form.setFieldValue(["placeOfLoading", "country"], country);
+    console.log(country);
+    form.setFieldValue(["addOnService", "placeOfLoading"], { country, state: "", city: "" });
+  }}
+/>;
+
                       </Form.Item>
                       <Form.Item name={"loadingPortObj"} noStyle />
                       <Form.Item name={"placeOfLoading"} noStyle />
@@ -411,14 +511,30 @@ const PostRFQUI = () => {
                     </Col>
                     <Col {...layParams} lg={13}>
                       <Form.Item name={"dischargePort"} label={"Port of Discharge"} layout="vertical" rules={[{ required: true }]}>
-                        <LocodeSelect
-                          change={(e: any) => form.setFieldValue("dischargePort", e)}
-                          wholeValue={(e: any) => form.setFieldValue("dischargePortObj", e?.title)}
-                          changeLocation={(country: string, state: string) => {
-                            form.setFieldsValue({ placeOfUnLoading: { country } })
-                            form.setFieldValue(["addOnService", "placeOfUnLoading"], {country,state:"",city:""})
-                          }}
-                        />
+                      <LocodeSelect
+  form={form}  
+  change={(e: any) => form.setFieldValue("dischargePort", e)}
+  wholeValue={(e: any) => {
+    // ✅ Update global variable with correct property access
+    globalDischargePortObj = {
+      Country: e?.title?.country || "",
+      PortName: e?.title?.port_name || e?.title?.airport_name || "",
+      PortCode: e?.title?.sea_port_code || e?.title?.iata_code || "",
+      City: e?.title?.city || ""
+    };
+
+    // ✅ Store in form state
+    form.setFieldValue("dischargePortObj", globalDischargePortObj);
+
+    console.log("Updated globalDischargePortObj:", globalDischargePortObj);
+  }}
+  changeLocation={(country: string, state: string) => {
+    form.setFieldValue(["placeOfUnLoading", "country"], country);
+    form.setFieldValue(["addOnService", "placeOfUnLoading"], { country, state: "", city: "" });
+  }}
+/>
+
+
                       </Form.Item>
                       <Form.Item name={"dischargePortObj"} noStyle />
                       <Form.Item name={"placeOfUnLoading"} noStyle />
@@ -767,7 +883,9 @@ const PostRFQUI = () => {
                                     {standardContainersOptions.map((e: string) => (<Col key={e} {...layParams3}><Button size="large" block shape="round" style={{ textWrap: "wrap", lineHeight: 1 }} type={container[name]?.name === e ? "primary" : "default"} onClick={() => {
                                       form.setFieldValue(["container", name, "typee"], strings.standardContainers)
                                       form.setFieldValue(["container", name, "name"], e)
-                                      form.setFieldValue(["container", name, "cargo"], {
+                                      form.setFieldValue(["container", name, "cargo"],
+                                        
+                                        {
                                         typee: standardCargoOptions[0],
                                         category: container[name]?.cargo?.category,
                                         hsCode: container[name]?.cargo?.hsCode,

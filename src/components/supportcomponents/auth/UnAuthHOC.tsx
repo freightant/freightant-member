@@ -134,6 +134,7 @@ function withAuth(WrappedComponent: React.FC, isAuthRequired: boolean) {
               router.replace("/");
             }
           } else {
+            
             if (isAuthRequired) {
               signOut({ callbackUrl: "/auth/signin" });
             }
