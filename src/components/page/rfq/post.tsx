@@ -240,7 +240,7 @@ const PostRFQUI = () => {
 
     console.log(e);
     
-    postRfQ(e).then(r => {
+    postRfQ(formValues).then(r => {
       setGlobalRfqNumber(r.data.rfqNumber);
       console.log(globalRfqNumber);
       console.log(r);

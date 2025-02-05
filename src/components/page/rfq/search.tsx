@@ -664,10 +664,14 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                         </Form.Item>
                       </Col>
                       <Col {...lParams}>
-                        <Form.Item label={"HS code"} layout="vertical">
-                        <Input value={container?.[0]?.cargo?.hsCode?.join(", ") || ""} disabled className="text-center" />
+                      <Form.Item label={"HS code"} layout="vertical">
+  <Input
+    value={cargoDetail?.hsCode}
+    disabled
+    className="text-center"
+  />
+</Form.Item>
 
-                        </Form.Item>
 
                       </Col>
                       <Col {...lParams}>
@@ -754,7 +758,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                       </Col>
                       <Col {...lParams}>
                         <Form.Item label={!index?"Hs Code":null} layout="vertical">
-                          <Input disabled className='text-center' style={{ backgroundColor: '#F6F4FF' , fontWeight: 'bold',  padding: '8px'}}/>
+                          <Input value={container?.[0]?.cargo?.hsCode?.length ? container[0].cargo.hsCode.join(", ") : ""} disabled className='text-center' style={{ backgroundColor: '#F6F4FF' , fontWeight: 'bold',  padding: '8px'}}/>
                         </Form.Item>
                         
                       </Col>
