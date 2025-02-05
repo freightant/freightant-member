@@ -422,6 +422,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     setLoading(true)
     postQuotation(dts)
     .then((r:any)=>{
+      console.log(dts)
       console.log(r);      
       if(r.code){
         setSuccessModal(true)
@@ -435,14 +436,16 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     });
   }
   console.log("test",rfq?.rfqNumber);
+
+  let rfqNo = rfq?.rfqNumber;
   return (
     <Form form={form} layout="vertical" onFinish={formFinish}>
         <Row gutter={[16,16]} style={{ width: '120%', marginLeft: '-10%', }}>
           <Col span={24}>
           <Space  >
-            <Form.Item className='mb-1' >
+            <Form.Item className='mb-1' name={"rfq"}>
            
-              <Input value={rfq?.rfqNumber} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
+              <Input value={rfqNo} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item className='mb-1'>
               <Input value={rfq?.modeOfShipment} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
