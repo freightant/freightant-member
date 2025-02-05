@@ -434,13 +434,13 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
       setLoading(false)
     });
   }
-  console.log("test",rfq?.container);
+  console.log("test",rfq?.rfqNumber);
   return (
     <Form form={form} layout="vertical" onFinish={formFinish}>
         <Row gutter={[16,16]} style={{ width: '120%', marginLeft: '-10%', }}>
           <Col span={24}>
           <Space  >
-            <Form.Item className='mb-1' name={"rfq"}>
+            <Form.Item className='mb-1' >
            
               <Input value={rfq?.rfqNumber} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
             </Form.Item>
