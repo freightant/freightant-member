@@ -14,6 +14,8 @@ const OfferCompare = ({id}:{id?:any}) => {
   const {data:d,isLoading,error} = useSWR(id,getQuotationByRfqId)
   const [rfq, setrfq] = useState<any>({})
   const [offers, setoffers] = useState([])
+  const [rfqNumber, setRfqNumber] = useState("");
+
   
   const sortBy = Form.useWatch("sortBy",{form,preserve:true});
   const licenses = Form.useWatch("licenses",{form,preserve:true});
@@ -38,8 +40,10 @@ const OfferCompare = ({id}:{id?:any}) => {
   useEffect(() => {
       let fa =async ()=>{
         let rfq = await getRfQById(id);
+
         if(rfq?.code){
-         setrfq(rfq?.data)      
+         setrfq(rfq?.data)    
+         setRfqNumber(rfq?.data?.rfqNumber || "");  
         }
       }
       fa()
@@ -119,7 +123,7 @@ const OfferCompare = ({id}:{id?:any}) => {
             <Form form={form} layout="vertical">
                     <Card>
                     <div className="col-12 col-md-10 col-lg-6 mx-auto">                        
-                        <p className='text-primary2 fs-5 fw-bolder'>RFQ number : <span className="fw-light p-2 border rounded-pill">{id}</span> </p>
+                        <p className='text-primary2 fs-5 fw-bolder'>RFQ number : <span className="text-primary1 fw-bold p-2 border rounded-pill">{rfqNumber}</span> </p>
                     </div>
                     <Row gutter={[16, 16]}>
                         <Col span={12}>
@@ -171,7 +175,7 @@ const OfferCompare = ({id}:{id?:any}) => {
                             <Form.Item noStyle name={"transhipmentPorts"} />
                         </Col>
                         <Col span={6}>
-                            <Form.Item rules={[{ required: true }]} name={"licenses"} label={`Licenses/Certifications`}>
+                            <Form.Item rules={[{ required: false }]} name={"licenses"} label={`Licenses/Certifications`}>
                                 <Select options={[]} />
                             </Form.Item>
                         </Col>

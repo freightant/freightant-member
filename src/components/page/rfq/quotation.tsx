@@ -349,7 +349,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
       form.setFieldValue("polCurrencyCode",rfq?.loadingPortObj?.currency)
     }
     else{
-      getCurrecyByContryName(rfq?.placeOfLoading?.country)
+      getCurrecyByContryName(rfq?.loadingPortObj?.Country)
       .then(r=>{
         setCurrencyCode(Object.keys(r.data)[0])      
         form.setFieldValue("polCurrencyCode",Object.keys(r.data)[0])

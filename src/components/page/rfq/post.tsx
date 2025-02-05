@@ -197,18 +197,22 @@ const PostRFQUI = () => {
   const onFinished = () => {
     
     let formValues = form.getFieldsValue()
-    console.log(formValues);
+    console.log("form Values data",formValues);
 
     setformLoading(true)
     
-    let e1 = { ...formValues }
-    console.log(e1)
+    
+
     type ContainerType = {
       typee?: string;
       name?: string;
       quantity?: number;
       readyDate?: string;
+      // closingDate?: string;
     };
+    // let e1 = { ...formValues }
+    // console.log(e1)
+
     
     let e = { 
       modeOfShipment: formValues?.modeOfShipment || "",
@@ -219,12 +223,15 @@ const PostRFQUI = () => {
     
       loadingPortObj: formValues?.loadingPortObj || {},
       dischargePortObj: formValues?.dischargePortObj || {},
-    
+      closingDate: formValues?.closingDate || "",
+      readyDate: formValues?.container?.readyDate || "2025-02-24T18:30:00.000Z",
+
       container: (formValues?.container as ContainerType[])?.map((container: ContainerType) => ({
         typee: container?.typee || "N/A",
         name: container?.name || "N/A",
         quantity: container?.quantity || 0,
-        readyDate: container?.readyDate || ""
+        readyDate: formValues?.container?.readyDate || "",
+        
       })) || []
     };
 
@@ -306,11 +313,14 @@ let globalDischargePortObj: {
   City: ".",
 };
 
+let closingDate = ""
+
 type ContainerItem = {
   typee: string;
   name: string;
   quantity: number;
   readyDate: string;
+  
 };
 
 
@@ -321,6 +331,7 @@ let globalContainer: ContainerItem[] = [
     name: "standard",
     quantity: 1,
     readyDate: "",
+    
   },
 ];
 
@@ -477,8 +488,8 @@ let globalContainer: ContainerItem[] = [
     // Update global variable
     globalLoadingPortObj = {
       Country: e?.title?.country || "",
-      PortName: e?.title?.port_name || e?.airport_name || "",
-      PortCode: e?.title?.sea_port_code || e?.iata_code || "",
+      PortName: e?.title?.port_name || e?.airport_name || "n/a",
+      PortCode: e?.title?.sea_port_code || e?.iata_code || "n/a",
       City: e?.title?.city || "",
     };
 
@@ -1118,8 +1129,8 @@ let globalContainer: ContainerItem[] = [
               <Card title="Add on Services at Port of loading [ POL ]" classNames={{ body: "px-4" }} styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0, paddingTop: "12px" }, body: { padding: "10px" } }}
                 extra={
                   modeOfShipment !== strings.crossBorderTrucking &&
-                  <Form.Item label="" name={["addOnService", "status"]} className="my-2">
-                    <Switch checkedChildren={"Yes"} unCheckedChildren={"No"} checked={addOnService?.status} onChange={(e: any) => form.setFieldValue("addOnService", { status: e })} />
+                  <Form.Item label="" name={["addOnService", "status"]} className="my-2" initialValue={false}>
+                    <Switch checkedChildren={"Yes"} unCheckedChildren={"No"} checked={addOnService?.status ?? false} onChange={(e: any) => form.setFieldValue("addOnService", { status: e })} />
                   </Form.Item>
                 }
               >
@@ -1509,21 +1520,24 @@ let globalContainer: ContainerItem[] = [
         className="my-0"
         layout="horizontal"
       >
-        <DatePicker
-          variant="borderless"
-          onChange={(date) => {
-            if (date && date.isValid()) { // Ensure date is valid before setting the value
-              form.setFieldValue("closingDate", date);
-            }
-          }}
-          size="small"
-          style={{
-            paddingRight: "2px",
-            paddingLeft: "2px",
-          }}
-          className="rounded-pill"
-          disabledDate={(current) => current && current.isBefore(dayjs().startOf('day'), 'day')} // Disable past dates
-        />
+       <DatePicker
+  onChange={(date) => {
+    if (date && date.isValid()) {
+      form.setFieldValue("globalClosingDate", date); // Set valid date
+      // globalContainer = globalContainer.map((item) => ({
+      //   ...item,
+      //   closingDate: date.format("YYYY-MM-DD"), // Convert Dayjs to string
+      // }));
+    }
+  }}
+  size="small"
+  style={{ border: 0, fontSize: "10px", paddingRight: "2px", paddingLeft: "2px" }}
+  className="rounded-pill"
+  disabledDate={(current) => {
+    // Check if the current date is before today
+    return current && current.isBefore(dayjs().startOf('day'), 'day');
+  }}
+/>
       </Form.Item>
     </Space>
   </div>

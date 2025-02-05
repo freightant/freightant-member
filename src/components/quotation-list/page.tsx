@@ -55,7 +55,7 @@ const QuotationList = () => {
   const [filters, setFilters] = useState<FilterState>({
     mode: "Sea-FCL",
     tradeType: "Export",
-    status: "Awarded",
+    status: "all",
   });
 
   const [quotations, setQuotations] = useState<QuotationData[]>([]);
@@ -220,8 +220,8 @@ const QuotationList = () => {
               All
             </button>
             <button
-              style={filterButtonStyle(filters.status === "online")}
-              onClick={() => handleFilterChange("status", "online")}
+              style={filterButtonStyle(filters.status === "live")}
+              onClick={() => handleFilterChange("status", "live")}
             >
               Live
             </button>
@@ -232,8 +232,8 @@ const QuotationList = () => {
               Awarded
             </button>
             <button
-              style={filterButtonStyle(filters.status === "Closed")}
-              onClick={() => handleFilterChange("status", "Closed")}
+              style={filterButtonStyle(filters.status === "closed")}
+              onClick={() => handleFilterChange("status", "closed")}
             >
               Closed
             </button>
@@ -342,7 +342,7 @@ const QuotationList = () => {
                 ? "#16A149" // Text color for 'awarded' status
                 : "#FF6C02", // Default text color for other statuses
             backgroundColor:
-              quotation.rfqStatus === "online"
+              quotation.rfqStatus === "live"
                 ? "#FFE7D1"
                 : quotation.rfqStatus === "awarded"
                 ? "#E8FFF3"

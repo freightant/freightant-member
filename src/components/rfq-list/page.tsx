@@ -69,9 +69,10 @@ const RFQList = () => {
   const [filters, setFilters] = useState<FilterState>({
     mode: "Sea-FCL",
     tradeType: "Export",
-    status: "Awarded",
+    status: "live",
   });
-  
+  const [pendingFilters, setPendingFilters] = useState<FilterState>({ ...filters });
+
   const router = useRouter();
 
   
@@ -90,7 +91,7 @@ const RFQList = () => {
   const [selectedRow, setSelectedRow] = useState<string | null>(null); // Track selected row
 
   const handleFilterChange = (filterName: keyof FilterState, value: string) => {
-    setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
+    setPendingFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
   };
 
   const filterButtonStyle = (isSelected: boolean) => ({
@@ -113,10 +114,12 @@ const RFQList = () => {
 
   const handleSubmit = async () => {
     try {
+      setFilters(pendingFilters); // Update actual filters only on submit
+  
       const requestBody = {
-        modeOfShipment: filters.mode,
-        tradeType: filters.tradeType,
-        status: filters.status,
+        modeOfShipment: pendingFilters.mode,
+        tradeType: pendingFilters.tradeType,
+        status: pendingFilters.status,
       };
   
       // Call the `showRfq` API function
@@ -144,144 +147,62 @@ const RFQList = () => {
         overflowY: "auto",
       }}
     >
+      
       {/* Filters */}
-      <div
-        style={{
-          display: "flex",
-          gap: "16px",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-        }}
-      >
-        {/* Mode of Shipment */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+      {/* Filters */}
+<div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap" }}>
+  
+  {/* Mode of Shipment */}
+  <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+    <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Mode of Shipment</div>
+    <div style={{ display: "flex", gap: "12px" }}>
+      {["Sea-FCL", "Sea-LCL", "Air", "Cross Border Trucking"].map((mode) => (
+        <button key={mode} style={filterButtonStyle(pendingFilters.mode === mode)} onClick={() => handleFilterChange("mode", mode)}>
+          {mode}
+        </button>
+      ))}
+    </div>
+  </div>
 
-          <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-            Mode of Shipment
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.mode === "Sea-FCL")}
-              onClick={() => handleFilterChange("mode", "Sea-FCL")}
-            >
-              Sea-FCL
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Sea-LCL")}
-              onClick={() => handleFilterChange("mode", "Sea-LCL")}
-            >
-              Sea-LCL
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Air")}
-              onClick={() => handleFilterChange("mode", "Air")}
-            >
-              Air
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Cross Border Trucking")}
-              onClick={() => handleFilterChange("mode", "Cross Border Trucking")}
-            >
-              Cross Border Trucking
-            </button>
-          </div>
-        </div>
+  {/* Trade Type */}
+  <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+    <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Trade Type</div>
+    <div style={{ display: "flex", gap: "12px" }}>
+      {["Export", "Import"].map((type) => (
+        <button key={type} style={filterButtonStyle(pendingFilters.tradeType === type)} onClick={() => handleFilterChange("tradeType", type)}>
+          {type}
+        </button>
+      ))}
+    </div>
+  </div>
 
-        {/* Trade Type */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
+  {/* Status */}
+  <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+    <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Status</div>
+    <div style={{ display: "flex", gap: "12px" }}>
+      {["all", "live", "awarded", "closed"].map((status) => (
+        <button key={status} style={filterButtonStyle(pendingFilters.status === status)} onClick={() => handleFilterChange("status", status)}>
+          {status}
+        </button>
+      ))}
+    </div>
+  </div>
 
-        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-            Trade Type
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.tradeType === "Export")}
-              onClick={() => handleFilterChange("tradeType", "Export")}
-            >
-              Export
-            </button>
-            <button
-              style={filterButtonStyle(filters.tradeType === "Import")}
-              onClick={() => handleFilterChange("tradeType", "Import")}
-            >
-              Import
-            </button>
-          </div>
-        </div>
-
-        {/* Status */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
-
-          <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-            Status
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.status === "all")}
-              onClick={() => handleFilterChange("status", "all")}
-            >
-              All
-            </button>
-            <button
-              style={filterButtonStyle(filters.status === "online")}
-              onClick={() => handleFilterChange("status", "online")}
-            >
-              Live
-            </button>
-            <button
-              style={filterButtonStyle(filters.status === "awarded")}
-              onClick={() => handleFilterChange("status", "awarded")}
-            >
-              Awarded
-            </button>
-            <button
-              style={filterButtonStyle(filters.status === "Closed")}
-              onClick={() => handleFilterChange("status", "Closed")}
-            >
-              Closed
-            </button>
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div
-  style={{
-    marginTop: "",
-    textAlign: "right",
-    display: "flex", // Use Flexbox
-    alignItems: "center", // Center the button vertically
-    justifyContent: "flex-end", // Keep the button aligned to the right
-    height: "100px", // Set a height for the container to test vertical centering
-  }}
->
-  <button
-    onClick={handleSubmit}
-    style={{
-      height: "36px", // Same as filter buttons
-      minWidth: "100px", // Same as filter buttons
-      padding: "0 12px", // Same padding as filter buttons
-      border: "none", // Remove any border
-      outline: "none", // Remove the default focus outline
-      borderRadius: "20px", // Same border radius
-      backgroundColor: "#6e44ff", // Custom background color for Submit button
-      color: "white", // Text color
-      fontSize: "14px", // Same font size as filter buttons
-      fontWeight: "500", // Same font weight
-      cursor: "pointer", // Pointer cursor on hover
-      textAlign: "center", // Center align text
-      display: "flex", // Flexbox for alignment
-      alignItems: "center", // Center align items vertically
-      justifyContent: "center", // Center align items horizontally
-      transition: "background-color 0.3s ease", // Smooth background transition
+  {/* Submit Button */}
+  <div style={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100px" }}>
+    <button onClick={handleSubmit} style={{
+      height: "36px", minWidth: "100px", padding: "0 12px", border: "none", outline: "none", borderRadius: "20px",
+      backgroundColor: "#6e44ff", color: "white", fontSize: "14px", fontWeight: "500", cursor: "pointer",
+      display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color 0.3s ease"
     }}
-    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4a2ccd")}
-    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#6e44ff")}
-  >
-    Submit
-  </button>
-</div>
+      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4a2ccd")}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#6e44ff")}
+    >
+      Submit
+    </button>
+  </div>
 
-      </div>
+</div>
 
       {/* Table */}
     {/* Table */}
@@ -390,92 +311,78 @@ const RFQList = () => {
       </th>
     </tr>
   </thead>
-  <tbody style={{  }}>
-    {shipments.map((shipment) => (
+  <tbody>
+  {shipments.map((shipment, index) => (
+    <tr
+      key={shipment.rfqNumber}
+      onClick={() => setSelectedRow(shipment.rfqNumber)}
+      style={{
+        backgroundColor: selectedRow === shipment.rfqNumber 
+          ? "#F6F4FF" 
+          : index % 2 === 0 
+          ? "#FFFFFF" // White for even rows
+          : "#F3F6FF", // Light blue for odd rows
+        border: selectedRow === shipment.rfqNumber ? "1px solid #6A37F4" : "none",
+        cursor: "pointer",
+        transition: "background-color 0.3s ease",
+        fontSize: "12px",
+        lineHeight: "36px",
+      }}
+    >
+      <td style={{ color: "black", textAlign: "center" }}>{shipment.rfqNumber}</td>
+      <td style={{ color: "black", textAlign: "center" }}>{shipment.tradeType}</td>
+      <td style={{ color: "black", textAlign: "center" }}>
+        {`${shipment.loadingPort} - ${shipment.dischargePort}`}
+      </td>
+      <td style={{ textAlign: "center", padding: "8px" }}>
+        <div
+          style={{
+            color:
+              shipment.status === "closed"
+                ? "#A5ABB4"
+                : shipment.status === "awarded"
+                ? "#16A149"
+                : "#FF6C02",
+            backgroundColor:
+              shipment.status === "live"
+                ? "#FFFACD"
+                : shipment.status === "awarded"
+                ? "#E8FFF3"
+                : shipment.status === "closed"
+                ? "#F6F4FF"
+                : "white",
+            borderRadius: "40px",
+            display: "flex",
+            height: "30px",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "5px",
+          }}
+        >
+          {shipment.status}
+        </div>
+      </td>
 
-      <tr
-        key={shipment.rfqNumber}
-        onClick={() => setSelectedRow(shipment.rfqNumber)} // Set selected row
-        style={{
-          backgroundColor:
-            selectedRow === shipment.rfqNumber ? "#F6F4FF" : "white",
-          border:
-            selectedRow === shipment.rfqNumber ? "1px solid #6A37F4" : "none",
-          cursor: "pointer", // Add cursor pointer to indicate it's clickable  
-          transition: "background-color 0.3s ease", 
-          fontSize: "12px",
-        lineHeight:"36px",
-        }}
-      >
-        <td style={{ color: "black", textAlign: "center" }}>
-          {shipment.rfqNumber}
-        </td>
-        <td style={{  color: "black", textAlign: "center" }}>
-          {shipment.tradeType}
-        </td>
-        <td style={{ color: "black", textAlign: "center" }}>
-          {`${shipment.loadingPort} - ${shipment.dischargePort}`}
-        </td>
-        <td style={{ textAlign: 'center', padding: '8px' }}>
-  <div
-    style={{
-      color:
-        shipment.status === 'closed'
-          ? '#A5ABB4'
-          : shipment.status === 'awarded'
-          ? '#16A149' // Text color for 'awarded' status
-          : '#FF6C02', // Default text color for other statuses
-      backgroundColor:
-        shipment.status === 'online'
-          ? '#FFE7D1'
-          : shipment.status === 'awarded'
-          ? '#E8FFF3'
-          : shipment.status === 'closed'
-          ? '#F6F4FF'
-          : 'white', // Default background color
-      borderRadius: '40px',
-       // Adjust the height as needed
-      display: 'flex',
-      height: '30px',
-      
-      justifyContent: 'center',
-      alignItems: 'center',  // Vertically center the text
-      padding: '5px', // Optional: Padding for better spacing inside the div
-    }}
-  >
-    {shipment.status}
-  </div>
-</td>
+      {/* Dynamic column value based on filters.mode */}
+      <td style={{ color: "black", textAlign: "center" }}>
+        {filters.mode === "Sea-FCL"
+          ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}`
+          : filters.mode === "Sea-LCL"
+          ? `${shipment.container?.[0]?.typee || "-"} * ${shipment.container?.[0]?.quantity || 0}`
+          : filters.mode === "Air"
+          ? `${shipment.container?.[0]?.cargo.weight || 0}`
+          : filters.mode === "Cross Border Trucking"
+          ? "Truck type unavailable"
+          : ""}
+      </td>
 
+      <td style={{ color: "black", textAlign: "center" }}>{shipment.quotationCount}</td>
+      <td style={{ color: "black", textAlign: "center" }}>{shipment.createdAt}</td>
+      <td style={{ color: "black", textAlign: "center" }}>{shipment.closingDate}</td>
+    </tr>
+  ))}
+</tbody>
 
-
-        {/* Added dynamic column value based on filters.mode */}
-        <td style={{ color: "black", textAlign: "center" }}>
-  {filters.mode === "Sea-FCL"
-    ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}`
- // Replace with equipment if available
-    : filters.mode === "Sea-LCL"
-    ? `${shipment.container?.[0]?.typee || "-"} * ${shipment.container?.[0]?.quantity || 0}`// Replace with mtCbm if available
-    : filters.mode === "Air"
-    ? `${shipment.container?.[0]?.cargo.weight || 0}` // Replace with chargeableWeight if available
-    : filters.mode === "Cross Border Trucking"
-    ? "Truck type unavailable" // Replace with shipment.truckType if available
-    : ""}
-</td>
-
-        <td style={{  color: "black", textAlign: "center" }}>
-          {shipment.quotationCount}
-        </td>
-        <td style={{  color: "black", textAlign: "center" }}>
-          {shipment.createdAt}
-        </td>
-        <td style={{  color: "black", textAlign: "center" }}>
-          {shipment.closingDate}
-        </td>
-      </tr>
-      
-    ))}
-  </tbody>
 </table>
 
 
@@ -503,10 +410,10 @@ const RFQList = () => {
       onClick={() => setSelectedRow(null)}
       style={{
         position: 'absolute',
-        top: '-32px',
+        top: '0px',
         right: '16px',
         backgroundColor: 'transparent',
-        border: 'none',
+        border: '1px black',
         fontSize: '20px',
         color: '#000000',
         cursor: 'pointer',
