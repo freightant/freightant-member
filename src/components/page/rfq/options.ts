@@ -689,7 +689,7 @@ export const polChargeOptions = (category:string)=>{
       ]
       break;
     
-    case strings.cfsTerminal || strings.custom:
+    case strings.custom:
       return[
         {label:`Surveying Charge`,value:`Surveying Charge`},
         {label:`Fumigation`,value:`Fumigation`},
@@ -746,6 +746,97 @@ export const polChargeOptions = (category:string)=>{
         {label:`Stamp Duty Charges`,value:`Stamp Duty Charges`},
         {label:`CFS Lift On/Off Charges`,value:`CFS Lift On/Off Charges`},
       ]
+      break;
+    
+      case strings.cfsTerminal: 
+      return[
+        {label:`INTERNAL CONTAINER SHIFTING`,value:`INTERNAL CONTAINER SHIFTING`},
+        {label:`RAIL FREIGHT CHARGES`,value:`RAIL FREIGHT CHARGES`},
+        {label:`FRENCHISE CHARGES`,value:`FRENCHISE CHARGES`},
+        {label:`HANDLING CHARGES`,value:`HANDLING CHARGES`},
+        {label:`DIRECT STUFFING`,value:`DIRECT STUFFING`},
+        {label:`RESERVATION SPACE`,value:`RESERVATION SPACE`},
+        {label:`FACTORY STUFFING`,value:`FACTORY STUFFING`},
+        {label:`MOVEMENT OUT`,value:`MOVEMENT OUT`},
+        {label:`TRANSPORTATION CHARGES`,value:`TRANSPORTATION CHARGES`},
+        {label:`INSURANCE CHARGES`,value:`INSURANCE CHARGES`},
+        {label:`EMPTY FREIGHT CHARGES (RAIL)`,value:`EMPTY FREIGHT CHARGES (RAIL)`},
+        {label:`EMPTY TRANSPORTATION CHARGES`,value:`EMPTY TRANSPORTATION CHARGES`},
+        {label:`DE-STUFFING`,value:`DE-STUFFING`},
+        {label:`PENALTY-handling&transportation`,value:`PENALTY-handling&transportation`},
+        {label:`PENALTY-storage`,value:`PENALTY-storage`},
+        {label:`REIMBURSEMENT OF ELECTRICITY AND WATER`,value:`REIMBURSEMENT OF ELECTRICITY AND WATER`},
+        {label:`PHOTO PASS`,value:`PHOTO PASS`},
+        {label:`STUFFING`,value:`STUFFING`},
+        {label:`RE-STUFFING`,value:`RE-STUFFING`},
+        {label:`GROUND RENT EMPTY`,value:`GROUND RENT EMPTY`},
+        {label:`GROUND RENT LOADED`,value:`GROUND RENT LOADED`},
+        {label:`MOVEMENT`,value:`MOVEMENT`},
+        {label:`WEIGHMENT`,value:`WEIGHMENT`},
+        {label:`INITIAL FUMIGATION`,value:`INITIAL FUMIGATION`},
+        {label:`FUMIGATION (ALL PEST CONTROL SERVICES INCLUDING CONTAINER)`,value:`FUMIGATION (ALL PEST CONTROL SERVICES INCLUDING CONTAINER)`},
+        {label:`ENTRY FEES`,value:`ENTRY FEES`},
+        {label:`REWORKING`,value:`REWORKING`},
+        {label:`CONTAINER LOCKING`,value:`CONTAINER LOCKING`},
+        {label:`LIFT ON LOADED`,value:`LIFT ON LOADED`},
+        {label:`LIFT OFF LOADED`,value:`LIFT OFF LOADED`},
+        {label:`LIFT ON EMPTY`,value:`LIFT ON EMPTY`},
+        {label:`LIFT OFF EMPTY`,value:`LIFT OFF EMPTY`},
+        {label:`BANK CHARGES`,value:`BANK CHARGES`},
+        {label:`BOND STORAGE CHARGES`,value:`BOND STORAGE CHARGES`},
+        {label:`RENT FROM OTHERS`,value:`RENT FROM OTHERS`},
+        {label:`BOND MF CHARGES`,value:`BOND MF CHARGES`},
+        {label:`BOND INSURANCE CHARGES`,value:`BOND INSURANCE CHARGES`},
+        {label:`STORAGE CHARGES`,value:`STORAGE CHARGES`},
+        {label:`CARTING CHARGES`,value:`CARTING CHARGES`},
+        {label:`SEAL CHARGES`,value:`SEAL CHARGES`},
+        {label:`LEVY CHARGES`,value:`LEVY CHARGES`},
+        {label:`MOVEMENT SPECIAL OPERATION`,value:`MOVEMENT SPECIAL OPERATION`},
+        {label:`OTHERS`,value:`OTHERS`},
+        {label:`OVER TIME`,value:`OVER TIME`},
+        {label:`EMPTY CONTAINER RAIL`,value:`EMPTY CONTAINER RAIL`},
+        {label:`GENERAL SPACE`,value:`GENERAL SPACE`},
+        {label:`IMPORT RAIL FREIGHT`,value:`IMPORT RAIL FREIGHT`},
+        {label:`TERMINAL HANDLING CHARGES`,value:`TERMINAL HANDLING CHARGES`},
+        {label:`DOCUMENTATION - CUSTOM`,value:`DOCUMENTATION - CUSTOM`},
+        {label:`CMD - AUCTION`,value:`CMD - AUCTION`},
+        {label:`AMENDMENT CHARGES`,value:`AMENDMENT CHARGES`},
+        {label:`PALLET`,value:`PALLET`},
+        {label:`SHIFTING CHARGES`,value:`SHIFTING CHARGES`},
+        {label:`BACK TO TOWN CHARGES`,value:`BACK TO TOWN CHARGES`},
+        {label:`SPECIAL OPERATION CHARGES`,value:`SPECIAL OPERATION CHARGES`},
+        {label:`BAGGAGE HANDLING SERVICE (OTHER THAN ACC)`,value:`BAGGAGE HANDLING SERVICE (OTHER THAN ACC)`},
+        {label:`BAGGAGE HANDLING SERVICE (IN CASE OF ACC)`,value:`BAGGAGE HANDLING SERVICE (IN CASE OF ACC)`},
+        {label:`ENVIRONMENTAL CLEARANCE CHARGES`,value:`ENVIRONMENTAL CLEARANCE CHARGES`},
+        {label:`TABLE SPACE`,value:`TABLE SPACE`},
+        {label:`TOWER SPACE CHARGES`,value:`TOWER SPACE CHARGES`},
+        {label:`ALL OPERATION RELATED TO REFER CONTAINER (EXCEPT GROUND RENT)`,value:`ALL OPERATION RELATED TO REFER CONTAINER (EXCEPT GROUND RENT)`},
+        {label:`GROUND RENT FOR REFER CONTAINER`,value:`GROUND RENT FOR REFER CONTAINER`},
+        {label:`DEDICATED WAREHOUSING`,value:`DEDICATED WAREHOUSING`},
+        {label:`DIRECT DELIVERY FROM RAIL HEAD`,value:`DIRECT DELIVERY FROM RAIL HEAD`},
+        {label:`INITIAL FUMIGATION`,value:`INITIAL FUMIGATION`},
+        {label:`STRATEGIC ALLIANCE MANAGEMENT CHARGES (INCL FIXED & VARIABLE FEE)`,value:`STRATEGIC ALLIANCE MANAGEMENT CHARGES (INCL FIXED & VARIABLE FEE)`},
+      ]
+    
+      case strings.transportations:
+        return [
+          { label: `20FT`, value: `20FT` },
+          { label: `40FT`, value: `40FT` },
+          { label: `40FT HQ`, value: `40FT HQ` },
+          { label: `45FT HQ`, value: `45FT HQ` },
+          { label: `20FT Flat Rack`, value: `20FT Flat Rack` },
+          { label: `20FT Open Top`, value: `20FT Open Top` },
+          { label: `20FT Platform`, value: `20FT Platform` },
+          { label: `20FT ISO Tank`, value: `20FT ISO Tank` },
+          { label: `40FT Flat Rack`, value: `40FT Flat Rack` },
+          { label: `40FT Open Top`, value: `40FT Open Top` },
+          { label: `40FT Platform`, value: `40FT Platform` },
+          { label: `40FT ISO Tank`, value: `40FT ISO Tank` },
+          { label: `20FT Reefer`, value: `20FT Reefer` },
+          { label: `40FT Reefer`, value: `40FT Reefer` }
+        ];
+        break;
+
     default:
       return [];
       break;

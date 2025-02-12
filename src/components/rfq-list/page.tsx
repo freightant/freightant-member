@@ -347,7 +347,7 @@ const RFQList = () => {
               shipment.status === "live"
                 ? "#FFFACD"
                 : shipment.status === "awarded"
-                ? "#E8FFF3"
+                ? "#D6F2E3"
                 : shipment.status === "closed"
                 ? "#F6F4FF"
                 : "white",

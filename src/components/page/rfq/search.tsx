@@ -370,6 +370,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
     placeOfLoading,
     placeOfUnLoading,
     rfqNumber,
+    quoted,
   } = rfqData;
 
   useEffect(()=>{
@@ -383,9 +384,28 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
       form={form} 
     >
       <Card title={
-    <span style={{ fontWeight: '600', textDecoration: 'underline', fontSize: '22px' }}>
-      RFQ ID: {rfqNumber}
-    </span>
+    <span style={{ fontWeight: "600", textDecoration: "underline", fontSize: "22px" }}>
+    RFQ ID: {rfqNumber}{" "}
+    {rfqData.quoted && (
+      <span
+        style={{
+          color: "green",
+          backgroundColor: "#e6f7e6",
+          padding: "4px 10px",
+          borderRadius: "40px",
+          marginLeft: "620px",
+          textDecoration: "none",
+          fontSize: "16px",
+          fontWeight: "500",
+          display: "inline-block",
+        }}
+      >
+        Already Quoted
+      </span>
+    )}
+  </span>
+
+    
 } styles={{header:{borderBottomWidth:0}}} className='my-3 '
         extra={<Button className={expand?"":"d-none"} size="large" type="link" onClick={()=>setexpand(false)} icon={<UpCircleOutlined className='fs-4' />}/>}
       >

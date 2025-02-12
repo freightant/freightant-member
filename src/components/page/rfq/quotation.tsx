@@ -134,6 +134,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         i[id][name]=value
         if("rate" === name){
           i[id]["amount"] =  value*i[id]?.quantity
+          console.log(value)
+          console.log(i[id]?.quantity)
+          console.log(value*i[id]?.quantity)
         }
         return [...i]
       })
@@ -168,13 +171,13 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         inclusiveFright = +inclusiveFright + +i["amount"]
       }else {
         if (i?.amount > 0 && i?.currency) {
-          const conversionRate = +exchangeRates?.data[i?.currency].toFixed(2);
+          const conversionRate = +exchangeRates?.data[i?.currency];
           inclusiveFright = +inclusiveFright + (i.amount / conversionRate) * exchangeRates?.data["USD"]
         }
       }
     })
-      form.setFieldValue("inclusiveFrightDollar",inclusiveFright.toFixed(2))
-      form.setFieldValue("inclusiveFrightLocal",(inclusiveFright*(exchangeRate?exchangeRate:1)).toFixed(2))
+      form.setFieldValue("inclusiveFrightDollar",inclusiveFright)
+      form.setFieldValue("inclusiveFrightLocal",(inclusiveFright*(exchangeRate?exchangeRate:1)))
     
     let totalpol = 0;
     polChargesData.forEach((i:any)=>{
@@ -182,13 +185,15 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         totalpol = +totalpol + +i["amount"]
       }else{
         if(i?.amount>0 && i?.currency){
-          const conversionRate = +exchangeRates?.data[i?.currency].toFixed(2);
+          const conversionRate = +exchangeRates?.data[i?.currency];
           totalpol =+totalpol + (i.amount / conversionRate) * exchangeRates?.data["USD"]
         }
         }
     })
-    form.setFieldValue("polChargeDollar",totalpol.toFixed(2))
-    form.setFieldValue("polChargeLocal",(totalpol*(exchangeRate?exchangeRate:1)).toFixed(2))
+    form.setFieldValue("polChargeDollar",totalpol)
+    form.setFieldValue("polChargeLocal",(totalpol*(exchangeRate?exchangeRate:1)))
+    console.log("Total pol=",totalpol,exchangeRate,totalpol*exchangeRate)
+    
     
     let totalpod = 0;
     podChargesData.forEach((i:any)=>{
@@ -196,20 +201,20 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         totalpod += i["amount"]
       }else{
         if(i?.currency && i?.amount>0){
-          const conversionRate = +exchangeRates?.data[i?.currency].toFixed(2);
+          const conversionRate = +exchangeRates?.data[i?.currency];
           totalpod =+totalpod + (i.amount / conversionRate) * exchangeRates?.data["USD"]
         }
       }
     })
     if(totalpod>0){
-      form.setFieldValue("podChargeDollar",totalpod.toFixed(2))
-      form.setFieldValue("podChargeLocal",(totalpod*(exchangeRate?exchangeRate:1)).toFixed(2))
+      form.setFieldValue("podChargeDollar",totalpod)
+      form.setFieldValue("podChargeLocal",(totalpod*(exchangeRate?exchangeRate:1)))
     }
 
     let totalLanded = inclusiveFright+totalpol+totalpod
     
     if(totalLanded>0){
-      form.setFieldValue("totallandedCost",(totalLanded*(exchangeRate?exchangeRate:1)).toFixed(2))
+      form.setFieldValue("totallandedCost",(totalLanded*(exchangeRate?exchangeRate:1)))
     }
     
   }, [freightData,polChargesData,podChargesData])
@@ -442,10 +447,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
     <Form form={form} layout="vertical" onFinish={formFinish}>
         <Row gutter={[16,16]} style={{ width: '120%', marginLeft: '-10%', }}>
           <Col span={24}>
-          <Space  >
-            <Form.Item className='mb-1' name={"rfq"}>
-           
-              <Input value={rfqNo} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
+          <Space>
+            <Form.Item className='mb-1'name={"rfq"} >           
+              <Input value={rfq?.rfqNumber} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
             </Form.Item>
             <Form.Item className='mb-1'>
               <Input value={rfq?.modeOfShipment} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
@@ -506,7 +510,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                           <Space>
                             {freightTitle(rfq?.modeOfShipment)}
                               {(rfq?.container?rfq?.container:[]).length>0?
-                              rfq?.container.map((i:any)=>(<Button type="primary" key={`${i?.name}*${i?.quantity}`} className="rounded-pill">{i?.name}*{i?.quantity}</Button>))
+                              rfq?.container.map((i:any)=>(<Button type="primary" key={`${i?.name}*${i?.quantity}`} className="rounded-pill">{i?.name} * {i?.quantity}</Button>))
                               :null
 }
                             </Space> } styles={{header:{ borderBottom: 0 }}}
@@ -533,12 +537,12 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Cost heads",
                                   dataIndex: "costHead",
                                   key: "costHead",
-                                  width:250,
+                                  
                                   align: "center",
                                   className:"text-wrap",
                                   render:(_:any,record:any,index:number)=>(
                                       <Select 
-                                      style={{maxWidth:"250px"}}
+                                      style={{maxWidth:"380px"}}
                                       onFocus={()=>setfreightActive(record.key)}                                      
                                       onBlur={()=>setfreightActive(-1)}
                                       mode={freightActive===record.key?"tags":undefined}
@@ -599,6 +603,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   dataIndex: "currency",
                                   key: "currency",
                                   className:"text-center",
+                                  width:40,
                                   render:()=>("USD")
                                 },
                                 {
@@ -606,7 +611,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   dataIndex: "rate",
                                   key: "rate",
                                   align: "center",
-                                  width:75,
+                                  width:50,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input placeholder="Rate" disabled={!freightData[index].unit} variant="outlined" className="p-1 text-center" value={freightData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value)}/>
                                   ))
@@ -1168,7 +1173,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         />
       </Form.Item>
       <Form.Item rules={[{ required: true }]} name={["siCutOff", "time"]} noStyle>
-        <TimePicker format={"HH"} />
+      <TimePicker format={"HH"} showNow={false} />
       </Form.Item>
     </Space>
   </Form.Item>
@@ -1183,7 +1188,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
         />
       </Form.Item>
       <Form.Item rules={[{ required: true }]} name={["portCutOff", "time"]} noStyle>
-        <TimePicker format={"HH"} />
+        <TimePicker format={"HH"} showNow={false} />
       </Form.Item>
     </Space>
   </Form.Item>
