@@ -91,6 +91,8 @@ const OrderList = () => {
 
   // Applies filters on Submit
   const handleSubmit = async () => {
+
+    
     setFilters(pendingFilters);  // Apply the pending filters
     setOrders([]);  // Clear existing orders before fetching new data
   

@@ -57,13 +57,13 @@ const QuotationList = () => {
     tradeType: "Export",
     status: "all",
   });
-
+  const [pendingFilters, setPendingFilters] = useState<FilterState>(filters);
   const [quotations, setQuotations] = useState<QuotationData[]>([]);
 
   const [selectedRow, setSelectedRow] = useState<string | null>(null); // Track selected row
 
-  const handleFilterChange = (filterName: keyof FilterState, value: string) => {
-    setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
+  const handlePendingFilterChange = (filterName: keyof FilterState, value: string) => {
+    setPendingFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
   };
 
   const filterButtonStyle = (isSelected: boolean) => ({
@@ -84,46 +84,42 @@ const QuotationList = () => {
   });
 
   const handleSubmit = async () => {
+    // Apply pending filters
+    setFilters(pendingFilters);
+  
+    // Clear previous data
+    setQuotations([]);
+  
     const requestBody: FilterState = {
-      mode: filters.mode,
-      tradeType: filters.tradeType,
-      status: filters.status,
+      mode: pendingFilters.mode,
+      tradeType: pendingFilters.tradeType,
+      status: pendingFilters.status,
     };
   
     try {
       const response = await quotationList(requestBody);
+      console.log("API Response:", response);
   
-      console.log("API Response:", response); // Log the full response to inspect
+      if (response.code && Array.isArray(response.data?.quotations)) {
+        const mappedData: QuotationData[] = response.data.quotations.map((item: any) => ({
+          rfqNumber: item.rfqNumber || "N/A",
+          tradeType: item.tradeType || "N/A",
+          portOfLoading: item.loadingPortFullNameCountry || "N/A",
+          portOfDischarge: item.dischargePortFullNameCountry || "N/A",
+          rfqStatus: item.rfqStatus || "N/A",
+          modeOfShipment: item.modeOfShipment || "N/A",
+          quotationNumber: item.quotationNumber || "N/A",
+          quotationDate: item.quotationCreationDate || "N/A",
+          containerDetails: item.containerDetails?.map((container: any) => ({
+            typee: container.typee || "N/A",
+            name: container.name || "N/A",
+            quantity: container.quantity || 0,
+            _id: container._id || "N/A",
+            cargo: container.cargo || {},
+          })) || [],
+        }));
   
-      if (response.code) {
-        // Check if response.data.quotations is an array
-        if (Array.isArray(response.data?.quotations)) {
-          // Map the response data to transform it as needed
-          const mappedData: QuotationData[] = response.data.quotations.map((item: any) => ({
-            rfqNumber: item.rfqNumber || "N/A",
-            tradeType: item.tradeType || "N/A",
-            portOfLoading: item.loadingPortFullNameCountry || "N/A", 
-            portOfDischarge: item.dischargePortFullNameCountry            || "N/A", 
-            rfqStatus: item.rfqStatus || "N/A", 
-            modeOfShipment: item.modeOfShipment || "N/A", // updated to take mode from API response
-            quotationNumber: item.quotationNumber || "N/A", // updated to match quotationNumber
-            quotationDate: item.quotationCreationDate
-              || "N/A",
-            containerDetails: item.containerDetails?.map((container: any) => ({
-              typee: container.typee || "N/A",
-              name: container.name || "N/A",
-              quantity: container.quantity || 0,
-              _id: container._id || "N/A",
-              cargo: container.cargo || {},
-            })) || [],
-          }));
-  
-          // Set the mapped data into the state
-          setQuotations(mappedData);
-        } else {
-          console.log("Response data is not an array:", response.data);
-          message.error("Expected an array in the response.");
-        }
+        setQuotations(mappedData);
       } else {
         message.error(response.message || "Failed to fetch quotations.");
       }
@@ -137,6 +133,7 @@ const QuotationList = () => {
   
   
   
+  
 
   return (
     <div style={{ padding: "24px", fontFamily: "Arial, sans-serif", height: "100vh", overflowY: "auto" }}>
@@ -145,135 +142,82 @@ const QuotationList = () => {
       <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap" }}>
 
         {/* Mode of Shipment */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
-
-        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-
-            Mode of Shipment
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.mode === "Sea-FCL")}
-              onClick={() => handleFilterChange("mode", "Sea-FCL")}
-            >
-              Sea-FCL
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Sea-LCL")}
-              onClick={() => handleFilterChange("mode", "Sea-LCL")}
-            >
-              Sea-LCL
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Air")}
-              onClick={() => handleFilterChange("mode", "Air")}
-            >
-              Air
-            </button>
-            <button
-              style={filterButtonStyle(
-                filters.mode === "Cross Border Trucking"
-              )}
-              onClick={() =>
-                handleFilterChange("mode", "Cross Border Trucking")
-              }
-            >
-              Cross Border Trucking
-            </button>
-          </div>
-        </div>
-
-        {/* Trade Type */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
-
-        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-            Trade Type
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.tradeType === "Export")}
-              onClick={() => handleFilterChange("tradeType", "Export")}
-            >
-              Export
-            </button>
-            <button
-              style={filterButtonStyle(filters.tradeType === "Import")}
-              onClick={() => handleFilterChange("tradeType", "Import")}
-            >
-              Import
-            </button>
-          </div>
-        </div>
-
-        {/* Status */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
-
-          <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-
-            Status
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.status === "all")}
-              onClick={() => handleFilterChange("status", "all")}
-            >
-              All
-            </button>
-            <button
-              style={filterButtonStyle(filters.status === "live")}
-              onClick={() => handleFilterChange("status", "live")}
-            >
-              Live
-            </button>
-            <button
-              style={filterButtonStyle(filters.status === "awarded")}
-              onClick={() => handleFilterChange("status", "awarded")}
-            >
-              Awarded
-            </button>
-            <button
-              style={filterButtonStyle(filters.status === "closed")}
-              onClick={() => handleFilterChange("status", "closed")}
-            >
-              Closed
-            </button>
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div style={{ marginTop: "", textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100px" }}>
-
+        <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+      <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Mode of Shipment</div>
+      <div style={{ display: "flex", gap: "12px" }}>
+        {["Sea-FCL", "Sea-LCL", "Air", "Cross Border Trucking"].map((mode) => (
           <button
-            onClick={handleSubmit}
-            style={{
-              height: "36px", // Same as filter buttons
-              minWidth: "100px", // Same as filter buttons
-              padding: "0 12px", // Same padding as filter buttons
-              border: "none", // Remove any border
-              outline: "none", // Remove the default focus outline
-              borderRadius: "20px", // Same border radius
-              backgroundColor: "#6e44ff", // Custom background color for Submit button
-              color: "white", // Text color
-              fontSize: "14px", // Same font size as filter buttons
-              fontWeight: "500", // Same font weight
-              cursor: "pointer", // Pointer cursor on hover
-              textAlign: "center", // Center align text
-              display: "flex", // Flexbox for alignment
-              alignItems: "center", // Center align items vertically
-              justifyContent: "center", // Center align items horizontally
-              transition: "background-color 0.3s ease", // Smooth background transition
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "#4a2ccd")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "#6e44ff")
-            }
+            key={mode}
+            style={filterButtonStyle(pendingFilters.mode === mode)}
+            onClick={() => handlePendingFilterChange("mode", mode)}
           >
-            Submit
+            {mode}
           </button>
-        </div>
+        ))}
       </div>
+    </div>
+
+    {/* Trade Type */}
+    <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+      <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Trade Type</div>
+      <div style={{ display: "flex", gap: "12px" }}>
+        {["Export", "Import"].map((trade) => (
+          <button
+            key={trade}
+            style={filterButtonStyle(pendingFilters.tradeType === trade)}
+            onClick={() => handlePendingFilterChange("tradeType", trade)}
+          >
+            {trade}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Status */}
+    <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+      <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Status</div>
+      <div style={{ display: "flex", gap: "12px" }}>
+        {["all", "live", "awarded", "closed"].map((status) => (
+          <button
+            key={status}
+            style={filterButtonStyle(pendingFilters.status === status)}
+            onClick={() => handlePendingFilterChange("status", status)}
+          >
+            {status}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Submit Button */}
+    <div style={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100px" }}>
+      <button
+        onClick={handleSubmit}
+        style={{
+          height: "36px",
+          minWidth: "100px",
+          padding: "0 12px",
+          border: "none",
+          outline: "none",
+          borderRadius: "20px",
+          backgroundColor: "#6e44ff",
+          color: "white",
+          fontSize: "14px",
+          fontWeight: "500",
+          cursor: "pointer",
+          textAlign: "center",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "background-color 0.3s ease",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4a2ccd")}
+        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#6e44ff")}
+      >
+        Submit
+      </button>
+    </div>
+  </div>
 
       {/* Table */}
       {/* Table */}
@@ -410,7 +354,7 @@ const QuotationList = () => {
       onClick={() => setSelectedRow(null)}
       style={{
         position: "absolute",
-        top: "-32px",
+        top: '0px',
         right: "16px",
         backgroundColor: "transparent",
         border: "none",

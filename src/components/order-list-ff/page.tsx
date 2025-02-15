@@ -388,7 +388,7 @@ const OrderListFF = () => {
       onClick={() => setSelectedRow(null)}
       style={{
         position: 'absolute',
-        top: '-32px',
+        top: '0px',
         right: '16px',
         backgroundColor: 'transparent',
         border: 'none',
