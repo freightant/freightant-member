@@ -375,20 +375,35 @@ export const uomSeaFcl = [
   { key: '40FT', label: '40 Feet', value: strings["40ft"] },
 ]
 
+export const uomSeaLcl = [
+  { key: 'BL', label: 'BL', value: "BL" },
+  { key: 'MT', label: 'MT', value: "MT" },
+  { key: 'CBM', label: 'CBM', value: "CBM" },
+]
+
+export const Air = [
+  { key: 'KG', label: 'KG', value: "KG" },
+  { key: 'AWB', label: 'AWB', value: "AWB" },
+  
+]
+
 export const unitsOption =(modeOfShipment:string)=>{
   switch (modeOfShipment) {
     case strings.seaFCL:
         return uomSeaFcl
       break;
     case strings.seaLCL:
-        return uomSeaFcl
+        return uomSeaLcl
+      break;
+      case strings.air:
+        return Air
       break;
     default:
         return [
           {key:strings.mt,label:strings.mt,value:strings.mt},
-          {key:strings.cbm,label:strings.cbm,value:strings.cbm},
-          {key:strings.awb,label:strings.awb,value:strings.awb},
-          {key:strings.invoice,label:strings.invoice,value:strings.invoice},
+          // {key:strings.cbm,label:strings.cbm,value:strings.cbm},
+          // {key:strings.awb,label:strings.awb,value:strings.awb},
+          // {key:strings.invoice,label:strings.invoice,value:strings.invoice},
           {key:strings.truck,label:strings.truck,value:strings.truck},
         ]
       break;

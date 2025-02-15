@@ -61,6 +61,8 @@ const defaultValue = {
 }
 const PostRFQUI = () => {
 
+  
+
   const [globalRfqNumber, setGlobalRfqNumber] = useState("");
   const [formLoading, setformLoading] = useState(false)
   const [SuccessModal, setSuccessModal] = useState(false)
@@ -72,6 +74,14 @@ const PostRFQUI = () => {
   const { state, dispatch } = useContext(ContextRFQ)
   const [containerData, setContainerData] = useState<any>()
   const [form] = useForm()
+
+// Ensure form is initialized with defaultValue
+useEffect(() => {
+  form.setFieldsValue(defaultValue);
+  console.log(defaultValue)
+}, [form]);
+
+
   const modeOfShipment = useWatch("modeOfShipment",{ form, preserve: true })
   const tradeType = useWatch("tradeType",{ form, preserve: true })
   const incoterm = useWatch("incoterm", { form, preserve: true })
@@ -133,6 +143,10 @@ const PostRFQUI = () => {
     form.setFieldValue(["cargoDetail", "totalGrossWeight"], gw)
     return
   }
+
+  
+
+
   useEffect(() => {
 
     if (modeOfShipment) {
@@ -286,6 +300,8 @@ const PostRFQUI = () => {
       }
     }
   }, [addOnService])
+
+  
 
   // Global variable to store loading port details
 let globalLoadingPortObj: {
@@ -753,9 +769,31 @@ let globalContainer: ContainerItem[] = [
                     ))
                   }
                   <Col {...layParams}>
-                    <Form.Item name={["cargoDetail", "totalCBM"]} rules={[{ required: true }]} label="Total CBM" layout="vertical">
-                      <Input placeholder="Enter Here" />
-                    </Form.Item>
+                  <Form.Item
+  name={["cargoDetail", "totalCBM"]}
+  rules={[
+    { required: true, message: "Total CBM is required" },
+    {
+      pattern: /^\d+(\.\d{1,2})?$/,
+      message: "Enter a valid number with up to 2 decimal places",
+    },
+  ]}
+  label="Total CBM"
+  layout="vertical"
+>
+  <Input
+    placeholder="Enter Here"
+    onChange={(e) => {
+      let value = e.target.value;
+      if (/^\d+(\.\d{0,2})?$/.test(value) || value === "") {
+        e.target.value = value;
+      } else {
+        e.preventDefault();
+      }
+    }}
+  />
+</Form.Item>
+
                   </Col>
                   <Col {...layParams}>
                     <Form.Item name={["cargoDetail", "totalGrossWeight"]} rules={[{ required: true }]} label="Total Gross Weight" layout="vertical">
@@ -1129,8 +1167,8 @@ let globalContainer: ContainerItem[] = [
               <Card title="Add on Services at Port of loading [ POL ]" classNames={{ body: "px-4" }} styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0, paddingTop: "12px" }, body: { padding: "10px" } }}
                 extra={
                   modeOfShipment !== strings.crossBorderTrucking &&
-                  <Form.Item label="" name={["addOnService", "status"]} className="my-2" initialValue={false}>
-                    <Switch checkedChildren={"Yes"} unCheckedChildren={"No"} checked={addOnService?.status ?? false} onChange={(e: any) => form.setFieldValue("addOnService", { status: e })} />
+                  <Form.Item label="" name={["addOnService", "status"]} className="my-2" >
+                    <Switch checkedChildren={"Yes"} unCheckedChildren={"No"} checked={addOnService?.status } onChange={(e: any) => form.setFieldValue("addOnService", { status: e })} />
                   </Form.Item>
                 }
               >
@@ -1294,7 +1332,7 @@ let globalContainer: ContainerItem[] = [
               <Card title="Add on Services at Port of loading [ POD ]" classNames={{ body: "px-4" }} styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0, paddingTop: "12px" }, body: { padding: "10px" } }}
                 extra={
                   modeOfShipment !== strings.crossBorderTrucking &&
-                  <Form.Item label="" name={["addOnService", "status"]} className="my-2">
+                  <Form.Item label="" name={["addOnService", "status"]} className="my-2" >
                     <Switch checkedChildren={"Yes"} unCheckedChildren={"No"} checked={addOnService?.status} onChange={(e: any) => form.setFieldValue("addOnService", { status: e })} />
                   </Form.Item>
                 }
@@ -1345,7 +1383,7 @@ let globalContainer: ContainerItem[] = [
                           <Checkbox checked={addOnService?.eSeal === true} onChange={() => form.setFieldValue(["addOnService", "eSeal"], true)}>Yes</Checkbox>
                           <Checkbox checked={addOnService?.eSeal === false} onChange={() => form.setFieldValue(["addOnService", "eSeal"], false)}>No</Checkbox>
                         </Form.Item>
-                        <Form.Item name={["addOnService", "stuffingLocationType"]} label="De Stuffing Location Type" style={{ width: "100%" }}>
+                        <Form.Item name={["addOnService", "stuffingLocationType"]} label="De Stuffing Location Type" style={{ width: "50%" }} layout="horizontal">
                           {destuffingLocationTypeOptions.map((e: string, iIndex) => (<Button key={iIndex + "cbt"} block shape="round" style={{ margin: 2, lineHeight: 1, fontSize: "12px" }} type={addOnService?.stuffingLocationType === e ? "primary" : "default"} onClick={() => { form.setFieldValue(["addOnService", "stuffingLocationType"], e) }}>{e}</Button>))}
                         </Form.Item>
                       </>

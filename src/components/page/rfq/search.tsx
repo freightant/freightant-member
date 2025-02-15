@@ -141,6 +141,9 @@ function RfqSearchUI() {
     })
   };
 
+ 
+  
+
   useEffect(() => {
     setinputUpdate(true);
   }, [universal]); 
@@ -363,6 +366,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
     loadingPortObj,
     dischargePortObj,
     organization,
+    pointOfContact,
     paymentTerms,
     remarks,
     container,
@@ -377,6 +381,35 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
     form.setFieldsValue(rfqData)
   },[rfqData])
 
+  console.log(form)
+
+  const handleDownload = async (rfqId: string) => {
+    try {
+      if (!rfqId) throw new Error("Missing required field: _id");
+  
+      const response = await fetch("https://freightant-api.onrender.com/api/pdf/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rfqId }),
+      });
+  
+      if (!response.ok) throw new Error("Failed to generate PDF");
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "document.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+    }
+  };
+  
+  
   
   
   return (
@@ -497,32 +530,36 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
   )
 } */}
 
-<Row gutter={[16, 16]} style={{ flexWrap: "wrap" }} className='px-4'>
+<Row gutter={[16, 16]} style={{ flexWrap: "wrap" }} className='px-4' >
   
-    <Col span={10} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
+    <Col span={12} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
       <Form.Item
         label={
-          <span style={{ fontWeight: 600, fontSize: "18px" }}>
+          <span style={{ fontWeight: 600, fontSize: "18px" , }}>
             Port of Loading
           </span>
         }
         layout="vertical"
       >
+         <div style={{ width: "100%" }}>
         <PortUI i={loadingPortObj} />
+      </div>
       </Form.Item>
     </Col>
   
   {dischargePort && (
-    <Col span={10} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
+    <Col span={12} style={{ backgroundColor: "#ffffff", borderRadius: "5px" }}>
       <Form.Item
         label={
-          <span style={{ fontWeight: 600, fontSize: "18px" }}>
+          <span style={{ fontWeight: 600, fontSize: "18px" ,  }}>
             Port of Discharge
           </span>
         }
         layout="vertical"
       >
-        <PortUI i={dischargePortObj} />
+        <div style={{ width: "100%" }}>
+          <PortUI i={dischargePortObj} />
+        </div>
       </Form.Item>
     </Col>
   )}
@@ -696,12 +733,13 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                       </Col>
                       <Col {...lParams}>
                         <Form.Item label={"Volume"} layout="vertical">
-                          <Input value={cargoDetail?.totalCBM} disabled className='text-center' />
+                          <Input value={`${cargoDetail?.totalCBM || ""} ${cargoDetail?.measurement1 || ""}`} disabled className='text-center' />
                         </Form.Item>
                       </Col>
                       <Col {...lParams}>
                         <Form.Item label={"Weight"} layout="vertical">
-                          <Input value={cargoDetail?.totalGrossWeight || cargoDetail?.weight} disabled className='text-center' />
+                          <Input value={`${cargoDetail?.totalGrossWeight || ""} ${cargoDetail?.weight || ""} ${cargoDetail?.measurement2 || ""}`}
+disabled className='text-center' />
                       </Form.Item>                        
                       </Col>
                       {
@@ -846,7 +884,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                         <Form.Item label={"Truck/Trailer Type"}>
                           {
                             (addOnService.truckType?addOnService.truckType:[]).map((truckType:any,iIndex:number)=>(
-                              <Input key={truckType.typee+iIndex} value={`${truckType.typee} * ${truckType.quantity}`} disabled className='text-center my-1' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'70%'  }}/>
+                              <Input key={truckType.typee+iIndex} value={`${truckType.typee} * ${truckType.quantity}`} disabled className='text-center my-1' style={{  fontSize: '12px', backgroundColor: '#F6F4FF',  fontWeight: 600 , width:'90%'  }}/>
                             ))
                           }
                         </Form.Item>
@@ -874,7 +912,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                       (addOnService.miscServices?addOnService.miscServices:[]).length>0&&
                       <Col sm={24} span={11}>
                         <Form.Item label={"Misc Services"} className='d-inline-flex'>
-                          <Input.TextArea rows={1} value={addOnService.miscServices.join()+ `${addOnService.miscServices.includes(strings.others)?", "+addOnService?.miscOtherValue:""}`} disabled className='text-center text-wrap ' style={{  backgroundColor: '#F6F4FF',  fontWeight: 'bold' ,width:'150%'  }}/>
+                          <Input.TextArea rows={1} value={addOnService.miscServices.join()+ `${addOnService.miscServices.includes(strings.others)?", "+addOnService?.miscOtherValue:""}`} disabled className='text-center text-wrap ' style={{  backgroundColor: '#F6F4FF',  fontWeight: 500 ,width:'400px'  }}/>
                         </Form.Item>
                       </Col>
                     }
@@ -930,7 +968,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                       }
                     </div>
                   </Col>
-                    {organization?.pointSalesPricingTeam&& 
+                    {/* {organization?.pointSalesPricingTeam&& 
                     <>
                     {
                       (organization?.pointSalesPricingTeam?.name?organization.pointSalesPricingTeam?.name:[]).map((r:any,iIndex:number)=>(
@@ -947,13 +985,30 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                       ))
                     }
                     </>
-                    }
+                    } */}
+                    {pointOfContact && (
+  <>
+    {pointOfContact.map((r: any, iIndex: number) => (
+      <Col span={20} key={iIndex}>
+        <Space>
+          {iIndex === 0 && <p className="m-0 fw-semibold">POC</p>}
+          <Input value={r.name} disabled style={{ width: "100px", backgroundColor: "#F6F4FF", fontWeight: 500, fontSize: "16px" }} className="text-center" />
+          <Input value={r.email} disabled style={{ width: "100%", backgroundColor: "#F6F4FF", fontWeight: 500, fontSize: "16px" }} className="text-center" />
+          <Input value={r.mobile} disabled style={{ width: "80%", backgroundColor: "#F6F4FF", fontWeight: 500, fontSize: "16px" }} className="text-center" />
+        </Space>
+      </Col>
+    ))}
+  </>
+)}
+
                 </Row>
               </Card>
             }
             <Col span={24} className='my-4 '>
               {!showSubmit&&<div className="d-flex justify-content-between mx-0">
-                <Button icon={<DownloadOutlined className="fw-bold fs-5 text-primary2" />} >Download as pdf</Button>
+                <Button onClick={() => handleDownload(_id)} icon={<DownloadOutlined className="fw-bold fs-5 text-primary2" />}>
+    Download as PDF
+  </Button>
                 <Link target="_blank" href={"/rfq/quotation?rfq="+_id}>
                   <Button type="primary" >Submit quotation</Button>
                 </Link>

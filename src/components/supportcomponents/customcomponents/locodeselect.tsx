@@ -128,17 +128,19 @@ async function fetchUserList(username: string, modeOfShipment: string): Promise<
 //   );
 // };
 
-const LocodeSelect = ({ change, changeLocation, wholeValue, form, ...props }: { wholeValue?: any, props?: any, mode?: any, change: any, changeLocation?: any, form: any }) => {
+const LocodeSelect = ({ change, changeLocation, wholeValue, form, modeOfShipment, style, ...props }: { wholeValue?: any, props?: any, mode?: any, change: any, changeLocation?: any, form: any, modeOfShipment?: any,  style?: React.CSSProperties; }) => {
   const [value, setValue] = useState<UserValue[]>([]);
+
+  console.log("🔍 modeOfShipment in LocodeSelect:", modeOfShipment); // Debugging
 
   return (
     <DebounceSelect
       value={value}
-      style={{ width: "90%" }}
+      style={style}
       {...props}
       placeholder="Select Port"
       suffixIcon={null}
-      fetchOptions={(username) => fetchUserList(username, form.getFieldValue("modeOfShipment"))} // Pass modeOfShipment
+      fetchOptions={(username) => fetchUserList(username, modeOfShipment || form.getFieldValue("modeOfShipment"))} // Pass modeOfShipment
       onChange={(newValue: any) => {
         if (changeLocation) {
           changeLocation(newValue?.title.countryname, newValue?.title.statename);

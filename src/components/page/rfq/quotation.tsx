@@ -238,7 +238,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   const termsCondition = Form.useWatch("termsCondition",form)
   const quotationValidityDate = Form.useWatch("quotationValidityDate",form)
   const transitTime = Form.useWatch("transitTime",form)
-
+  const modeOfShipment = rfq?.modeOfShipment;
+  
+  
   useEffect(() => {
     let value = form.getFieldsValue()
     if(validateData(freightData,"Freight").length<1 && freightData.length>0){
@@ -442,15 +444,25 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   }
   console.log("test",rfq?.rfqNumber);
 
-  let rfqNo = rfq?.rfqNumber;
+  const [rfqNo, setRfqNo] = useState(rfq?.rfqNumber || "");
+
   return (
     <Form form={form} layout="vertical" onFinish={formFinish}>
         <Row gutter={[16,16]} style={{ width: '120%', marginLeft: '-10%', }}>
           <Col span={24}>
           <Space>
-            <Form.Item className='mb-1'name={"rfq"} >           
-              <Input value={rfq?.rfqNumber} disabled className='border rounded-pill p-1 fs-6 text-center' style={{ backgroundColor: '#ffffff', fontWeight: '500' }}/>
-            </Form.Item>
+          <Form.Item name="rfq" hidden>
+  <Input value={rfq?._id} />
+</Form.Item>
+
+<Form.Item className="mb-1">
+  <Input 
+    value={rfqNo} 
+    disabled 
+    className="border rounded-pill p-1 fs-6 text-center" 
+    style={{ backgroundColor: "#ffffff", fontWeight: "500" }} 
+  />
+</Form.Item>
             <Form.Item className='mb-1'>
               <Input value={rfq?.modeOfShipment} disabled className='border rounded-pill p-1  text-center' style={{ backgroundColor: '#ffffff' , fontWeight: '500' }}/>
             </Form.Item>
@@ -776,6 +788,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   dataIndex: "rate",
                                   align: "center",
                                   key: "rate",
+                                  width:80,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input disabled={!polChargesData[index].unit} placeholder="Rate" variant="outlined" className="p-1" value={polChargesData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value,1)}/>
                                   ))
@@ -941,6 +954,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                   title: "Rate",
                                   dataIndex: "rate",
                                   key: "rate",
+                                  width:80,
                                   render:((_:any,record:any,index:number)=>(
                                     <Input disabled={!podChargesData[index].unit} placeholder="Rate" variant="outlined" className="p-1" value={podChargesData[index].rate} onChange={e=>handleInputChange(index,"rate",e.target.value,2)}/>
                                   ))
@@ -968,7 +982,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                     <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} />
                                   </Form.Item>
                                   <Form.Item name={"podChargeLocal"} noStyle>
-                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={UnLoadingCountryCurrency} />
+                                    <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={UnLoadingCountryCurrency} addonAfter="INR"/>
                                   </Form.Item>
                                 </Space>
                               </Form.Item>
@@ -1126,29 +1140,32 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                 items={
                                   [ 
                                     ...[{ label: `Port of Loading`, children: rfq?.loadingPortObj?<PortUI {...{style:{minWidth:"300px",maxWidth:"370px"}}} i={rfq?.loadingPortObj} /> :
-                                      <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.placeOfLoading?.address}, ${rfq?.placeOfLoading?.city}, ${rfq?.placeOfLoading?.state}, ${rfq?.placeOfLoading?.country}`} />
+                                      <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.loadingPortObj?.PortCode} ${rfq?.loadingPortObj?.PortName} ${rfq?.loadingPortObj?.City} ${rfq?.loadingPortObj?.Country}`} />
                                     }],
                                     ...Array.from({length:noOfTransShipmentPorts}).map((port, index) => ({ 
                                       label: `T/S Port ${index + 1}`, 
                                       children: (
                                         <Form.Item name={["transShipmentPorts", index]} layout="horizontal">
-                                          <LocodeSelect
-                                           form={form} 
-                                            {...{style:{minWidth:"300px",maxWidth:"370px"}}}
-                                            change={() => { }}
-                                            wholeValue={(value: any) => handleTransshipmentPortChange(value.title, index)}
-                                          />
+                                         <LocodeSelect
+  form={form}
+  modeOfShipment={rfq?.modeOfShipment}  // ✅ Pass modeOfShipment
+  style={{ minWidth: "300px", maxWidth: "370px" }}
+  change={() => {}}
+  wholeValue={(value: any) => handleTransshipmentPortChange(value.title, index)}
+/>
                                         </Form.Item>
                                       ) 
                                     })),
                                     ...[{ label: `Port of Discharge`, children:rfq?.dischargePortObj? <PortUI {...{style:{minWidth:"300px",maxWidth:"370px"}}} i={rfq?.dischargePortObj} /> 
                                     :
-                                    <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.placeOfUnLoading?.address}, ${rfq?.placeOfUnLoading?.city}, ${rfq?.placeOfUnLoading?.state}, ${rfq?.placeOfUnLoading?.country}`} />
+                                    <Input.TextArea style={{minWidth:"300px",maxWidth:"370px"}} className='rounded-2' value={`${rfq?.dischargePortObj?.PortCode} ${rfq?.dischargePortObj?.PortName} ${rfq?.dischargePortObj?.City} ${rfq?.dischargePortObj?.Country}`} />
                                     }],
                                   ]
                                 }
                               />
                             </Space>
+                           
+
                         </Col>
                         <Col span={24}>
   <Form.Item 
