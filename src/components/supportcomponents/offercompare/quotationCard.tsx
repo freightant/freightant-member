@@ -14,6 +14,7 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
   const {
     _id,
     rfq,
+    rfqNumber,
     shippingLine,
     modeOfShipment,
     quotationValidityDate,
@@ -21,7 +22,8 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
     podChargeLocal,
     podCurrencyCode,
     polCurrencyCode,
-    polChargeLocal,    
+    polChargeLocal,
+    freightData,    
     inclusiveFrightDollor,
     transShipmentPorts,
     noOfTransShipmentPorts,
@@ -44,9 +46,9 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
     }
     
   },[quotation])
-  console.log(docs);
   
-
+  
+  console.log(quotation?.freightData?.amount);
   return (
     <Card
      title={
@@ -65,7 +67,7 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
             </Col>
             <Col sm={24} md={8} className='d-flex justify-content-end'>
                 <Space className="border rounded-2 px-2 py-1 my-1 " style={{ textAlign: "right" , marginRight: "-20px"}}>
-                    <p className='m-0'>{_id}</p>
+                    <p className='m-0'>{quotation?.quotationNumber}</p>
                 </Space>
             </Col>
         </Row>
@@ -126,30 +128,32 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
         </Col>
         <Col sm={24} md={6}>
             <Row gutter={[16, 8]}>
-                <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
-                    <Space className="border rounded-2 px-2 py-1">
-                        <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}</p>
-                        <p className='m-0'>USD {inclusiveFrightDollor}</p>
-                    </Space>
-                </Col>
+            <Col span={24} style={{ textAlign: "right", fontWeight: 500, color: "#451197" }}>
+  <div style={{ display: "flex", justifyContent: "right", alignItems: "center",  whiteSpace: "nowrap" }} className="border rounded-2 px-2 py-1">
+    <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}</p>
+    <p className='m-0'>USD {quotation?.freightData?.[0]?.amount}</p>
+  </div>
+</Col>
+
                 <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
                     <Space className="border rounded-2 px-2 py-1">
                         <p className='m-0'>POL Cost:</p>
-                        <p className='m-0'>{polCurrencyCode} {polChargeLocal}</p>
+                        <p className='m-0'>{polCurrencyCode} {Number(polChargeLocal).toFixed(2)}</p>
                     </Space>
                 </Col>
                 <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
                     <Space className="border rounded-2 px-2 py-1">
                         <p className='m-0'>POD Cost:</p>
-                        <p className='m-0'>{podCurrencyCode} {podChargeLocal}</p>
+                        <p className='m-0'>{podCurrencyCode} INR {podChargeLocal}</p>
                     </Space>
                 </Col>
-                <Col span={24}  style={{ textAlign: "right" , fontWeight: 500, color: "#451197" }}>
-                    <Space className="border rounded-2 px-2 py-1 my-1">
-                        <p className='m-0'>Total Landed Cost:</p>
-                        <p className='m-0'>{polCurrencyCode} {totallandedCost}</p>
-                    </Space>
-                </Col>
+                <Col span={24} style={{ textAlign: "right", fontWeight: 500, color: "#451197" }}>
+  <Space className="border rounded-2 px-2 py-1 my-1" style={{ display: "flex", alignItems: "center", whiteSpace: "nowrap" }}>
+    <p className='m-0'>Total Landed Cost:</p>
+    <p className='m-0'>{polCurrencyCode} {Number(totallandedCost).toFixed(2)}</p>
+  </Space>
+</Col>
+
             </Row>
         </Col>
       </Row>

@@ -365,16 +365,31 @@ const RFQList = () => {
 
       {/* Dynamic column value based on filters.mode */}
       <td style={{ color: "black", textAlign: "center" }}>
-        {filters.mode === "Sea-FCL"
-          ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}`
-          : filters.mode === "Sea-LCL"
-          ? `${shipment.container?.[0]?.typee || "-"} * ${shipment.container?.[0]?.quantity || 0}`
-          : filters.mode === "Air"
-          ? `${shipment.container?.[0]?.cargo.weight || 0}`
-          : filters.mode === "Cross Border Trucking"
-          ? "Truck type unavailable"
-          : ""}
-      </td>
+  {filters.mode === "Sea-FCL" ? (
+    shipment.container?.map((cont, index) => (
+      <div key={index}>
+        {`${cont.name || "-"} * ${cont.quantity || 0}`}
+      </div>
+    ))
+  ) : filters.mode === "Sea-LCL" ? (
+    shipment.container?.map((cont, index) => (
+      <div key={index}>
+        {`${cont.typee || "-"} * ${cont.quantity || 0}`}
+      </div>
+    ))
+  ) : filters.mode === "Air" ? (
+    shipment.container?.map((cont, index) => (
+      <div key={index}>
+        {`Weight: ${cont.cargo?.weight || 0} kg`}
+      </div>
+    ))
+  ) : filters.mode === "Cross Border Trucking" ? (
+    "Truck type unavailable"
+  ) : (
+    ""
+  )}
+</td>
+
 
       <td style={{ color: "black", textAlign: "center" }}>{shipment.quotationCount}</td>
       <td style={{ color: "black", textAlign: "center" }}>{shipment.createdAt}</td>
