@@ -386,9 +386,9 @@ const RFQList = () => {
       <div key={index}>{`${cont.name || "-"} * ${cont.quantity || 0}`}</div>
     ))
   ) : filters.mode === "Sea-LCL" ? (
-    shipment.container?.map((cont, index) => (
-      <div key={index}>{`${cont.typee || "-"} * ${cont.quantity || 0}`}</div>
-    ))
+    <div>
+      {`${(shipment.cargoDetail?.totalGrossWeight || 0) / 1000} MT / ${shipment.cargoDetail?.totalCBM || 0} CBM`}
+    </div>
   ) : filters.mode === "Air" ? (
     <div>{`${shipment.cargoDetail?.totalGrossWeight || 0} kg`}</div>
   ) : filters.mode === "Cross Border Trucking" ? (
@@ -397,6 +397,8 @@ const RFQList = () => {
     ""
   )}
 </td>
+
+
 
 
 
