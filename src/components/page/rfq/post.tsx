@@ -95,9 +95,10 @@ useEffect(() => {
   const cargoDetail = useWatch("cargoDetail",{ form, preserve: true })
   const paymentTerms = useWatch("paymentTerms",{ form, preserve: true })
   const dischargePort = useWatch("dischargePort",{ form, preserve: true })
-  const loadingPortObj = useWatch("loadingPortObj", { form, preserve: true });
+  const loadingPortObj = useWatch("loadingPort", { form, preserve: true });
   const dischargePortObj = useWatch("dischargePortObj", { form, preserve: true });
 
+  console.log("loading port",loadingPortObj)
 
   const [countryID, setCountryID] = useState("")
   const [stateID, setStateID] = useState("")
@@ -236,6 +237,7 @@ useEffect(() => {
       dischargePort: formValues?.dischargePort || "",
     
       loadingPortObj: formValues?.loadingPortObj || {},
+      
       dischargePortObj: formValues?.dischargePortObj || {},
       closingDate: formValues?.closingDate || "",
       readyDate: formValues?.container?.readyDate || "2025-02-24T18:30:00.000Z",
@@ -502,13 +504,15 @@ let globalContainer: ContainerItem[] = [
   change={(e: any) => form.setFieldValue("loadingPort", e)}
   wholeValue={(e: any) => {
     // Update global variable
+    console.log("print e=",e)
+    
     globalLoadingPortObj = {
       Country: e?.title?.country || "",
-      PortName: e?.title?.port_name || e?.airport_name || "n/a",
-      PortCode: e?.title?.sea_port_code || e?.iata_code || "n/a",
+      PortName: e?.title?.port_name || e?.title?.airport_name || "",
+      PortCode: e?.title?.sea_port_code || e?.title?.iata_code || "",
       City: e?.title?.city || "",
     };
-
+    
     
     
     // Update form field

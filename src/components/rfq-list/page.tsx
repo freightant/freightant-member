@@ -31,7 +31,22 @@ type ShipmentData = {
   createdAt: string;
   closingDate: string;
   quotationCount: number;
+  cargoDetail: CargoDetail; // Added this
 };
+
+type CargoDetail = {
+  dimensions: Record<string, any>;
+  typee: string;
+  packageType: string;
+  totalGrossWeight: number;
+  totalCBM: number;
+  packageQuantity: number;
+  hsCode: string[];
+  category: string[];
+  packageDetail: any[];
+  truckType: string[];
+};
+
 
 type PortData = {
   id: number;
@@ -52,6 +67,7 @@ type ContainerData = {
   typee: string;
   name: string;
   quantity: number;
+  totalGrossWeight: number;
 };
 
 type CargoData = {
@@ -332,7 +348,7 @@ const RFQList = () => {
       <td style={{ color: "black", textAlign: "center" }}>{shipment.rfqNumber}</td>
       <td style={{ color: "black", textAlign: "center" }}>{shipment.tradeType}</td>
       <td style={{ color: "black", textAlign: "center" }}>
-        {`${shipment.loadingPort} - ${shipment.dischargePort}`}
+        {`${shipment.loadingPort} to ${shipment.dischargePort}`}
       </td>
       <td style={{ textAlign: "center", padding: "8px" }}>
         <div
@@ -367,28 +383,21 @@ const RFQList = () => {
       <td style={{ color: "black", textAlign: "center" }}>
   {filters.mode === "Sea-FCL" ? (
     shipment.container?.map((cont, index) => (
-      <div key={index}>
-        {`${cont.name || "-"} * ${cont.quantity || 0}`}
-      </div>
+      <div key={index}>{`${cont.name || "-"} * ${cont.quantity || 0}`}</div>
     ))
   ) : filters.mode === "Sea-LCL" ? (
     shipment.container?.map((cont, index) => (
-      <div key={index}>
-        {`${cont.typee || "-"} * ${cont.quantity || 0}`}
-      </div>
+      <div key={index}>{`${cont.typee || "-"} * ${cont.quantity || 0}`}</div>
     ))
   ) : filters.mode === "Air" ? (
-    shipment.container?.map((cont, index) => (
-      <div key={index}>
-        {`${cont.cargo?.weight || 0} kg`}
-      </div>
-    ))
+    <div>{`${shipment.cargoDetail?.totalGrossWeight || 0} kg`}</div>
   ) : filters.mode === "Cross Border Trucking" ? (
     "Truck type unavailable"
   ) : (
     ""
   )}
 </td>
+
 
 
       <td style={{ color: "black", textAlign: "center" }}>{shipment.quotationCount}</td>
