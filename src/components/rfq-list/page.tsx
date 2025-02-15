@@ -380,7 +380,7 @@ const RFQList = () => {
   ) : filters.mode === "Air" ? (
     shipment.container?.map((cont, index) => (
       <div key={index}>
-        {`Weight: ${cont.cargo?.weight || 0} kg`}
+        {`${cont.cargo?.weight || 0} kg`}
       </div>
     ))
   ) : filters.mode === "Cross Border Trucking" ? (
@@ -454,16 +454,16 @@ const RFQList = () => {
             { label: 'Discharge Port', value: shipment.dischargePort },
             { label: 'RFQ Status', value: shipment.status },
             {
-              label: filters.mode, // Set the label to the filter mode
+              label: filters.mode,
               value:
                 filters.mode === "Sea-FCL"
-                  ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}`
+                  ? shipment.container?.map(cont => `${cont.name || "-"} * ${cont.quantity || 0}`).join(", ")
                   : filters.mode === "Sea-LCL"
-                  ? `${shipment.container?.[0]?.typee || "-"} * ${shipment.container?.[0]?.quantity || 0}` // Replace with mtCbm if available
+                  ? shipment.container?.map(cont => `${cont.typee || "-"} * ${cont.quantity || 0}`).join(", ")
                   : filters.mode === "Air"
-                  ? `${shipment.container?.[0]?.name || "-"} * ${shipment.container?.[0]?.quantity || 0}` // Replace with chargeableWeight if available
+                  ? shipment.container?.map(cont => `${cont.cargo?.weight || 0} kg`).join(", ")
                   : filters.mode === "Cross Border Trucking"
-                  ? "Truck type unavailable" // Replace with shipment.truckType if available
+                  ? "Truck type unavailable"
                   : "",
             },
               

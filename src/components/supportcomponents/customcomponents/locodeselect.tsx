@@ -83,7 +83,7 @@ async function fetchUserList(username: string, modeOfShipment: string): Promise<
         // Determine the fields based on modeOfShipment
         const value = (modeOfShipment.toLowerCase() === "air") ? i.iata_code : i.sea_port_code;
         const label = (modeOfShipment.toLowerCase() === "air") 
-          ? `${i.iata_code} ${i.airport_name} ${i.city} ${i.country}`
+          ? `${i.iata_code} ${i.airport_name} ${i.country}`
           : `${i.sea_port_code} ${i.port_name} ${i.country}`;
 
         return {

@@ -252,7 +252,7 @@ useEffect(() => {
     // globalRfqNumber =formValues?.rfqNumber || "N/A";
     // console.log(globalRfqNumber)
 
-    console.log(e);
+    console.log(formValues);
     
     postRfQ(formValues).then(r => {
       setGlobalRfqNumber(r.data.rfqNumber);
@@ -509,8 +509,8 @@ let globalContainer: ContainerItem[] = [
       City: e?.title?.city || "",
     };
 
-    form.setFieldValue("globalLoadingPortObj", e)
-    console.log(e)
+    
+    
     // Update form field
     form.setFieldValue("loadingPortObj", globalLoadingPortObj);
 
@@ -521,7 +521,7 @@ let globalContainer: ContainerItem[] = [
     console.log(country);
     form.setFieldValue(["addOnService", "placeOfLoading"], { country, state: "", city: "" });
   }}
-/>;
+/>
 
                       </Form.Item>
                       <Form.Item name={"loadingPortObj"} noStyle />

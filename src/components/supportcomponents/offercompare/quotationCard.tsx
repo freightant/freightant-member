@@ -130,8 +130,8 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
             <Row gutter={[16, 8]}>
             <Col span={24} style={{ textAlign: "right", fontWeight: 500, color: "#451197" }}>
   <div style={{ display: "flex", justifyContent: "right", alignItems: "center",  whiteSpace: "nowrap" }} className="border rounded-2 px-2 py-1">
-    <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}</p>
-    <p className='m-0'>USD {quotation?.freightData?.[0]?.amount}</p>
+    <p className='m-0'>{freightTitle(rfq?.modeOfShipment)}: </p>
+    <p className='m-0'>   USD  {quotation?.freightData?.[0]?.amount} </p>
   </div>
 </Col>
 

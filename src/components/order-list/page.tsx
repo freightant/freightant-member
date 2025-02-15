@@ -59,11 +59,16 @@ const OrderList = () => {
     tradeType: "Export",
   });
 
+  const [pendingFilters, setPendingFilters] = useState<FilterState>({ ...filters });
+
   const [orders, setOrders] = useState<OrderData[]>([]);
   const [selectedRow, setSelectedRow] = useState<string | null>(null); // Track selected row
 
   const handleFilterChange = (filterName: keyof FilterState, value: string) => {
-    setFilters((prevFilters) => ({ ...prevFilters, [filterName]: value }));
+    setPendingFilters((prevFilters) => ({
+      ...prevFilters,
+      [filterName]: value,
+    }));
   };
 
 
@@ -84,15 +89,15 @@ const OrderList = () => {
     justifyContent: "center",
   });
 
+  // Applies filters on Submit
   const handleSubmit = async () => {
-    const requestBody = {
-      modeOfShipment: filters.mode,
-      tradeType: filters.tradeType,
-    };
-
+    setFilters(pendingFilters);  // Apply the pending filters
+    setOrders([]);  // Clear existing orders before fetching new data
+  
+    const requestBody = { modeOfShipment: pendingFilters.mode, tradeType: pendingFilters.tradeType };
+  
     try {
       const response = await showOrder(requestBody);
-
       if (response.code) {
         const mappedData: OrderData[] = response.data.map((item: any) => ({
           rfqNumber: item.rfqNumber || "N/A",
@@ -101,20 +106,7 @@ const OrderList = () => {
           portOfLoading: item.portOfLoading || "N/A",
           portOfDischarge: item.portOfDischarge || "N/A",
           container: item.container?.map((cont: any) => ({
-            cargo: {
-              typee: cont.cargo.typee || "N/A",
-              category: cont.cargo.category || ["N/A"],
-              hsCode: cont.cargo.hsCode || [],
-              weight: cont.cargo.weight || 0,
-              imoClass: cont.cargo.imoClass || undefined,
-              unNumber: cont.cargo.unNumber || undefined,
-              packagingMaterial: cont.cargo.packagingMaterial || undefined,
-              msdsDocument: cont.cargo.msdsDocument || undefined,
-              temperature: cont.cargo.temperature || undefined,
-              humidity: cont.cargo.humidity || undefined,
-              remarks: cont.cargo.remarks || undefined,
-              gaugeStatus: cont.cargo.gaugeStatus || undefined,
-            },
+            cargo: { typee: cont.cargo.typee || "N/A", category: cont.cargo.category || ["N/A"], hsCode: cont.cargo.hsCode || [], weight: cont.cargo.weight || 0 },
             typee: cont.typee || "N/A",
             name: cont.name || "N/A",
             quantity: cont.quantity || 0,
@@ -130,10 +122,8 @@ const OrderList = () => {
           })) || [],
           rfqStatus: item.rfqStatus || "N/A",
         }));
-    
-        setOrders(mappedData);
-      } 
-       else {
+        setOrders(mappedData); // Update orders with the new filtered data
+      } else {
         message.error(response.message || "Failed to fetch orders.");
       }
     } catch (err: any) {
@@ -141,6 +131,7 @@ const OrderList = () => {
       message.error(err.message || "Failed to fetch orders.");
     }
   };
+  
 
   
   
@@ -179,106 +170,36 @@ const OrderList = () => {
       }}
     >
       {/* Filters */}
-      <div
-        style={{
-          display: "flex",
-          gap: "16px",
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-        }}
-      >
-        {/* Mode of Shipment */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
-        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-            Mode of Shipment
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.mode === "Sea-FCL")}
-              onClick={() => handleFilterChange("mode", "Sea-FCL")}
-            >
-              Sea-FCL
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Sea-LCL")}
-              onClick={() => handleFilterChange("mode", "Sea-LCL")}
-            >
-              Sea-LCL
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Air")}
-              onClick={() => handleFilterChange("mode", "Air")}
-            >
-              Air
-            </button>
-            <button
-              style={filterButtonStyle(filters.mode === "Cross Border Trucking")}
-              onClick={() => handleFilterChange("mode", "Cross Border Trucking")}
-            >
-              Cross Border Trucking
-            </button>
-          </div>
-        </div>
+      <div style={{ display: "flex", gap: "16px", alignItems: "flex-start", flexWrap: "wrap" }}>
+  <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+    <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Mode of Shipment</div>
+    <div style={{ display: "flex", gap: "12px" }}>
+      <button style={filterButtonStyle(pendingFilters.mode === "Sea-FCL")} onClick={() => handleFilterChange("mode", "Sea-FCL")}>Sea-FCL</button>
+      <button style={filterButtonStyle(pendingFilters.mode === "Sea-LCL")} onClick={() => handleFilterChange("mode", "Sea-LCL")}>Sea-LCL</button>
+      <button style={filterButtonStyle(pendingFilters.mode === "Air")} onClick={() => handleFilterChange("mode", "Air")}>Air</button>
+      <button style={filterButtonStyle(pendingFilters.mode === "Cross Border Trucking")} onClick={() => handleFilterChange("mode", "Cross Border Trucking")}>Cross Border Trucking</button>
+    </div>
+  </div>
 
-        {/* Trade Type */}
-        <div style={{ backgroundColor: "white", borderRadius: "10px", paddingTop: "4px", paddingBottom:"10px", paddingLeft:"12px", paddingRight:"12px",lineHeight:"32px"}}>
-        <div style={{ fontSize: "14px", color: "black", textAlign: "left" as "left",}}>
-            Trade Type
-          </div>
-          <div style={{ display: "flex", gap: "12px" }}>
-            <button
-              style={filterButtonStyle(filters.tradeType === "Export")}
-              onClick={() => handleFilterChange("tradeType", "Export")}
-            >
-              Export
-            </button>
-            <button
-              style={filterButtonStyle(filters.tradeType === "Import")}
-              onClick={() => handleFilterChange("tradeType", "Import")}
-            >
-              Import
-            </button>
-          </div>
-        </div>
+  <div style={{ backgroundColor: "white", borderRadius: "10px", padding: "4px 12px 10px", lineHeight: "32px" }}>
+    <div style={{ fontSize: "14px", color: "black", textAlign: "left" }}>Trade Type</div>
+    <div style={{ display: "flex", gap: "12px" }}>
+      <button style={filterButtonStyle(pendingFilters.tradeType === "Export")} onClick={() => handleFilterChange("tradeType", "Export")}>Export</button>
+      <button style={filterButtonStyle(pendingFilters.tradeType === "Import")} onClick={() => handleFilterChange("tradeType", "Import")}>Import</button>
+    </div>
+  </div>
 
-        {/* Submit Button */}
-        <div
-          style={{
-            marginTop: "",
-            textAlign: "right",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            height: "100px",
-          }}
-        >
-          <button
-            onClick={handleSubmit}
-            style={{
-              height: "36px",
-              minWidth: "100px",
-              padding: "0 12px",
-              border: "none",
-              outline: "none",
-              borderRadius: "20px",
-              backgroundColor: "#6e44ff",
-              color: "white",
-              fontSize: "14px",
-              fontWeight: "500",
-              cursor: "pointer",
-              textAlign: "center",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "background-color 0.3s ease",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4a2ccd")}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#6e44ff")}
-          >
-            Submit
-          </button>
-        </div>
-      </div>
+  <div style={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100px" }}>
+    <button onClick={handleSubmit} style={{ height: "36px", minWidth: "100px", padding: "0 12px", border: "none", outline: "none", borderRadius: "20px",
+      backgroundColor: "#6e44ff", color: "white", fontSize: "14px", fontWeight: "500", cursor: "pointer", textAlign: "center",
+      display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color 0.3s ease"
+    }} onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4a2ccd")}
+      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#6e44ff")}>
+      Submit
+    </button>
+  </div>
+</div>
+
 
       {/* Table */}
     
@@ -494,7 +415,7 @@ const OrderList = () => {
       onClick={() => setSelectedRow(null)}
       style={{
         position: 'absolute',
-        top: '-32px',
+        top: '0px',
         right: '16px',
         backgroundColor: 'transparent',
         border: 'none',

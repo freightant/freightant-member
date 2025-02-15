@@ -71,7 +71,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
           <div className="rounded-5  p-1 px-4 primary-bg-color fs-5">{d?.data?.organization?.companyName}</div>
         </Col>
         <Col>
-          <div className="rounded-5 p-1 px-3 bg-light border fs-5">Quote ID</div>
+          <div className="rounded-5 p-1 px-3 bg-light border fs-5">{d?.data?.quotationNumber}</div>
         </Col>
       </Row>
 
@@ -252,7 +252,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
         <Col xs={24}>
   <div className="card-content rounded-3 p-4 my-2 border border-[#dedede] mx-" style={{ width: "105%", marginLeft: "-20px"}}>
     <span className="fw-semibold fs-5">Terms and Conditions</span><br/>
-    <Typography.Text>{d?.data?.termsCondition}</Typography.Text>
+    <Typography.Text>{d?.data?.rfq?.remarks}</Typography.Text>
   </div>
 </Col>
 
