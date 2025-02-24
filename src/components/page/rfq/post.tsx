@@ -782,11 +782,11 @@ let globalContainer: ContainerItem[] = [
       message: "Enter a valid number with up to 2 decimal places",
     },
   ]}
-  label="Total CBM"
+  label={`Total CBM ${cargoDetail?.measurement1 ? `(${cargoDetail.measurement1})` : ""}`}
   layout="vertical"
 >
   <Input
-    placeholder="Enter Here"
+    placeholder={ cargoDetail?.measurement1 ? cargoDetail.measurement1 : "Enter Here"}
     onChange={(e) => {
       let value = e.target.value;
       if (/^\d+(\.\d{0,2})?$/.test(value) || value === "") {
@@ -800,8 +800,8 @@ let globalContainer: ContainerItem[] = [
 
                   </Col>
                   <Col {...layParams}>
-                    <Form.Item name={["cargoDetail", "totalGrossWeight"]} rules={[{ required: true }]} label="Total Gross Weight" layout="vertical">
-                      <Input placeholder="Kg" />
+                    <Form.Item name={["cargoDetail", "totalGrossWeight"]} rules={[{ required: true }]} label={`Total Gross Weight ${cargoDetail?.measurement2 ? `(${cargoDetail.measurement2})` : ""}`}  layout="vertical">
+                      <Input placeholder={cargoDetail?.measurement2 ? cargoDetail.measurement2 : "Enter Here"}  />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -1216,7 +1216,7 @@ let globalContainer: ContainerItem[] = [
                         }
                       </Space>
                     </Form.Item>
-                    {modeOfShipment !== strings.crossBorderTrucking &&
+                    {modeOfShipment === "Sea-FCL" &&
                       <>
                         <Form.Item name={["addOnService", "eSeal"]} label="E Seal Facility"  className="my-2" layout="horizontal">
                           <Checkbox checked={addOnService?.eSeal === true} onChange={() => form.setFieldValue(["addOnService", "eSeal"], true)}>Yes</Checkbox>
@@ -1381,7 +1381,7 @@ let globalContainer: ContainerItem[] = [
                         }
                       </Space>
                     </Form.Item>
-                    {modeOfShipment !== strings.crossBorderTrucking &&
+                    {( modeOfShipment === strings.seaFCL || (modeOfShipment === strings.seaLCL && tradeType === strings.export)) &&
                       <>
                         <Form.Item name={["addOnService", "eSeal"]} label="DPD Facility [ Direct Port Delivery ]">
                           <Checkbox checked={addOnService?.eSeal === true} onChange={() => form.setFieldValue(["addOnService", "eSeal"], true)}>Yes</Checkbox>

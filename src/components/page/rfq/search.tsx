@@ -717,7 +717,7 @@ export const RFQCard = ({ rfqData ,showSubmit,hideExpoter=false}:{rfqData:any,sh
                     <Row gutter={[16, 16]} className='my-3 '>
                       <Col {...lParams} >
                         <Form.Item label={`Cargo Category`} layout="vertical" >
-                        <Input value={container?.[0]?.typee || ""} disabled className='text-center' />
+                        <Input value={cargoDetail?.category ?? ""} disabled className='text-center' />
                         </Form.Item>
                       </Col>
                       <Col {...lParams}>

@@ -387,7 +387,7 @@ const RFQList = () => {
     ))
   ) : filters.mode === "Sea-LCL" ? (
     <div>
-      {`${(shipment.cargoDetail?.totalGrossWeight || 0) / 1000} MT / ${shipment.cargoDetail?.totalCBM || 0} CBM`}
+      {`${(shipment.cargoDetail?.totalGrossWeight || 0) } MT / ${shipment.cargoDetail?.totalCBM || 0} CBM`}
     </div>
   ) : filters.mode === "Air" ? (
     <div>{`${shipment.cargoDetail?.totalGrossWeight || 0} kg`}</div>

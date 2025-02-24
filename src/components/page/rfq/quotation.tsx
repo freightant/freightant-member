@@ -10,7 +10,7 @@ import { getCurrecyByContryName, getExchangeRates, getRfQById, postQuotation } f
 import { strings } from '@/components/strings';
 import { PortUI, RFQCard } from './search';
 import CustomTable, { DragHandle } from '@/components/supportcomponents/rfq/editableTable';
-import { airlinesOptions, freightCostHead, freightTitle, modeOfShipmentOptions, paymentTermOptions, polChargeOptions, polOptions, shippingLinesOptiopns, unitsOption, uomSeaFcl } from './options';
+import { airlinesOptions, freightCostHead, freightTitle, modeOfShipmentOptions, paymentTermOptions, polChargeOptions, polOptions, shippingLinesOptiopns, unitsOption, uomSeaFcl, unitsOption2 } from './options';
 import LocodeSelect from '@/components/supportcomponents/customcomponents/locodeselect';
 import { getPaymentCode, locodeFormatedString, validateData } from '@/components/utils';
 import { AuthHOC } from '@/components/supportcomponents/auth/UnAuthHOC';
@@ -352,8 +352,8 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
   useEffect(() => {
     if(rfq?.loadingPortObj?.currency){
       setCurrencyCode(rfq?.loadingPortObj?.currency)
-      form.setFieldValue("podCurrencyCode",rfq?.dischargePortObj?.currency)
-      form.setFieldValue("polCurrencyCode",rfq?.loadingPortObj?.currency)
+      form.setFieldValue("podCurrencyCode","India")
+      form.setFieldValue("polCurrencyCode","India")
     }
     else{
       getCurrecyByContryName(rfq?.loadingPortObj?.Country)
@@ -746,7 +746,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                           <Select className='w-100 text-wrap' value={polChargesData[index]?.unit} variant="borderless" 
                                           style={{maxWidth:"70px"}}
                                           options={
-                                            unitsOption(rfq?.modeOfShipment)
+                                            polChargesData[index]?.costCategory === "Transportations"
+                                              ? unitsOption2(rfq?.modeOfShipment)
+                                              : unitsOption(rfq?.modeOfShipment)
                                           } placeholder=""
                                           dropdownStyle={{width:"240px"}}
                                           onChange={e=>updateQuantity(e,index,1)}/>
@@ -914,7 +916,9 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                                           <Select className='w-100 text-wrap' value={podChargesData[index]?.unit} variant="borderless"
                                           style={{maxWidth:"70px"}}
                                           options={
-                                            unitsOption(rfq?.modeOfShipment)
+                                            podChargesData[index]?.costCategory === "Transportations"
+                                              ? unitsOption2(rfq?.modeOfShipment)
+                                              : unitsOption(rfq?.modeOfShipment)
                                           } placeholder=""
                                           dropdownStyle={{width:"240px"}}
                                           onChange={e=>updateQuantity(e,index,2)}/>
@@ -976,7 +980,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                               </Form.Item>
                             </div>
                             <Col sm={22} md={12} >
-                            <Form.Item label={"Port of unLoading [POD] charges"} layout="horizontal" style={{ fontWeight: '700' }} >
+                            <Form.Item label={"Port of Unloading [POD] charges"} layout="horizontal" style={{ fontWeight: '700' }} >
                                 <Space>
                                   <Form.Item name={"podChargeDollar"} noStyle>
                                     <Input disabled className="rounded-pill bg-shade text-primary1" variant="borderless" style={{width:"150px"}} addonBefore={"USD"} />
@@ -1215,6 +1219,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                 </Card>
             </Col>
             }
+            { (modeOfShipment === strings.seaFCL || modeOfShipment === strings.crossBorderTrucking ) &&
             <Col span={24}>
                   <Card styles={{body:{paddingBottom:9}}}>
                     <ConfigProvider theme={{components:{Input:{colorFillAlter:"#6A37F4",colorFill:"#FFFFF"}}}}>
@@ -1261,6 +1266,7 @@ const FormUI = ({id,rfq}:{rfq:any,id:any}) => {
                       </ConfigProvider>
                   </Card>
             </Col>
+          }
             <Col span={24}>
   <Card styles={{ body:{ paddingBottom: 9 } }}>
     <Form.Item rules={[{ required: true }]} name={"quotationValidityDate"} label={"Quotation Validity Date"}>
