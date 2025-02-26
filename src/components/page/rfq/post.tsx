@@ -692,6 +692,7 @@ let globalContainer: ContainerItem[] = [
             <Col span={24}>
               <Card title="Cargo Details" styles={{ title: { color: strings.textPrimary1 }, header: { borderBottom: 0 } }} >
                 <Row gutter={[8, 0]} className='mx-1 mx-md-2'>
+                <Form form={form} initialValues={{ cargoDetail: { typee: specialCargoOptions[0] } }}>
                   <Col {...layParams}>
                     <Form.Item name={"cargoDetail"}>
                       {specialCargoOptions.map((e: string) => (<Button key={e} block shape="round" style={{ maxWidth: "12em", minWidth: "10em", textWrap: "wrap", lineHeight: 1 }} type={cargoDetail?.typee === e ? "primary" : "default"} onClick={() => {
@@ -699,8 +700,11 @@ let globalContainer: ContainerItem[] = [
                       }}>{e}</Button>))}
                     </Form.Item>
                   </Col>
+                  </Form>
                   <Col {...layParams}>
-                    <Form.Item name={["cargoDetail", "packageType"]} label="Enter details by" layout="vertical">
+                  <div style={{ marginLeft: "80px" }}>
+
+                    <Form.Item name={["cargoDetail", "packageType"]} label="Enter details by" layout="vertical" className="ml-8">
                       <Radio.Group options={packageTypeOptions} value={cargoDetail?.packageType} onChange={(e) => {
                         form.setFieldValue(["cargoDetail", "packageType"], e.target.value)
                         if (e.target.value === strings.totalCargo) {
@@ -708,7 +712,9 @@ let globalContainer: ContainerItem[] = [
                         }
                       }} />
                     </Form.Item>
+                    </div>
                   </Col>
+                  
                   <Col span={22}>
                     <Form.Item name={["cargoDetail", "category"]} label="Cargo Category" layout="vertical">
                       <Select suffixIcon={<></>} optionFilterProp="label" mode="multiple" placeholder="Select cargo category" options={cargoCategoryOptions.map((i: any) => ({ label: `${i.range[0]}-${i.range[1]} ${i.label}`, options: (i.children ? i.children : []).map((p: any) => ({ label: `${p.range} ${p.label}`, value: `${p.range} ${p.label}` })) }))} />

@@ -60,9 +60,12 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
             </Col>
             <Col sm={24} md={8} className='d-flex justify-content-center'>
                 <Space size={8}>
-                    <Button shape="round" icon={<img src={assetsRootPath+"image/assets/cargoShip.png"}/>}>{shippingLine}</Button>
+                <Button shape="round" icon={<img src={assetsRootPath + (rfq?.modeofshipment === "Sea-FCL" || rfq?.modeofshipment === "Sea-LCL" ? "image/assets/cargoShip.png" : "image/assets/air1.png")} style={rfq?.modeofshipment === "Air" ? { width: "4px", height: "4px"} : {}}/>}>
+  {shippingLine}
+</Button>
+
                     <Button shape="round" icon={<img src={assetsRootPath+"image/assets/port.png"}/>}>{noOfTransShipmentPorts} Transhipment</Button>                    
-                    <Button shape="round" icon={<ClockCircleOutlined/>}>{rfq?.freeTimeLP} Days</Button>                    
+                    <Button shape="round" icon={<ClockCircleOutlined/>}>{rfq?.freeTimeLP}</Button>                    
                 </Space>
             </Col>
             <Col sm={24} md={8} className='d-flex justify-content-end'>
@@ -84,11 +87,11 @@ const QuotationCard = ({ quotation }:{quotation:any}) => {
                               size="small"
                               items={
                                 [
-                                    ...[{ title:rfq?.loadingPortObj?.Name,description:rfq?.loadingPortObj?.FullName}],
+                                    ...[{ title:rfq?.loadingPortObj?.Country,description:rfq?.loadingPortObj?.PortName}],
                                     ...(transShipmentPorts? transShipmentPorts: []).map((port: any, iIndex: number) => (
                                         { title: port?.Name,status:"wait", description:port?.FullName  }
                                     )),
-                                    ...[{ status:"finish", title:rfq?.dischargePortObj?.Name,description:rfq?.dischargePortObj?.FullName}],
+                                    ...[{ status:"finish", title:rfq?.dischargePortObj?.Country,description:rfq?.dischargePortObj?.PortName}],
                                 ]
                               }
                           />

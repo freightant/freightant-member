@@ -111,7 +111,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                 >
                   <TableCards obj={d?.data} frieght={d?.data?.freightData} pol={d?.data?.polChargesData} pod={d?.data?.podChargesData} />
                 </ConfigProvider>
-                <p className='currency-total my-3  fw-bold' style={{ color: '#0A0049'  }}>Total Landed Cost: {d?.data?.polCurrencyCode} {d?.data?.totallandedCost}</p>
+                <p className='currency-total my-3  fw-bold' style={{ color: '#0A0049'  }}>Total Landed Cost: {d?.data?.polCurrencyCode} {d?.data?.totallandedCost?.toFixed(2)}</p>
               </div>
             </Col>
             <Col xs={24}>
@@ -132,7 +132,7 @@ function OfferDetail({ params,previewData=false ,hideExtra=false }: { params: { 
                             <p className='mb-0' style={{ color: '#0A0049'  }}>Transshipment Ports</p><span>{d?.data?.noOfTransShipmentPorts}</span>
                         </div>
                     </div>
-                    <div className="shippment-port-container">
+                    <div className="shippment-port-container w-64">
                         <h3 className='m-4' style={{ color: '#0A0049'  }}>Transshipment Ports </h3>
                         <Row>
                             <Col xs={24} md={20} lg={20}>
@@ -352,8 +352,7 @@ function TableCards({frieght,pol,pod,obj}:{frieght:any,pol:any,pod:any,obj:any})
             <div className="table-container">
                 <div className="table-header">
                     <h6 className='mb-0' style={{ fontWeight: 600, color: '#0A0049' }}>Port of Discharge [POD] Charges</h6>
-                    <div className="header-tag-content">40FT x 2</div>
-                    <div className="header-tag-content">20FT x 1</div>
+                    
                 </div>
 
                 <div className="table-content">

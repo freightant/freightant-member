@@ -205,10 +205,10 @@ const RFQList = () => {
   </div>
 
   {/* Submit Button */}
-  <div style={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", height: "100px" }}>
+  <div style={{ textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", height: "80px" }}>
     <button onClick={handleSubmit} style={{
-      height: "36px", minWidth: "100px", padding: "0 12px", border: "none", outline: "none", borderRadius: "20px",
-      backgroundColor: "#6e44ff", color: "white", fontSize: "14px", fontWeight: "500", cursor: "pointer",
+      height: "30px", minWidth: "80px", padding: "0 12px", border: "none", outline: "none", borderRadius: "40px",
+      backgroundColor: "#6e44ff", color: "white", fontSize: "12px", fontWeight: "500", cursor: "pointer",
       display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color 0.3s ease"
     }}
       onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#4a2ccd")}

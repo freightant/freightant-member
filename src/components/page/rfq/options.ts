@@ -526,6 +526,7 @@ export const freightCostHead = (mode:string)=>{
         break;
       case strings.air:
        return [
+        { "value": "Air Freight", "label": "Air Freight" },
         { "value": "1st0.5", "label": "First 0.5Kg Surcharge" },
         { "value": "AAA ", "label": "Misc Charge " },
         { "value": "AAC ", "label": "AAC" },
